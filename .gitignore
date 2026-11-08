@@ -1,0 +1,39 @@
+# Build products and this machine's offline dependency setup.
+/target/
+/vendor/
+/.cargo/
+/.cargo-cache/
+/shots/
+/exports/
+*.exe
+*.pdb
+*.log
+/fetch_deps.py
+/fetch_reference_pictures.py
+
+# Session preferences and private/local configuration.
+/preferences.ron*
+.env*
+!.env.example
+AGENTS.local.md
+*.key
+*.pem
+*.pfx
+*.p12
+credentials*.json
+secrets*.json
+
+# Optional copyrighted product-reference photos are never distributed.
+/assets/ti/*.png
+/assets/ti/*.jpg
+/assets/ti/*.jpeg
+
+# Editor and operating-system files.
+.idea/
+.vscode/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+Desktop.ini
