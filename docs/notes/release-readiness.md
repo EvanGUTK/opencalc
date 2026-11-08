@@ -16,7 +16,7 @@ Target: `0.2.0-beta.1`, Windows x64. The local qualification gates pass for an u
 | Access | Visual, nonvisual semantics, keyboard, motor guards, quiet feedback, reading/focus combinations | All 16 synthetic native scenarios pass; physical-device and learner checks remain unperformed |
 | Returning user | v1 migration, canvas pages/ink/text/shapes, optional recovery and restart tests | Model, real filesystem, async UI and recovery regressions pass; corrupt input keeps existing work, recovered drafts cannot silently replace the original file |
 | Maintainer | Current dependency advisory check, notices, source/private-data review, clean build | Local gates and clean exported-source check pass; exact license bundle and staged-publication scan reviewed; four maintenance advisories documented; CodeRabbit unavailable |
-| Distribution | Portable Windows build and per-user installer, isolated install/uninstall, hashes and beta release | Real-binary qualification passes, including executable hashes, launches, uninstall retry and personal-file preservation; ready for prerelease publication after the final artifact check |
+| Distribution | Portable Windows build and per-user installer, isolated install/uninstall, hashes and beta release | Published as an unsigned prerelease; downloaded artifacts match their checksums and pass the complete real-binary installer/portable smoke |
 
 ## Executed gates
 
@@ -31,6 +31,18 @@ Target: `0.2.0-beta.1`, Windows x64. The local qualification gates pass for an u
 Final application executable SHA-256: `c6ae02b32359dfa488c96d64ecd1d099dffc4e725c462a75cfd09dbe291cbbc8`.
 
 The committed [raw curriculum report](../validation/curriculum-0.2.0-beta.1.json) has SHA-256 `176e6a32f7a1c286b9d18a47ea076fa9ac3581f7855d4b3acf6f0ee12c0a7802`. Release assets supply their own SHA256SUMS and payload manifests; generated installer/log/profile artifacts are excluded from Git.
+
+## Published artifacts
+
+[OpenCalc 0.2.0-beta.1](https://github.com/EvanGUTK/opencalc/releases/tag/v0.2.0-beta.1) was published at 2026-11-08 06:46:30 UTC as a public prerelease. The tag and package manifest identify verified source commit `b615e395c90adca46d074bf2b6dcd06130201f30`. [PR #5](https://github.com/EvanGUTK/opencalc/pull/5) remains open for maintainer approval; it was not merged automatically.
+
+| Download | SHA-256 |
+| --- | --- |
+| Windows x64 installer | `d30f3c70597bebfbf967685fdf3ec95ed38a2c2bd8c8a6398e156b458f642f96` |
+| Windows x64 portable ZIP | `ff55d1bae16b9c4d7d18f5dfd988f26125b0eb84e5af74d387f28fcff712204a` |
+| Curriculum results JSON | `176e6a32f7a1c286b9d18a47ea076fa9ac3581f7855d4b3acf6f0ee12c0a7802` |
+
+Both distributions were downloaded from GitHub and reran the full isolated installation/payload/self-test/launch/uninstall checks successfully. An unauthenticated public portable download also matched the ZIP checksum. The downloaded release app was opened interactively and reported a responding native window with its portable data directory created. The [sanitized Windows verification record](../validation/windows-0.2.0-beta.1.json) contains no local evidence/profile paths.
 
 ## Reproduced baseline defects
 

@@ -1,0 +1,37 @@
+{
+    "version":  "0.2.0-beta.1",
+    "release_url":  "https://github.com/EvanGUTK/opencalc/releases/tag/v0.2.0-beta.1",
+    "published_utc":  "2026-11-08T06:46:30Z",
+    "source_commit":  "b615e395c90adca46d074bf2b6dcd06130201f30",
+    "installer_sha256":  "d30f3c70597bebfbf967685fdf3ec95ed38a2c2bd8c8a6398e156b458f642f96",
+    "portable_sha256":  "ff55d1bae16b9c4d7d18f5dfd988f26125b0eb84e5af74d387f28fcff712204a",
+    "executable_sha256":  "c6ae02b32359dfa488c96d64ecd1d099dffc4e725c462a75cfd09dbe291cbbc8",
+    "unauthenticated_public_portable_checksum":  "passed",
+    "installed_files_verified":  630,
+    "portable_files_verified":  631,
+    "silent_install":  "passed",
+    "payload_hashes":  "passed",
+    "locked_uninstall_retry":  "passed",
+    "uninstall_owned_files":  "passed",
+    "preserved_personal_files":  "passed",
+    "launch":  "installed and portable screenshot passed",
+    "test_mode":  "isolated /TESTPROFILE; no registry or shortcuts",
+    "curriculum":  [
+                       {
+                           "distribution":  "installed",
+                           "passed":  138,
+                           "failed":  0,
+                           "application_version":  "0.2.0-beta.1",
+                           "executable_sha256":  "c6ae02b32359dfa488c96d64ecd1d099dffc4e725c462a75cfd09dbe291cbbc8"
+                       },
+                       {
+                           "distribution":  "portable",
+                           "passed":  138,
+                           "failed":  0,
+                           "application_version":  "0.2.0-beta.1",
+                           "executable_sha256":  "c6ae02b32359dfa488c96d64ecd1d099dffc4e725c462a75cfd09dbe291cbbc8"
+                       }
+                   ],
+    "native_interaction":  "synthetic egui events; physical assistive devices and live dialogs unverified",
+    "interactive_native_window":  "responding; portable data directory created"
+}
