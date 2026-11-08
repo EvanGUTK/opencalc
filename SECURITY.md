@@ -1,6 +1,6 @@
 # Security
 
-Equal is an early-stage desktop application. Core calculation and practice run locally. Optional AI requests send the selected problem to the user's separately installed loopback Ollama service. Check that service and model's settings before supplying sensitive material.
+OpenCalc is an early-stage desktop application. Core calculation and practice run locally. Optional AI requests send the selected problem to the user's separately installed loopback Ollama service. Check that service and model's settings before supplying sensitive material.
 
 Do not put passwords, access tokens, private schoolwork or personal data in public issues. For a vulnerability, use GitHub's private vulnerability-reporting option if available; otherwise open an issue requesting a private reporting channel without publishing exploit details or sensitive data.
 

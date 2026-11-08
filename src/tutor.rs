@@ -1018,7 +1018,7 @@ impl EqualApp {
                 });
                 egui::CollapsingHeader::new("Local AI and photo reading").id_salt("ai-config").show(ui,|ui| {
                     ui.checkbox(&mut self.tutor.ai_enabled,"Use local AI (Ollama)");
-                    ui.label("Run Ollama on this computer and enter a model you have already installed. A vision model is required for photos. Nothing is downloaded or sent to a cloud service by Equal.");
+                    ui.label("Run Ollama on this computer and enter a model you have already installed. A vision model is required for photos. Nothing is downloaded or sent to a cloud service by OpenCalc.");
                     ui.horizontal_wrapped(|ui| {
                         ui.label("Installed model:");
                         ui.add(egui::TextEdit::singleline(&mut self.tutor.model).desired_width(180.0).hint_text("gemma3:4b"));

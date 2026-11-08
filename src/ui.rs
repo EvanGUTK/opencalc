@@ -32,7 +32,7 @@ impl EqualApp {
                     ui.disable();
                 }
                 ui.horizontal_wrapped(|ui| {
-                    ui.label(R::new("Equal").strong());
+                    ui.label(R::new("OpenCalc").strong());
                     ui.label(LEVELS[self.settings.level]);
                     let settings = ui.button("Settings");
                     ctx.data_mut(|data| {
@@ -319,18 +319,6 @@ impl EqualApp {
             area(20.0_f32, 13.0_f32, 283.0_f32, 626.0_f32)
         };
         p.rect_filled(body, 24.0_f32 * scale, shell);
-        let font = if self.settings.readable {
-            FontId::monospace(21.0_f32 * scale)
-        } else {
-            FontId::proportional(21.0_f32 * scale)
-        };
-        p.text(
-            area(27.0_f32, 28.0_f32, 0.0_f32, 0.0_f32).min,
-            egui::Align2::LEFT_TOP,
-            if basic { "TI-108" } else { "TI-34 MultiView" },
-            font,
-            C::WHITE,
-        );
         p.text(
             area(28.0_f32, height - 28.0_f32, 0.0_f32, 0.0_f32).min,
             egui::Align2::LEFT_TOP,
@@ -737,11 +725,11 @@ mod tests {
 
     #[test]
     fn each_school_level_has_its_own_accessible_handheld() {
-        for (level, model, key) in [
-            (0, "TI-108", "Recall or clear memory"),
-            (1, "TI-34 MultiView", "Enter fraction"),
-            (2, "TI-84", "Graph on calculator"),
-            (3, "TI-84", "Graph on calculator"),
+        for (level, case_width, case_height, key) in [
+            (0, 317.0, 470.0, "Recall or clear memory"),
+            (1, 317.0, 651.0, "Enter fraction"),
+            (2, 307.0, 648.0, "Graph on calculator"),
+            (3, 307.0, 648.0, "Graph on calculator"),
         ] {
             let ctx = egui::Context::default();
             ctx.enable_accesskit();
@@ -768,11 +756,39 @@ mod tests {
             };
             frame(&mut app);
             let output = frame(&mut app);
+            let case_color = C::from_gray(if level < 2 { 180 } else { 201 });
             assert!(
-                output.shapes.iter().any(|shape| matches!(
-                    &shape.shape, egui::Shape::Text(text) if text.galley.text() == model
-                )),
-                "missing {model} at level {level}"
+                output.shapes.iter().any(|shape| match &shape.shape {
+                    egui::Shape::Rect(rect) if rect.fill == case_color => {
+                        (rect.rect.width() / rect.rect.height() - case_width / case_height).abs()
+                            < 0.001
+                    }
+                    _ => false,
+                }),
+                "calculator casing changed at level {level}"
+            );
+            for shape in &output.shapes {
+                if let egui::Shape::Text(text) = &shape.shape {
+                    let label = text.galley.text().to_ascii_uppercase();
+                    assert!(
+                        !["TI-", "PLUS CE", "TEXAS", "INSTRUMENTS"]
+                            .iter()
+                            .any(|brand| label.contains(brand)),
+                        "vendor branding remained at level {level}: {label}"
+                    );
+                }
+            }
+            assert_eq!(
+                output
+                    .shapes
+                    .iter()
+                    .filter(|shape| matches!(
+                        &shape.shape,
+                        egui::Shape::Text(text) if text.galley.text() == "OpenCalc"
+                    ))
+                    .count(),
+                1,
+                "the app name belongs in the toolbar only"
             );
             let tree = output
                 .platform_output

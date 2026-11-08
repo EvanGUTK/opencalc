@@ -5,7 +5,7 @@ updated: 2026-11-07
 
 # Initial public source review
 
-The initial Equal source snapshot uses the app directory as its repository root. The original code and original artwork use MIT. Third-party fonts and optional product references are separately described in THIRD_PARTY_NOTICES.md.
+The initial OpenCalc source snapshot uses the app directory as its repository root. The original code and original artwork use MIT. Third-party fonts and optional product references are separately described in THIRD_PARTY_NOTICES.md.
 
 ## Local evidence
 

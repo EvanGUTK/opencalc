@@ -5,7 +5,7 @@ updated: 2026-11-07
 
 # Inclusive design acceptance matrix
 
-Equal should let people combine controls for their tasks and preferences without providing a diagnosis, age, gender, or other demographic profile. A preset is a starting point, not an assessment of a person. The design covers overlapping barriers rather than claiming that a list of features accommodates every disability. [WAI describes a diversity of abilities and barriers rather than an exhaustive disability checklist.](https://www.w3.org/WAI/people-use-web/abilities-barriers/)
+OpenCalc should let people combine controls for their tasks and preferences without providing a diagnosis, age, gender, or other demographic profile. A preset is a starting point, not an assessment of a person. The design covers overlapping barriers rather than claiming that a list of features accommodates every disability. [WAI describes a diversity of abilities and barriers rather than an exhaustive disability checklist.](https://www.w3.org/WAI/people-use-web/abilities-barriers/)
 
 This note defines acceptance work for step 3. A declared setting, a passing unit test, or a screenshot is not evidence that a learner can use their actual assistive technology. The step-3 build and interaction evidence belong to the parent integration report; this reviewer does not mark untried tasks as passing.
 

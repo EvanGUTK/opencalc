@@ -1308,7 +1308,7 @@ impl EqualApp {
                 "Open larger graph",
                 "Named lists L1-L6",
                 "Sequence formulas u, v, w",
-                "Equal text transfer",
+                "OpenCalc text transfer",
             ]
             .into_iter()
             .map(str::to_owned)
@@ -1707,7 +1707,7 @@ impl EqualApp {
                             if ui.button("Save program in this session").clicked() {
                                 if valid_program_name(&self.device.program_name) && self.device.programs.len() < 32 {
                                     self.device.programs.insert(self.device.program_name.clone(),self.device.program.clone());
-                                    self.device.information = "Saved. Use Equal text transfer to keep a copy.".into();
+                                    self.device.information = "Saved. Use OpenCalc text transfer to keep a copy.".into();
                                 } else { self.device.information = "Use a letter followed by up to 15 letters, digits, or underscores. Maximum 32 saved programs.".into(); }
                             }
                             for name in self.device.programs.keys().cloned().collect::<Vec<_>>() {
@@ -1954,8 +1954,8 @@ impl EqualApp {
     }
 
     fn device_transfer_ui(&mut self, ui: &mut egui::Ui) {
-        ui.strong("Equal text transfer");
-        ui.label("Copy or paste your Equal variables, lists, sequences, graph functions, and programs. This text format does not communicate with a physical TI calculator or emulate its transfer protocol.");
+        ui.strong("OpenCalc text transfer");
+        ui.label("Copy or paste your OpenCalc variables, lists, sequences, graph functions, and programs. This text format does not communicate with a physical TI calculator or emulate its transfer protocol.");
         if ui.button("Prepare export").clicked() {
             self.export_device_transfer();
         }
@@ -1965,7 +1965,7 @@ impl EqualApp {
         self.device_field(
             ui,
             EditTarget::Transfer,
-            "Equal transfer text: paste here to import",
+            "OpenCalc transfer text: paste here to import",
             5,
         );
         if ui.button("Import transfer text").clicked() {
@@ -2272,7 +2272,7 @@ impl EqualApp {
             return;
         }
         let result = serde_json::from_str::<TransferPacket>(&self.device.transfer)
-            .map_err(|error| format!("Invalid Equal transfer text: {error}"))
+            .map_err(|error| format!("Invalid OpenCalc transfer text: {error}"))
             .and_then(|packet| {
                 validate_transfer(&packet)?;
                 Ok(packet)
@@ -2653,7 +2653,7 @@ fn valid_program_name(name: &str) -> bool {
 
 fn validate_transfer(packet: &TransferPacket) -> Result<(), String> {
     if packet.version != 1 || packet.functions.len() != 10 {
-        return Err("Expected Equal transfer version 1 with ten graph functions.".into());
+        return Err("Expected OpenCalc transfer version 1 with ten graph functions.".into());
     }
     if packet.variables.len() > 26
         || packet.complex_variables.len() > 26

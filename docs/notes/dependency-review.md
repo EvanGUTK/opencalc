@@ -7,7 +7,7 @@ updated: 2026-11-07
 
 Checked at **2026-11-08 02:10 UTC** (2026-11-07 locally) for the initial public source snapshot. This is an advisory-database check, not a security certification or a substitute for ongoing updates.
 
-The reviewed `Cargo.lock` SHA-256 is `03c774853a1f8e879bf11d970a6ad23f37dff47e304ca7bf2b3d2616fc3f9b95`. A changed lockfile requires a new check.
+The reviewed `Cargo.lock` SHA-256 is `63b587c8909e375cc68de85358878fdab4e37d4984e39d77eb3f060c01c0b079`. A changed lockfile requires a new check.
 
 ## Method and result
 
@@ -36,3 +36,5 @@ No dependencies were upgraded, removed or suppressed by this review. Major GUI/a
 This check covers the exact registry versions recorded in this lockfile and the database state at the stated time. It does not cover undisclosed defects, unindexed advisories, operating-system components, drivers, MATLAB, Ollama/model weights, malicious local configuration, or application logic. No exploit reproduction, platform build or Cargo command was run by this reviewer. The parent integration records tests and native build results separately.
 
 Related: [[calculator-accessibility]], [[inclusive-design]].
+
+The application package was renamed to `opencalc`; all 345 registry package/version pairs are unchanged from this review.

@@ -74,7 +74,7 @@ impl EqualApp {
                     }
                     if !minimal {
                         ui.label(
-                            R::new("Equal")
+                            R::new("OpenCalc")
                                 .size(if tiny { 16.0 } else { 20.0 })
                                 .strong()
                                 .color(palette.ink),

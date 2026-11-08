@@ -30,7 +30,7 @@ Local speech uses math narration, can be stopped, and reports errors visibly. Sc
 - Explore both graph curves with keyboard and screen reader, including undefined coordinates.
 - Check Windows display scaling and the app's 200–400% zoom with a magnifier.
 - Try switch input and gather feedback from learners with dyslexia, low vision, color blindness, and hearing impairment.
-- Compare all primary and secondary key sequences against the relevant TI guidebooks before claiming firmware parity. Step 3 adds complex arithmetic, a bounded program-language subset and Equal JSON transfer; full TI firmware, language and hardware-transfer compatibility remains unverified.
+- Compare all primary and secondary key sequences against the relevant TI guidebooks before claiming firmware parity. Step 3 adds complex arithmetic, a bounded program-language subset and OpenCalc JSON transfer; full TI firmware, language and hardware-transfer compatibility remains unverified.
 
 The existing in-app assistive-technology checklist records only tasks actually tried. Do not mark untried tasks as passing.
 
@@ -40,7 +40,7 @@ The existing in-app assistive-technology checklist records only tasks actually t
 - Rendered captures checked at 360×720, 480×800, and 640×840, including both school layouts, live LCD graph/trace, high contrast, readable fonts, and 200% magnification.
 - Tests cover actual pointer sequences for editing Y1 with physical keys and drawing on the LCD, plus navigation overlap, key magnification, LCD expression/result geometry, native status announcements, fraction precision, memory, storage, and menu navigation.
 - eframe 0.33 loads saved window geometry even when `persist_window` is false; apply the initial launch size once after stored zoom settles, then leave resizing to the user.
-- The step-1 executable is `target/accessibility/equal-calculator.exe`; the newer step-2 build is `target/curriculum/equal-calculator.exe` (see [[practice-learning]]).
+- The step-1 executable is `target/accessibility/opencalc.exe`; the newer step-2 build is `target/curriculum/opencalc.exe` (see [[practice-learning]]).
 - Zoom follow-up: reproduced typed 125% jumping to 200% because the slider displayed percentages but parsed scale factors. Replaced it with presets, 5% buttons, and a staged integer percentage input; intermediate and invalid inputs have native interaction regressions.
 
 ## Remaining milestones

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/brand/equal-banner.svg" alt="Equal — Calculator, graphing and learning" width="100%">
+  <img src="assets/brand/opencalc-banner.svg" alt="OpenCalc — Calculator, graphing and learning" width="100%">
 </p>
 
 <p align="center">
@@ -18,14 +18,14 @@
   <a href="#development">Development</a>
 </p>
 
-# Equal
+# OpenCalc
 
 A native desktop calculator with graphing, worked lessons and practice from K–3 through advanced mathematics. Use it beside online homework in a narrow window, or open the larger workspace for graphs, matrices and lessons.
 
 The core calculator, practice questions and built-in explanations run locally. No account, subscription or AI model is required.
 
 <p align="center">
-  <img src="assets/screenshots/calculator.png" alt="Equal calculating 12 plus 8 as 20 with its large-key keypad" width="100%">
+  <img src="assets/screenshots/calculator.png" alt="OpenCalc calculating 12 plus 8 as 20 on its unbranded calculator" width="100%">
 </p>
 
 ## What you can do
@@ -40,7 +40,7 @@ The core calculator, practice questions and built-in explanations run locally. N
 | **Practice** | 25 topics with Basic, Standard and Challenge questions, visual models and worked solutions |
 | **Tools** | 30 tools covering statistics, probability, fractions, algebra, conversions, percentages, finance and geometry |
 
-The familiar layouts are TI-108-inspired for K–3, TI-34-inspired for 4–8, and TI-84-style for both 9–12 and Advanced. Their casing, keys and live display are drawn in the app. Equal is an independent implementation; these layouts do not establish TI firmware compatibility.
+The familiar layouts are TI-108-inspired for K–3, TI-34-inspired for 4–8, and TI-84-style for both 9–12 and Advanced. Their casing, keys and live display are drawn in the app. OpenCalc is an independent implementation; these layouts do not establish TI firmware compatibility.
 
 ### Graphing stays on the calculator
 
@@ -51,7 +51,7 @@ Numerical tools find values, zeros, intersections, extrema, derivatives and inte
 Graphs, tables and tracing follow the selected Degrees/Radians setting. MATLAB export sends numeric samples from Y1 and Y2 to a separately installed MATLAB. Numerical results are approximations and can miss features between samples.
 
 <p align="center">
-  <img src="assets/screenshots/graph.png" alt="Two functions plotted in Equal's dark graph workspace" width="100%">
+  <img src="assets/screenshots/graph.png" alt="Two functions plotted in OpenCalc's dark graph workspace" width="100%">
 </p>
 
 ### Editing, lists and programs
@@ -60,7 +60,7 @@ Use scientific exponent entry, alpha lock, named variables, selection-aware edit
 
 **PRGM** supports a local TI-BASIC-style subset: assignments, `Disp`, resumable `Input` and `Pause`, conditionals, loops, labels and stop commands. Execution and output are bounded. It does not implement every TI command or execute host programs.
 
-**2nd → x,t** opens Equal text transfer for variables, lists, sequences, graph functions and programs. Import validates the complete JSON packet and can be undone. This format does not communicate with physical TI hardware. See [calculator workflows and limits](docs/notes/calculator-accessibility.md).
+**2nd → x,t** opens OpenCalc text transfer for variables, lists, sequences, graph functions and programs. Import validates the complete JSON packet and can be undone. This format does not communicate with physical TI hardware. See [calculator workflows and limits](docs/notes/calculator-accessibility.md).
 
 ## Accessibility
 
@@ -77,7 +77,7 @@ Choose **Settings** to combine individual controls or start with **Large print**
 | **Number conventions** | Supported non-Latin decimal digits and decimal-comma input; semicolons separate arguments and multiple answers in comma mode |
 
 <p align="center">
-  <img src="assets/screenshots/accessibility.png" alt="Equal large-key calculator with configurable accessibility settings" width="100%">
+  <img src="assets/screenshots/accessibility.png" alt="OpenCalc large-key calculator with configurable accessibility settings" width="100%">
 </p>
 
 Dwell and switch scanning apply to the **calculator keypad**. Dwell requires a deliberate hold and leaving the key before repeating. Scanning starts paused; Space selects a row, then a key. Dialogs pause scanning, and returning requires a deliberate restart. Settings and other workspaces still need ordinary keyboard/pointer navigation or operating-system assistive tools.
@@ -119,21 +119,23 @@ For a worked lesson, choose **Learn** or **Explain**, type a problem, or upload/
 <details>
 <summary><strong>Optional local Ollama tutor</strong></summary>
 
-The **Local AI** section can use a model you have already installed in [Ollama](https://ollama.com), running at `127.0.0.1:11434`. Equal does not install models or require an API key. Use a local model rather than a cloud model.
+The **Local AI** section can use a model you have already installed in [Ollama](https://ollama.com), running at `127.0.0.1:11434`. OpenCalc does not install models or require an API key. Use a local model rather than a cloud model.
 
 An installed vision model can transcribe an uploaded PNG/JPG problem. Review and correct the transcription before requesting an explanation. Uploads are limited to 8 MB; text problems to 8,000 characters. AI explanations and follow-ups are labeled as AI output and may contain mathematical errors. Built-in lessons remain available without Ollama.
 
-Uploaded content and conversations stay in session memory and are not saved as preferences. Equal sends these requests to loopback without a proxy. A live model has not been validated; serialization, parsing, error paths and HTTP transport with a local mock server have tests. The integration uses Ollama's [chat](https://docs.ollama.com/api/chat) and [vision](https://docs.ollama.com/capabilities/vision) interfaces.
+Uploaded content and conversations stay in session memory and are not saved as preferences. OpenCalc sends these requests to loopback without a proxy. A live model has not been validated; serialization, parsing, error paths and HTTP transport with a local mock server have tests. The integration uses Ollama's [chat](https://docs.ollama.com/api/chat) and [vision](https://docs.ollama.com/capabilities/vision) interfaces.
 
 </details>
 
 ## Get started
 
-Equal is under active development. Build from source with a current [Rust toolchain](https://www.rust-lang.org/tools/install) supporting edition 2024. Windows is the tested platform; other desktop platforms are not yet verified.
+OpenCalc is under active development. Build from source with a current [Rust toolchain](https://www.rust-lang.org/tools/install) supporting edition 2024. Windows is the tested platform; other desktop platforms are not yet verified.
 
-From the repository root:
+Clone the source, then run it:
 
 ```sh
+git clone https://github.com/EvanGUTK/opencalc.git
+cd opencalc
 cargo run --release
 ```
 
@@ -144,7 +146,7 @@ Choose a learning level in **Settings**. Use **Workspace** for the full navigati
 To open a specific practice view on Windows:
 
 ```powershell
-./target/release/equal-calculator.exe --practice --level 4-8 --topic fractions --difficulty standard --size 800x900
+./target/release/opencalc.exe --practice --level 4-8 --topic fractions --difficulty standard --size 800x900
 ```
 
 Add `--show-solution` to preview a worked solution. Start the large-key view with `--layout accessible`, or select it in Settings.
@@ -165,15 +167,15 @@ cargo build --release
 If Windows locks existing build artifacts, choose an isolated target directory and use it consistently across commands:
 
 ```powershell
-cargo test --target-dir "$env:TEMP/equal-build"
-cargo clippy --all-targets --target-dir "$env:TEMP/equal-build" -- -D warnings
-cargo build --target-dir "$env:TEMP/equal-build"
+cargo test --target-dir "$env:TEMP/opencalc-build"
+cargo clippy --all-targets --target-dir "$env:TEMP/opencalc-build" -- -D warnings
+cargo build --target-dir "$env:TEMP/opencalc-build"
 ```
 
 Capture an app screenshot without external screen-capture software:
 
 ```powershell
-./target/debug/equal-calculator.exe --screenshot shots/current.png --size 800x900 --workspace --layout accessible
+./target/debug/opencalc.exe --screenshot shots/current.png --size 800x900 --workspace --layout accessible
 ```
 
 Other preview options include `--preview graph`, `--preview tutor`, `--preview settings`, `--contrast`, `--readable`, `--theme dark` and `--scale 1.25`.
@@ -184,8 +186,8 @@ See [contributing](CONTRIBUTING.md), [security reporting](SECURITY.md), and the 
 
 ## License and acknowledgements
 
-Equal's original source and original artwork are released under the [MIT license](LICENSE). Third-party dependencies retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
+OpenCalc's original source and original artwork are released under the [MIT license](LICENSE). Third-party dependencies retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
 
-Texas Instruments product names and any optional locally supplied reference photographs belong to their respective owners. Reference photographs are not covered by Equal's MIT license and are not required to build the public source. Equal is not affiliated with or endorsed by Texas Instruments or MathWorks. MATLAB requires a separate installation and license.
+Texas Instruments product names and any optional locally supplied reference photographs belong to their respective owners. Reference photographs are not covered by OpenCalc's MIT license and are not required to build the public source. OpenCalc is not affiliated with or endorsed by Texas Instruments or MathWorks. MATLAB requires a separate installation and license.
 
 [Calculator and accessibility notes](docs/notes/calculator-accessibility.md) · [Practice implementation](docs/notes/practice-learning.md) · [Research and conventions](docs/notes/feature-research.md)

@@ -21,7 +21,7 @@ pub fn graph_script(
     };
     // Export evaluated numbers, so learner input never becomes executable MATLAB code.
     let mut script = format!(
-        "% Equal graph export: numeric samples; angles in {}.\n% Undefined real values are NaN. Equal remains usable without MATLAB.\nequal_data = [\n",
+        "% OpenCalc graph export: numeric samples; angles in {}.\n% Undefined real values are NaN. OpenCalc remains usable without MATLAB.\nopencalc_data = [\n",
         if degrees { "degrees" } else { "radians" }
     );
     let mut valid = [0, 0];
@@ -59,20 +59,20 @@ pub fn graph_script(
     if valid[0] == 0 || (b.is_some() && valid[1] == 0) {
         return Err("No real values to send to MATLAB. Check your function and range.".into());
     }
-    script.push_str("] ;\nfigure('Name','Equal - MATLAB graph','Color','w');\n");
+    script.push_str("] ;\nfigure('Name','OpenCalc - MATLAB graph','Color','w');\n");
     if surface {
-        writeln!(script, "equal_X = reshape(equal_data(:,1),{SURFACE_SAMPLES},{SURFACE_SAMPLES})';\nequal_Y = reshape(equal_data(:,2),{SURFACE_SAMPLES},{SURFACE_SAMPLES})';\nequal_Z = reshape(equal_data(:,3),{SURFACE_SAMPLES},{SURFACE_SAMPLES})';").expect("write to string");
-        script.push_str("surf(equal_X,equal_Y,equal_Z,'FaceColor',[0.75 0.85 0.82],'EdgeColor',[0.08 0.25 0.22]);\nylabel('y'); zlabel('z');\nequal_table = array2table(equal_data,'VariableNames',{'x','y','z'});\n");
+        writeln!(script, "opencalc_X = reshape(opencalc_data(:,1),{SURFACE_SAMPLES},{SURFACE_SAMPLES})';\nopencalc_Y = reshape(opencalc_data(:,2),{SURFACE_SAMPLES},{SURFACE_SAMPLES})';\nopencalc_Z = reshape(opencalc_data(:,3),{SURFACE_SAMPLES},{SURFACE_SAMPLES})';").expect("write to string");
+        script.push_str("surf(opencalc_X,opencalc_Y,opencalc_Z,'FaceColor',[0.75 0.85 0.82],'EdgeColor',[0.08 0.25 0.22]);\nylabel('y'); zlabel('z');\nopencalc_table = array2table(opencalc_data,'VariableNames',{'x','y','z'});\n");
     } else {
         script.push_str(
-            "plot(equal_data(:,1),equal_data(:,2),'-','Color',[0.08 0.35 0.65],'LineWidth',2);\n",
+            "plot(opencalc_data(:,1),opencalc_data(:,2),'-','Color',[0.08 0.35 0.65],'LineWidth',2);\n",
         );
         if b.is_some() {
-            script.push_str("hold on; plot(equal_data(:,1),equal_data(:,3),'--','Color',[0.65 0.25 0.05],'LineWidth',2); hold off;\nlegend('f(x) - solid','g(x) - dashed','Location','best');\n");
+            script.push_str("hold on; plot(opencalc_data(:,1),opencalc_data(:,3),'--','Color',[0.65 0.25 0.05],'LineWidth',2); hold off;\nlegend('f(x) - solid','g(x) - dashed','Location','best');\n");
         }
-        script.push_str("ylabel('Function value');\nequal_table = array2table(equal_data,'VariableNames',{'x','f','g'});\n");
+        script.push_str("ylabel('Function value');\nopencalc_table = array2table(opencalc_data,'VariableNames',{'x','f','g'});\n");
     }
-    script.push_str("xlabel('x'); grid on; title('Equal graph - numeric samples');\nset(gca,'FontSize',14);\ndisp('Graph samples are available as equal_table in the workspace.');\ndisp(equal_table(1:min(9,height(equal_table)),:));\n");
+    script.push_str("xlabel('x'); grid on; title('OpenCalc graph - numeric samples');\nset(gca,'FontSize',14);\ndisp('Graph samples are available as opencalc_table in the workspace.');\ndisp(opencalc_table(1:min(9,height(opencalc_table)),:));\n");
     Ok(script)
 }
 
@@ -113,7 +113,7 @@ pub fn open_graph(script: &str) -> Result<PathBuf, String> {
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|e| format!("Could not name graph: {e}"))?
         .as_nanos();
-    let path = folder.join(format!("equal_graph_{stamp}.m"));
+    let path = folder.join(format!("opencalc_graph_{stamp}.m"));
     std::fs::write(&path, script).map_err(|e| format!("Could not save MATLAB graph: {e}"))?;
     let escaped = path
         .to_string_lossy()
@@ -152,7 +152,7 @@ mod tests {
         assert!(!script.contains("sin(x)"));
         assert_eq!(
             script
-                .split("equal_data = [\n")
+                .split("opencalc_data = [\n")
                 .nth(1)
                 .unwrap()
                 .split("] ;")
@@ -178,8 +178,8 @@ mod tests {
     #[test]
     fn surface_matches_the_apps_domain_and_exports_text_data() {
         let script = graph_script("x^2-y^2", "ignored", true, [0.0, 0.0], 1.0, false).unwrap();
-        assert!(script.contains("reshape(equal_data(:,3),41,41)'"));
-        assert!(script.contains("surf(equal_X,equal_Y,equal_Z"));
+        assert!(script.contains("reshape(opencalc_data(:,3),41,41)'"));
+        assert!(script.contains("surf(opencalc_X,opencalc_Y,opencalc_Z"));
         assert!(script.contains("{'x','y','z'}"));
     }
 
@@ -187,7 +187,7 @@ mod tests {
     fn exported_samples_match_calculator_angle_mode() {
         let script = graph_script("sin(x)", "", false, [90.0, 0.0], 1.0, true).unwrap();
         assert!(script.contains("angles in degrees"));
-        let rows = script.split("equal_data = [\n").nth(1).unwrap();
+        let rows = script.split("opencalc_data = [\n").nth(1).unwrap();
         let middle = rows.lines().nth(CURVE_SAMPLES / 2).unwrap();
         let value: f64 = middle.split_whitespace().nth(1).unwrap().parse().unwrap();
         assert!((value - 1.0).abs() < 1e-12);

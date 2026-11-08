@@ -873,16 +873,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c4fbe202b6578d3d56428fa185cdf114a05e49da05f477b3c7f0fbb221f1862"
 
 [[package]]
-name = "equal-calculator"
-version = "0.1.0"
-dependencies = [
- "eframe",
- "image",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "equivalent"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1898,6 +1888,16 @@ name = "once_cell"
 version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
+
+[[package]]
+name = "opencalc"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "image",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "orbclient"

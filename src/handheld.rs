@@ -93,56 +93,6 @@ pub fn draw_face(p: &Painter, face: Rect, scale: f32) {
             Stroke::new(scale, color),
         );
     }
-    bold_text(
-        p,
-        area(153., 23., 0., 0.).min,
-        Align2::RIGHT_CENTER,
-        "TI-84",
-        FontId::proportional(14. * scale),
-        C::WHITE,
-        scale,
-    );
-    p.text(
-        area(156., 23., 0., 0.).min,
-        Align2::LEFT_CENTER,
-        "Plus CE",
-        FontId::proportional(12. * scale),
-        C::from_gray(205),
-    );
-    bold_text(
-        p,
-        area(169., 631., 0., 0.).min,
-        Align2::CENTER_CENTER,
-        "TEXAS INSTRUMENTS",
-        FontId::proportional(10. * scale),
-        C::from_gray(218),
-        scale * 0.7,
-    );
-    // Small molded emblem beside the maker's lettering.
-    let emblem = [
-        (96., 626.),
-        (101., 626.),
-        (102., 623.),
-        (106., 626.),
-        (109., 626.),
-        (109., 631.),
-        (113., 633.),
-        (110., 637.),
-        (106., 636.),
-        (104., 631.),
-        (100., 631.),
-        (99., 634.),
-        (96., 632.),
-    ];
-    p.add(egui::Shape::convex_polygon(
-        emblem
-            .iter()
-            .map(|&(x, y)| area(x, y, 0., 0.).min)
-            .collect(),
-        C::from_gray(218),
-        Stroke::NONE,
-    ));
-
     // Four separate vector sectors keep the familiar directional pad crisp at any DPI.
     let center = area(233., 315., 0., 0.).min;
     p.circle_filled(center + Vec2::new(0., scale), 34. * scale, C::from_gray(10));

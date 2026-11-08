@@ -1,4 +1,4 @@
-# Contributing to Equal
+# Contributing to OpenCalc
 
 Small, focused contributions are welcome. Open an issue describing a reproducible problem or proposed behavior before a large change. For access issues, describe the task, relevant settings and assistive-tool versions; a diagnosis or personal identity is not needed. Do not include private schoolwork or personal information.
 

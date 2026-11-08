@@ -500,7 +500,7 @@ impl EqualApp {
                 ui.label(crate::appearance::paragraph(ctx, "Settings includes larger controls, key spacing, a left-handed layout, a repeated-input guard and pointer dwell. Dwell activates a key after you hold the pointer over it; move away to cancel. Move off the key before activating it again."));
                 ui.label(crate::appearance::paragraph(ctx, "Automatic switch scanning is available in the accessible calculator layout. Choose Start scanning. Space chooses a row, then Space chooses a key. Escape pauses scanning. Use Pause scanning or Restart scanning to change course. Scanning starts paused and pauses when a dialog opens."));
                 ui.strong("Voice control and sound");
-                ui.label(crate::appearance::paragraph(ctx, "Use your system voice-control tool with the visible button names. Word labels in Settings can make symbol keys easier to name. Equal does not require a microphone or spoken answers. Speech and graph audio are optional; answers and errors remain available as text."));
+                ui.label(crate::appearance::paragraph(ctx, "Use your system voice-control tool with the visible button names. Word labels in Settings can make symbol keys easier to name. OpenCalc does not require a microphone or spoken answers. Speech and graph audio are optional; answers and errors remain available as text."));
                 ui.label(crate::appearance::paragraph(ctx, "Assistive technology behavior varies by setup. Use the assistive technology test in Settings to record what works and what needs a change.").color(palette.muted));
             });
         }

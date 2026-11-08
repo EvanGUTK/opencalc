@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-labelledby="title description">
-  <title id="title">Equal</title>
-  <desc id="description">Equal. Calculator, graphing and learning. Dark green banner with an equals-sign mark.</desc>
+  <title id="title">OpenCalc</title>
+  <desc id="description">OpenCalc. Calculator, graphing and learning. Dark green banner with an equals-sign mark.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#073d35"/>
@@ -21,12 +21,12 @@
     <path d="M225 216C258 174 288 174 321 216"/>
     <path d="M879 215L904 192L926 215L969 156"/>
   </g>
-  <rect x="447" y="71" width="82" height="82" rx="22" fill="url(#accent)"/>
+  <rect x="366" y="71" width="82" height="82" rx="22" fill="url(#accent)"/>
   <g fill="#0b3029">
-    <rect x="465" y="96" width="46" height="8" rx="2"/>
-    <rect x="465" y="120" width="46" height="8" rx="2"/>
+    <rect x="384" y="96" width="46" height="8" rx="2"/>
+    <rect x="384" y="120" width="46" height="8" rx="2"/>
   </g>
-  <text x="552" y="140" fill="#f2f8f5" font-family="Segoe UI, Arial, sans-serif" font-size="78" font-weight="650" letter-spacing="-2">Equal</text>
+  <text x="484" y="140" fill="#f2f8f5" font-family="Segoe UI, Arial, sans-serif" font-size="78" font-weight="650" letter-spacing="-2" textLength="350" lengthAdjust="spacingAndGlyphs">OpenCalc</text>
   <text x="600" y="205" text-anchor="middle" fill="#c1dad2" font-family="Segoe UI, Arial, sans-serif" font-size="25" letter-spacing="1">Calculator · Graphing · Learning</text>
   <path d="M531 237H669" stroke="#5cc8aa" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
 </svg>

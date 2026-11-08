@@ -233,7 +233,7 @@ impl LearningSupport {
 
     fn report(&self) -> String {
         let mut text = format!(
-            "Equal assistive technology session\nSetup (device, OS, assistive technology and versions): {}\nLearning level: record in notes\nThese are session observations, not a compatibility certification.\n\n",
+            "OpenCalc assistive technology session\nSetup (device, OS, assistive technology and versions): {}\nLearning level: record in notes\nThese are session observations, not a compatibility certification.\n\n",
             self.setup
         );
         for (task, outcome) in TASKS.iter().zip(self.outcomes) {
@@ -279,8 +279,8 @@ impl EqualApp {
                     });
                     ui.separator();
                 }
-                ui.label("Models overlap across grades. Photos and display examples are references; Equal does not run TI firmware.");
-                ui.label(R::new("Reference photos are not bundled with the open-source app. Optional local photos retain their owners' rights and are not covered by Equal's MIT license. Equal is independent and is not endorsed by TI.").small());
+                ui.label("Models overlap across grades. Photos and display examples are references; OpenCalc does not run TI firmware.");
+                ui.label(R::new("Reference photos are not bundled with the open-source app. Optional local photos retain their owners' rights and are not covered by OpenCalc's MIT license. OpenCalc is independent and is not endorsed by TI.").small());
             });
         self.learning.show_references = open;
 

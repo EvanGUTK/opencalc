@@ -5,6 +5,9 @@
 /.cargo-cache/
 /shots/
 /exports/
+/notebooks/
+*.opencalc.json
+*.opencalc.json.*
 *.exe
 *.pdb
 *.log

@@ -36,6 +36,6 @@ Feedback uses polite atomic status announcements, native keyboard-focusable cont
 
 All 85 tests pass, along with Clippy for all targets with warnings denied, formatting, and the native build. Tests cover every topic/difficulty combination, sampled question variety and numeric bounds, independent calculation checks, answer formats, score invariants, matrix-givens handoffs, keyboard/pointer interactions, accessible feedback, and narrow layouts. Runtime captures cover all four grade bands, worked steps, visual aids, and a narrow magnified high-contrast view.
 
-The reviewed step-2 executable is `target/curriculum/equal-calculator.exe`. Start with `--practice --size 800x900` to open the practice workspace beside homework.
+The reviewed step-2 executable is `target/curriculum/opencalc.exe`. Start with `--practice --size 800x900` to open the practice workspace beside homework.
 
 Related: [[accessibility]], [[feature-research]]. Step 3 remains full calculator workflow/key parity; step 4 remains local notebooks and saved progress.

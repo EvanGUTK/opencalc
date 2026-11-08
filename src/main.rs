@@ -65,7 +65,8 @@ impl Default for Settings {
         }
     }
 }
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 enum Tab {
     Calculator,
     Graph,
@@ -143,7 +144,10 @@ impl EqualApp {
         handheld::install_fonts(&cc.egui_ctx);
         let mut settings: Settings = cc
             .storage
-            .and_then(|s| eframe::get_value(s, "equal-settings"))
+            .and_then(|s| {
+                eframe::get_value(s, "opencalc-settings")
+                    .or_else(|| eframe::get_value(s, "equal-settings"))
+            })
             .unwrap_or_default();
         if screenshot.is_some() {
             settings = Settings::default();
@@ -516,7 +520,7 @@ impl EqualApp {
             for s in ["sin(30) in Degrees mode → 0.5","asin(0.5) → inverse sine","diff(x^3, 2) → derivative at x = 2","integral(x^2, 0, 3) → definite integral","root(x^2-2, 1) → numerical root","5! → factorial; 50% → 0.5"]{ui.label(s);}ui.separator();
             ui.label("Graphs use the selected Degrees or Radians mode. Y= edits functions; GRAPH draws on the calculator; TRACE and the arrow keys explore coordinates; 2nd then GRAPH opens the table. The Graph tab opens a larger view. Calculus uses numerical approximations over real numbers.");
             ui.label("Reading-friendly mode uses a monospaced font and extra spacing. High contrast, larger text, patterned graphs, and optional spoken answers can be combined. All feedback is visible.");ui.separator();
-            ui.label("Equal is independent open-source software under the MIT license. The TI picture guide shows real reference devices. Open in MATLAB sends graph samples to your installed MATLAB; Equal itself does not execute MATLAB programs. Accessibility needs evaluation with disabled learners and their assistive technology.");
+            ui.label("OpenCalc is independent open-source software under the MIT license. The TI picture guide shows real reference devices. Open in MATLAB sends graph samples to your installed MATLAB; OpenCalc itself does not execute MATLAB programs. Accessibility needs evaluation with disabled learners and their assistive technology.");
         });
         self.learning_windows(ctx);
         self.geometry(ctx);
@@ -592,7 +596,7 @@ impl eframe::App for EqualApp {
     }
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         if self.screenshot.is_none() {
-            eframe::set_value(storage, "equal-settings", &self.settings);
+            eframe::set_value(storage, "opencalc-settings", &self.settings);
         }
     }
 }
@@ -664,11 +668,11 @@ fn main() -> eframe::Result {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size(size.unwrap_or([462.0, 840.0]))
             .with_min_inner_size([320.0, 400.0])
-            .with_title("Equal Calculator"),
+            .with_title("OpenCalc"),
         ..Default::default()
     };
     eframe::run_native(
-        "Equal",
+        "OpenCalc",
         options,
         Box::new(move |cc| {
             let mut app = EqualApp::new(cc, screenshot);
@@ -1043,8 +1047,15 @@ mod ui_tests {
             app.handheld_preview = false;
             frame(&mut app, &ctx, vec![]);
             let output = frame(&mut app, &ctx, vec![]);
-            assert!(output.shapes.iter().any(|shape| matches!(&shape.shape,
-                egui::Shape::Text(text) if text.galley.text() == "TI-84")));
+            assert!(
+                output.shapes.iter().all(|shape| match &shape.shape {
+                    egui::Shape::Text(text) => !["TI-84", "Plus CE", "TEXAS INSTRUMENTS"]
+                        .iter()
+                        .any(|brand| text.galley.text().contains(brand)),
+                    _ => true,
+                }),
+                "The calculator face must remain unbranded"
+            );
             let seven = control(&output, "7");
             let enter = control(&output, "Calculate answer");
             // These controls span 150 of the face's 323 units: require a face
@@ -1106,8 +1117,15 @@ mod ui_tests {
                     .iter()
                     .all(|(id, _)| *id == egui::TextureId::Managed(0))
             );
-            assert!(output.shapes.iter().any(|shape| matches!(&shape.shape,
-                egui::Shape::Text(text) if text.galley.text() == "TI-84")));
+            assert!(
+                output.shapes.iter().all(|shape| match &shape.shape {
+                    egui::Shape::Text(text) => !["TI-84", "Plus CE", "TEXAS INSTRUMENTS"]
+                        .iter()
+                        .any(|brand| text.galley.text().contains(brand)),
+                    _ => true,
+                }),
+                "The calculator face must remain unbranded"
+            );
             let seven = control(&output, "7");
             assert!(seven.x > 0.0 && seven.x < size[0]);
             assert!(seven.y > 0.0 && seven.y < size[1]);

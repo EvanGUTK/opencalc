@@ -16,7 +16,7 @@ Step 3 adds configurable support for overlapping visual, hearing, motor, reading
 - Y1–Y10 share the calculator graph, larger graph, trace, table and CSV. Numerical value/zero/intersection/extrema/derivative/integral tools report errors for invalid bounds and detected domain gaps. Sampling and numerical methods can miss features and are not symbolic proofs. MATLAB's existing sample export covers Y1/Y2.
 - Coordinate-based points, lines and circles appear on both graph views, with clear/remove/undo controls. Descriptions and sample tables remain available without audio. Optional graph pitch playback encodes sampled vertical values; undefined samples are silent.
 - PRGM parses a bounded TI-BASIC-style subset locally: assignments, Disp, Input, Pause, If/Then/Else, For, While, Repeat, Lbl/Goto and Stop. Input and Pause resume without repeating previous effects. It has source, execution, nesting and output limits; it does not execute host commands or implement the full TI language.
-- Equal text transfer exports/imports versioned JSON for variables, lists, sequences, graph functions and programs. Import validates the entire packet before replacing data; Undo last import restores previous data. It does not communicate with TI hardware.
+- OpenCalc text transfer exports/imports versioned JSON for variables, lists, sequences, graph functions and programs. Import validates the entire packet before replacing data; Undo last import restores previous data. It does not communicate with TI hardware.
 
 ## Access controls
 
