@@ -470,6 +470,10 @@ fn resolve_variables(text: &str, variables: &BTreeMap<char, f64>) -> Result<Stri
 }
 
 impl DeviceState {
+    pub(crate) fn complex_answer(&self) -> crate::complex::Complex {
+        self.complex_answer
+    }
+
     fn calculate(&mut self, text: &str, answer: f64, degrees: bool) -> Result<f64, String> {
         let normalized = text.replace("->", "→");
         let (value, target) = if let Some((value, name)) = normalized.split_once('→') {
@@ -1148,6 +1152,9 @@ impl EqualApp {
                 "sto" => "X",
                 "1" => "Y",
                 "2" => "Z",
+                "3" => "\u{3b8}",
+                "\u{b1}" => "?",
+                "enter" => "root(",
                 _ => "",
             };
             if !self.device.alpha_lock {
@@ -1166,7 +1173,8 @@ impl EqualApp {
                 "window" => self.set_device_screen(DeviceScreen::TableSettings),
                 "zoom" => self.set_device_screen(DeviceScreen::Format),
                 "trace" => self.set_device_screen(DeviceScreen::GraphCalculate),
-                "y=" | "stat" => self.set_device_screen(DeviceScreen::Statistics),
+                "y=" => self.set_device_screen(DeviceScreen::Statistics),
+                "stat" => self.set_device_screen(DeviceScreen::Lists),
                 "apps" => self.set_device_screen(DeviceScreen::Angles),
                 "1/x" => self.set_device_screen(DeviceScreen::Matrices),
                 "vars" => self.set_device_screen(DeviceScreen::Distributions),
@@ -1216,7 +1224,10 @@ impl EqualApp {
                 "\u{d7}" => self.device_insert("["),
                 "\u{2212}" => self.device_insert("]"),
                 "clear" => self.device_clear(),
-                _ => self.device_insert(key),
+                _ => {
+                    self.press_device_key(ctx, key);
+                    return;
+                }
             }
             self.sync_device_cursor(ctx);
             return;
@@ -1439,6 +1450,8 @@ impl EqualApp {
             self.expression = expression;
             self.device.just_evaluated = false;
             self.device.cursor = None;
+        } else {
+            self.message = "No previous calculation to recall.".into();
         }
     }
 
@@ -2125,9 +2138,14 @@ impl EqualApp {
         let before = self.expression.clone();
         let cursor = self.device.cursor;
         let palette = crate::appearance::palette(ui.ctx());
+        let expression_id = device_input_id(EditTarget::Home);
+        // A single-line TextEdit consumes Enter and surrenders focus while it
+        // renders. Capture submission before that changes its response state.
+        let had_focus = ui.memory(|memory| memory.has_focus(expression_id));
+        let enter_pressed = ui.input(|input| input.key_pressed(egui::Key::Enter));
         let response = ui.add(
             egui::TextEdit::singleline(&mut self.expression)
-                .id(egui::Id::new("expression"))
+                .id(expression_id)
                 .desired_width(ui.available_width())
                 .font(FontId::monospace((17.0 * scale).max(15.0)))
                 .text_color(palette.ink)
@@ -2145,17 +2163,23 @@ impl EqualApp {
             });
             self.device.just_evaluated = false;
         }
-        if response.has_focus() {
-            if let Some(state) = egui::text_edit::TextEditState::load(ui.ctx(), response.id) {
-                self.device.cursor = state.cursor.char_range().map(|range| range.primary.index);
-                self.device.selection = state
-                    .cursor
-                    .char_range()
-                    .map(|range| (range.primary.index, range.secondary.index));
-            }
-            if ui.input(|i| i.key_pressed(egui::Key::Enter)) {
-                self.evaluate();
-            }
+        let submitted = ui.is_enabled()
+            && !self.access_overlay_open()
+            && !egui::Popup::is_any_open(ui.ctx())
+            && enter_pressed
+            && (had_focus || response.has_focus());
+        if (response.has_focus() || submitted)
+            && let Some(state) = egui::text_edit::TextEditState::load(ui.ctx(), response.id)
+        {
+            self.device.cursor = state.cursor.char_range().map(|range| range.primary.index);
+            self.device.selection = state
+                .cursor
+                .char_range()
+                .map(|range| (range.primary.index, range.secondary.index));
+        }
+        if submitted {
+            self.evaluate();
+            response.request_focus();
         }
         let result = self.device_result_text();
         let label = ui.label(
@@ -3210,6 +3234,165 @@ fn format_dms(value: f64, precision: usize) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn native_enter_submits_once_and_preserves_expression_focus_and_caret() {
+        fn frame(
+            app: &mut EqualApp,
+            ctx: &egui::Context,
+            events: Vec<egui::Event>,
+            focus: Option<egui::Id>,
+        ) {
+            let _ = ctx.run(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(420.0, 260.0),
+                    )),
+                    events,
+                    ..Default::default()
+                },
+                |ctx| {
+                    app.theme(ctx);
+                    if let Some(id) = focus {
+                        ctx.memory_mut(|memory| memory.request_focus(id));
+                    }
+                    egui::CentralPanel::default().show(ctx, |ui| {
+                        app.device_home(ui, 1.0);
+                        let mut other = String::new();
+                        ui.add(
+                            egui::TextEdit::singleline(&mut other)
+                                .id(egui::Id::new("other-native-editor")),
+                        );
+                    });
+                },
+            );
+        }
+        fn enter(pressed: bool) -> egui::Event {
+            egui::Event::Key {
+                key: egui::Key::Enter,
+                physical_key: Some(egui::Key::Enter),
+                pressed,
+                repeat: false,
+                modifiers: egui::Modifiers::NONE,
+            }
+        }
+        let ctx = egui::Context::default();
+        let mut app = EqualApp::with_settings(Settings::default(), None);
+        let id = device_input_id(EditTarget::Home);
+        frame(&mut app, &ctx, Vec::new(), Some(id));
+        frame(&mut app, &ctx, vec![egui::Event::Text("7+5".into())], None);
+        assert_eq!(app.expression, "7+5");
+        frame(&mut app, &ctx, vec![enter(true)], None);
+        assert_eq!(app.answer, 12.0);
+        assert_eq!(app.history.len(), 1);
+        assert_eq!(app.device.cursor, Some(3));
+        assert_eq!(ctx.memory(|memory| memory.focused()), Some(id));
+        frame(&mut app, &ctx, vec![enter(false)], None);
+        assert_eq!(app.history.len(), 1);
+        let mut state = egui::text_edit::TextEditState::load(&ctx, id).unwrap();
+        state
+            .cursor
+            .set_char_range(Some(egui::text::CCursorRange::one(
+                egui::text::CCursor::new(1),
+            )));
+        state.store(&ctx, id);
+        frame(&mut app, &ctx, vec![egui::Event::Text("0".into())], None);
+        assert_eq!(app.expression, "70+5");
+        frame(&mut app, &ctx, vec![enter(true)], None);
+        assert_eq!(app.answer, 75.0);
+        assert_eq!(app.history.len(), 2);
+        assert_eq!(app.device.cursor, Some(2));
+        frame(
+            &mut app,
+            &ctx,
+            vec![enter(false)],
+            Some(egui::Id::new("other-native-editor")),
+        );
+        frame(&mut app, &ctx, vec![enter(true)], None);
+        assert_eq!(
+            app.history.len(),
+            2,
+            "Enter in another editor cannot submit the calculator"
+        );
+    }
+
+    #[test]
+    fn stored_complex_answer_accessor_keeps_both_components() {
+        let mut app = EqualApp::with_settings(Settings::default(), None);
+        app.expression = "1+2i".into();
+        app.evaluate();
+        assert!(!app.error, "{}", app.result);
+        assert_eq!(
+            app.device.complex_answer(),
+            crate::complex::Complex { re: 1.0, im: 2.0 }
+        );
+    }
+
+    #[test]
+    fn school_secondary_fallback_uses_primary_actions_without_typing_action_labels() {
+        let ctx = egui::Context::default();
+        let mut app = EqualApp::with_settings(
+            Settings {
+                level: 1,
+                ..Settings::default()
+            },
+            None,
+        );
+        app.expression = "123".into();
+        for key in ["2nd", "backspace"] {
+            app.press_device_key(&ctx, key);
+        }
+        assert_eq!(app.expression, "12");
+        app.device.memory = 8.0;
+        for key in ["2nd", "MRC"] {
+            app.press_device_key(&ctx, key);
+        }
+        assert_eq!(app.expression, "8");
+        for key in ["2nd", "convert"] {
+            app.press_device_key(&ctx, key);
+        }
+        assert!(app.device.fraction);
+        assert_eq!(app.expression, "8");
+        for key in ["2nd", "off"] {
+            app.press_device_key(&ctx, key);
+        }
+        assert!(!app.device.power);
+        assert_eq!(app.expression, "8");
+        app.press_device_key(&ctx, "on");
+        for key in ["2nd", "stat"] {
+            app.press_device_key(&ctx, key);
+        }
+        assert_eq!(app.device.screen, DeviceScreen::Lists);
+    }
+
+    #[test]
+    fn printed_alpha_punctuation_and_solve_actions_keep_their_editor_targets() {
+        let ctx = egui::Context::default();
+        let mut app = EqualApp::with_settings(Settings::default(), None);
+        app.expression = "123".into();
+        app.set_device_screen(DeviceScreen::Programs);
+        app.device.program.clear();
+        for key in ["alpha", "3", "alpha", "\u{b1}"] {
+            app.press_device_key(&ctx, key);
+        }
+        assert_eq!(app.device.program, "\u{3b8}?");
+        assert_eq!(app.expression, "123");
+        app.set_device_screen(DeviceScreen::Home);
+        app.press_device_key(&ctx, "clear");
+        for key in [
+            "alpha", "enter", "x,t", "x\u{b2}", "-", "4", ",", "1", ")", "enter",
+        ] {
+            app.press_device_key(&ctx, key);
+        }
+        assert!(!app.error, "{}", app.result);
+        assert!((app.answer - 2.0).abs() < 1e-10);
+        let mut empty = EqualApp::with_settings(Settings::default(), None);
+        for key in ["2nd", "enter"] {
+            empty.press_device_key(&ctx, key);
+        }
+        assert_eq!(empty.message, "No previous calculation to recall.");
+    }
 
     #[test]
     fn notebook_round_trip_preserves_complex_content_and_unsaved_drafts_without_mutation() {

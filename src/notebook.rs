@@ -1,9 +1,10 @@
 //! Versioned local work documents. Runtime jobs and access preferences stay outside them.
-use crate::{EqualApp, Tab, device, notebook_files, practice, tutor, workspaces};
+use crate::{EqualApp, Tab, canvas, device, notebook_files, practice, tutor, workspaces};
 use serde::{Deserialize, Serialize};
+use std::io::{self, Write};
 
 const FORMAT: &str = "opencalc-notebook";
-const VERSION: u32 = 1;
+const VERSION: u32 = 2;
 const MAX_TITLE_CHARS: usize = 200;
 const MAX_NOTES_BYTES: usize = 64 * 1024;
 const MAX_EXPRESSION_CHARS: usize = 1024;
@@ -35,6 +36,160 @@ pub(crate) struct Notebook {
     graph: workspaces::GraphNotebook,
     tutor: tutor::TutorNotebook,
     pub(crate) practice: Option<practice::PracticeNotebook>,
+    canvas: canvas::CanvasNotebook,
+}
+
+#[derive(Deserialize)]
+struct VersionHeader {
+    version: u32,
+}
+
+/// Keep the old schema explicit: defaults on v2 would also silently accept a
+/// truncated current document, while a Value-based migration duplicates ink.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LegacyNotebookV1 {
+    format: String,
+    version: u32,
+    title: String,
+    notes: String,
+    math: MathSettings,
+    workspace: Tab,
+    expanded_workspace: bool,
+    calculation: Calculation,
+    matrices: Matrices,
+    device: device::DeviceNotebook,
+    graph: workspaces::GraphNotebook,
+    tutor: tutor::TutorNotebook,
+    practice: Option<practice::PracticeNotebook>,
+}
+
+impl LegacyNotebookV1 {
+    fn migrate(self) -> Result<Notebook, String> {
+        if self.version != 1 || self.workspace == Tab::Notebook {
+            return Err("The legacy notebook contains an unsupported version or workspace.".into());
+        }
+        Ok(Notebook {
+            format: self.format,
+            version: VERSION,
+            title: self.title,
+            notes: self.notes,
+            math: self.math,
+            workspace: self.workspace,
+            expanded_workspace: self.expanded_workspace,
+            calculation: self.calculation,
+            matrices: self.matrices,
+            device: self.device,
+            graph: self.graph,
+            tutor: self.tutor,
+            practice: self.practice,
+            canvas: canvas::CanvasNotebook::default(),
+        })
+    }
+}
+
+#[derive(Serialize)]
+struct WorkContent<'a> {
+    format: &'a str,
+    version: u32,
+    title: &'a str,
+    notes: &'a str,
+    math: &'a MathSettings,
+    calculation: &'a Calculation,
+    matrices: &'a Matrices,
+    device: &'a device::DeviceNotebook,
+    graph: &'a workspaces::GraphNotebook,
+    tutor: &'a tutor::TutorNotebook,
+    practice: &'a Option<practice::PracticeNotebook>,
+}
+
+#[derive(Serialize)]
+struct CanvasContent<'a> {
+    pages: &'a [canvas::CanvasPage],
+}
+
+#[derive(Serialize)]
+struct ComparedContent<'a> {
+    #[serde(flatten)]
+    work: serde_json::Map<String, serde_json::Value>,
+    canvas: CanvasContent<'a>,
+}
+
+struct BoundedBytes {
+    bytes: Vec<u8>,
+    maximum: usize,
+    exceeded: bool,
+}
+
+impl BoundedBytes {
+    fn new(maximum: usize) -> Self {
+        Self {
+            bytes: Vec::new(),
+            maximum,
+            exceeded: false,
+        }
+    }
+}
+
+impl Write for BoundedBytes {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        if bytes.len() > self.maximum.saturating_sub(self.bytes.len()) {
+            self.exceeded = true;
+            return Err(io::Error::other("Notebook output exceeds the file limit"));
+        }
+        if bytes.len() > self.bytes.capacity().saturating_sub(self.bytes.len()) {
+            let required = self.bytes.len() + bytes.len();
+            let capacity = self
+                .bytes
+                .capacity()
+                .saturating_mul(2)
+                .max(4096)
+                .max(required)
+                .min(self.maximum);
+            self.bytes
+                .try_reserve_exact(capacity - self.bytes.len())
+                .map_err(io::Error::other)?;
+        }
+        self.bytes.extend_from_slice(bytes);
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+fn encode_bounded(value: &impl Serialize, pretty: bool) -> Result<Vec<u8>, String> {
+    let mut output = BoundedBytes::new(notebook_files::MAX_NOTEBOOK_BYTES);
+    let encoded = if pretty {
+        serde_json::to_writer_pretty(&mut output, value)
+    } else {
+        serde_json::to_writer(&mut output, value)
+    };
+    if let Err(error) = encoded {
+        return Err(if output.exceeded {
+            file_limit_error()
+        } else {
+            format!("Could not encode this OpenCalc notebook: {error}")
+        });
+    }
+    if pretty {
+        output.write_all(b"\n").map_err(|error| {
+            if output.exceeded {
+                file_limit_error()
+            } else {
+                format!("Could not finish this OpenCalc notebook: {error}")
+            }
+        })?;
+    }
+    Ok(output.bytes)
+}
+
+fn file_limit_error() -> String {
+    format!(
+        "This notebook exceeds {} MiB. Reduce its pages, notes or history before saving.",
+        notebook_files::MAX_NOTEBOOK_BYTES / (1024 * 1024)
+    )
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -209,9 +364,29 @@ impl Notebook {
     /// Comparison only: saved files still retain their complete editor context.
     /// Do not validate drafts here; an invalid edit must still mark work dirty.
     pub(crate) fn content_bytes(&self) -> Result<Vec<u8>, String> {
-        let mut value = serde_json::to_value(self)
-            .map_err(|error| format!("Could not compare notebook content: {error}"))?;
-        omit_fields(&mut value, &["workspace", "expanded_workspace"]);
+        // Keep the existing small workspace projection, but stream ink directly
+        // from its bounded page vectors instead of expanding every point into a
+        // temporary JSON Value tree. Bound even the projection before parsing it.
+        let mut value: serde_json::Value = {
+            let bytes = encode_bounded(
+                &WorkContent {
+                    format: &self.format,
+                    version: self.version,
+                    title: &self.title,
+                    notes: &self.notes,
+                    math: &self.math,
+                    calculation: &self.calculation,
+                    matrices: &self.matrices,
+                    device: &self.device,
+                    graph: &self.graph,
+                    tutor: &self.tutor,
+                    practice: &self.practice,
+                },
+                false,
+            )?;
+            serde_json::from_slice(&bytes)
+                .map_err(|error| format!("Could not compare notebook content: {error}"))?
+        };
         device_content(&mut value["device"], &self.graph);
         omit_fields(&mut value["graph"], &["table"]);
         omit_fields(
@@ -222,8 +397,19 @@ impl Notebook {
         if !value["practice"].is_null() {
             practice_content(&mut value["practice"]);
         }
-        serde_json::to_vec(&value)
-            .map_err(|error| format!("Could not compare notebook content: {error}"))
+        let work = value
+            .as_object_mut()
+            .map(std::mem::take)
+            .ok_or("Could not compare the notebook work object.")?;
+        encode_bounded(
+            &ComparedContent {
+                work,
+                canvas: CanvasContent {
+                    pages: &self.canvas.pages,
+                },
+            },
+            false,
+        )
     }
 
     pub(crate) fn validate(&self) -> Result<(), String> {
@@ -291,6 +477,7 @@ impl Notebook {
         )?;
         self.graph.validate()?;
         self.tutor.validate()?;
+        self.canvas.validate()?;
         if let Some(practice) = &self.practice {
             practice.validate()?;
         }
@@ -299,25 +486,29 @@ impl Notebook {
 
     pub(crate) fn decode(bytes: &[u8]) -> Result<Self, String> {
         if bytes.len() > notebook_files::MAX_NOTEBOOK_BYTES {
-            return Err("OpenCalc notebooks must be no larger than 2 MiB.".into());
+            return Err(file_limit_error());
         }
-        let notebook: Self = serde_json::from_slice(bytes)
-            .map_err(|error| format!("Could not read this OpenCalc notebook: {error}"))?;
+        let read_error = |error| format!("Could not read this OpenCalc notebook: {error}");
+        let header: VersionHeader = serde_json::from_slice(bytes).map_err(read_error)?;
+        let notebook = match header.version {
+            1 => serde_json::from_slice::<LegacyNotebookV1>(bytes)
+                .map_err(read_error)?
+                .migrate()?,
+            VERSION => serde_json::from_slice::<Self>(bytes).map_err(read_error)?,
+            other => {
+                return Err(format!(
+                    "OpenCalc notebook version {other} is not supported; this app supports versions 1 and {VERSION}."
+                ));
+            }
+        };
         notebook.validate()?;
         Ok(notebook)
     }
 
     pub(crate) fn to_bytes(&self) -> Result<Vec<u8>, String> {
         self.validate()?;
-        let mut bytes = serde_json::to_vec_pretty(self)
-            .map_err(|error| format!("Could not encode this OpenCalc notebook: {error}"))?;
-        bytes.push(b'\n');
-        if bytes.len() > notebook_files::MAX_NOTEBOOK_BYTES {
-            return Err(
-                "This notebook exceeds 2 MiB. Shorten its notes or history before saving.".into(),
-            );
-        }
-        Ok(bytes)
+        // Whitespace must not consume most of an ink document's file budget.
+        encode_bounded(self, false)
     }
 }
 
@@ -357,6 +548,7 @@ impl EqualApp {
             graph: self.capture_graph_notebook(),
             tutor: self.tutor.notebook_snapshot(),
             practice: include_practice.then(|| self.practice.notebook_snapshot()),
+            canvas: self.canvas.notebook_snapshot(),
         }
     }
 
@@ -376,6 +568,7 @@ impl EqualApp {
             graph,
             tutor,
             practice,
+            canvas,
             ..
         } = notebook;
         self.settings.level = math.level;
@@ -394,6 +587,7 @@ impl EqualApp {
         self.apply_device_notebook(device);
         self.apply_graph_notebook(graph);
         self.tutor.apply_notebook(tutor);
+        self.canvas.apply_notebook(canvas);
         if let Some(practice) = practice {
             self.practice.apply_notebook(practice);
         }
@@ -435,6 +629,252 @@ mod tests {
 
     fn app() -> EqualApp {
         EqualApp::with_settings(Settings::default(), None)
+    }
+
+    fn legacy_v1_fixture() -> (Vec<u8>, serde_json::Value) {
+        let mut application = app();
+        application.expression = "12+8".into();
+        application.evaluate();
+        application.graph_a = "x^2+1".into();
+        application.matrix_a = "1 2; 3 4".into();
+        application.tutor.problem = "2*x+3=11".into();
+        application.tutor.solve_local(2, true);
+        let answer = application.practice.current_question().answer.display();
+        application.practice.current_session_mut().response = answer;
+        application.practice.check_answer();
+        let mut fixture = serde_json::to_value(application.capture_notebook(
+            "Previous homework",
+            "Keep every old workspace.",
+            true,
+        ))
+        .unwrap();
+        fixture["version"] = 1.into();
+        fixture.as_object_mut().unwrap().remove("canvas");
+        (encode_bounded(&fixture, true).unwrap(), fixture)
+    }
+
+    fn canvas_fixture() -> canvas::CanvasNotebook {
+        serde_json::from_value(serde_json::json!({
+            "pages": [{
+                "title": "Physics", "background": "grid", "elements": [
+                    {"kind":"ink", "points":[
+                        {"position":[0.1,0.2],"pressure":0.5},
+                        {"position":[0.2,0.3],"pressure":1.0}
+                    ], "width":2.0,"color":"ink","description":"Force arrow"},
+                    {"kind":"text","bounds":[0.2,0.1,0.4,0.15],"text":"F = ma",
+                        "font_size":18.0,"color":"blue","description":"Newton's second law"},
+                    {"kind":"rectangle","bounds":[0.1,0.5,0.3,0.2],"width":2.0,
+                        "color":"teal","description":"System boundary"}
+                ]
+            }], "selected_page":0, "zoom":1.0, "pan":[0.0,0.0]
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn v2_round_trip_retains_ink_text_shapes_and_math() {
+        let mut application = app();
+        application.expression = "12+8".into();
+        application.evaluate();
+        application.canvas.apply_notebook(canvas_fixture());
+        application.tab = Tab::Notebook;
+        application.show_workspace = true;
+        let document = application.capture_notebook("Physics", "Keep the force labels.", false);
+        let bytes = document.to_bytes().unwrap();
+        let decoded = Notebook::decode(&bytes).unwrap();
+        assert_eq!(decoded.version, VERSION);
+        assert_eq!(decoded.canvas, canvas_fixture());
+        let mut restored = app();
+        restored.apply_notebook(decoded).unwrap();
+        assert_eq!(restored.result, "20");
+        assert_eq!(restored.answer, 20.0);
+        assert_eq!(restored.tab, Tab::Notebook);
+        assert_eq!(restored.canvas.notebook_snapshot(), canvas_fixture());
+        assert_eq!(
+            restored
+                .capture_notebook("Physics", "Keep the force labels.", false)
+                .content_bytes()
+                .unwrap(),
+            document.content_bytes().unwrap()
+        );
+    }
+
+    #[test]
+    fn canvas_content_comparison_keeps_edits_but_ignores_view_navigation() {
+        let mut original = app().capture_notebook("Pages", "", false);
+        original.canvas = canvas_fixture();
+        let mut second = original.canvas.pages[0].clone();
+        second.title = "Second page".into();
+        original.canvas.pages.push(second);
+        let bytes = original.content_bytes().unwrap();
+        let mut navigated = original.clone();
+        navigated.canvas.selected_page = 1;
+        navigated.canvas.zoom = 2.0;
+        navigated.canvas.pan = [0.25, -0.25];
+        assert_eq!(navigated.content_bytes().unwrap(), bytes);
+        assert_ne!(navigated.to_bytes().unwrap(), original.to_bytes().unwrap());
+        for change in [
+            (|document: &mut Notebook| document.canvas.pages[0].title.push('!'))
+                as fn(&mut Notebook),
+            |document| document.canvas.pages[0].background = canvas::Paper::Ruled,
+            |document| {
+                if let canvas::CanvasElement::Ink { points, .. } =
+                    &mut document.canvas.pages[0].elements[0]
+                {
+                    points[0].pressure = 0.75;
+                }
+            },
+            |document| {
+                if let canvas::CanvasElement::Text { text, .. } =
+                    &mut document.canvas.pages[0].elements[1]
+                {
+                    text.push_str("; m in kg");
+                }
+            },
+            |document| {
+                if let canvas::CanvasElement::Rectangle { bounds, .. } =
+                    &mut document.canvas.pages[0].elements[2]
+                {
+                    bounds[0] = 0.2;
+                }
+            },
+        ] {
+            let mut edited = original.clone();
+            change(&mut edited);
+            edited.validate().unwrap();
+            assert_ne!(edited.content_bytes().unwrap(), bytes);
+        }
+    }
+
+    #[test]
+    fn aggregate_bounded_ink_serializes_and_compares_within_the_file_budget() {
+        let mut document = app().capture_notebook("Long notes", "", false);
+        let mut remaining = 100_000;
+        while remaining != 0 {
+            let count = remaining.min(4096);
+            document.canvas.pages[0]
+                .elements
+                .push(canvas::CanvasElement::Ink {
+                    points: vec![
+                        canvas::InkPoint {
+                            position: [0.5, 0.5],
+                            pressure: 1.0
+                        };
+                        count
+                    ],
+                    width: 2.0,
+                    color: canvas::InkColor::Ink,
+                    description: "A bounded long note".into(),
+                });
+            remaining -= count;
+        }
+        let full = document.to_bytes().unwrap();
+        let content = document.content_bytes().unwrap();
+        assert!(full.len() < notebook_files::MAX_NOTEBOOK_BYTES);
+        assert!(content.len() < notebook_files::MAX_NOTEBOOK_BYTES);
+        assert_eq!(Notebook::decode(&full).unwrap().canvas, document.canvas);
+    }
+
+    #[test]
+    fn legacy_v1_fixture_migrates_without_losing_existing_work() {
+        let (bytes, mut expected) = legacy_v1_fixture();
+        let migrated = Notebook::decode(&bytes).unwrap();
+        assert_eq!(migrated.canvas, canvas::CanvasNotebook::default());
+        expected["version"] = VERSION.into();
+        expected["canvas"] = serde_json::to_value(canvas::CanvasNotebook::default()).unwrap();
+        assert_eq!(serde_json::to_value(&migrated).unwrap(), expected);
+        let saved = migrated.to_bytes().unwrap();
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&saved).unwrap()["version"],
+            VERSION
+        );
+        let mut restored = app();
+        restored.apply_notebook(migrated).unwrap();
+        assert_eq!(restored.answer, 20.0);
+        assert_eq!(restored.graph_a, "x^2+1");
+        assert_eq!(restored.matrix_a, "1 2; 3 4");
+        assert_eq!(restored.practice.current_session().progress.correct, 1);
+        assert_eq!(
+            restored.canvas.notebook_snapshot(),
+            canvas::CanvasNotebook::default()
+        );
+    }
+
+    #[test]
+    fn versioned_schemas_reject_missing_or_mislabelled_canvas_data() {
+        let mut current = serde_json::to_value(app().capture_notebook("", "", false)).unwrap();
+        current.as_object_mut().unwrap().remove("canvas");
+        assert!(
+            Notebook::decode(&serde_json::to_vec(&current).unwrap()).is_err(),
+            "Missing v2 canvas must not silently become a blank page"
+        );
+        let (_, mut old) = legacy_v1_fixture();
+        old["canvas"] = serde_json::to_value(canvas::CanvasNotebook::default()).unwrap();
+        assert!(
+            Notebook::decode(&serde_json::to_vec(&old).unwrap()).is_err(),
+            "A v1 file must not discard unexpected canvas content"
+        );
+        old.as_object_mut().unwrap().remove("canvas");
+        old["workspace"] = "notebook".into();
+        assert!(Notebook::decode(&serde_json::to_vec(&old).unwrap()).is_err());
+        let (_, mut truncated) = legacy_v1_fixture();
+        truncated.as_object_mut().unwrap().remove("calculation");
+        assert!(Notebook::decode(&serde_json::to_vec(&truncated).unwrap()).is_err());
+    }
+
+    #[test]
+    fn capped_json_output_never_appends_or_allocates_past_its_limit() {
+        let mut output = BoundedBytes::new(16);
+        output.write_all(b"twelve bytes").unwrap();
+        assert!(output.write_all(b"too large").is_err());
+        assert_eq!(output.bytes, b"twelve bytes");
+        assert!(output.exceeded);
+        assert!(output.bytes.capacity() <= 16);
+        let mut escaped = BoundedBytes::new(32);
+        assert!(serde_json::to_writer(&mut escaped, &"\t".repeat(32)).is_err());
+        assert!(escaped.exceeded);
+        assert!(escaped.bytes.len() <= 32 && escaped.bytes.capacity() <= 32);
+    }
+
+    #[test]
+    fn invalid_canvas_is_rejected_before_replacing_existing_math_or_pages() {
+        let mut application = app();
+        application.expression = "3+4".into();
+        application.evaluate();
+        let mut current_pages = application.canvas.notebook_snapshot();
+        current_pages.pages[0].title = "Current page".into();
+        application.canvas.apply_notebook(current_pages);
+        let before = application
+            .capture_notebook("Current", "Keep this.", true)
+            .to_bytes()
+            .unwrap();
+        let mut invalid = application.capture_notebook("Replacement", "Do not apply.", true);
+        invalid.calculation.expression = "900".into();
+        invalid.canvas.selected_page = usize::MAX;
+        assert!(application.apply_notebook(invalid).is_err());
+        assert_eq!(
+            application
+                .capture_notebook("Current", "Keep this.", true)
+                .to_bytes()
+                .unwrap(),
+            before
+        );
+        let mut invalid_ink = application.capture_notebook("Replacement", "", true);
+        invalid_ink.canvas = canvas_fixture();
+        invalid_ink.calculation.expression = "900".into();
+        if let canvas::CanvasElement::Ink { points, .. } =
+            &mut invalid_ink.canvas.pages[0].elements[0]
+        {
+            points[0].position[0] = -0.1;
+        }
+        assert!(application.apply_notebook(invalid_ink).is_err());
+        assert_eq!(
+            application
+                .capture_notebook("Current", "Keep this.", true)
+                .to_bytes()
+                .unwrap(),
+            before
+        );
     }
 
     #[test]
@@ -624,7 +1064,7 @@ mod tests {
         let mut application = app();
         application.set_device_screen(device::DeviceScreen::Lists);
         application.press_device_key(&ctx, "clear");
-        let values = std::iter::repeat_n("1e300", 1000)
+        let values = std::iter::repeat_n("1.23456789e300", 1000)
             .collect::<Vec<_>>()
             .join(";");
         application.press_device_key(&ctx, &values);
@@ -645,6 +1085,13 @@ mod tests {
             .unwrap();
         assert_eq!(restored.result, result);
         assert_eq!(restored.history[0].1, result);
+        restored.expression = "L1".into();
+        restored.evaluate();
+        assert!(!restored.error, "{}", restored.result);
+        assert_eq!(
+            restored.result, result,
+            "The underlying list must also survive reopening"
+        );
     }
 
     #[test]
@@ -822,11 +1269,13 @@ mod tests {
         assert!(Notebook::decode(&vec![b' '; notebook_files::MAX_NOTEBOOK_BYTES + 1]).is_err());
         assert!(Notebook::decode(b"not JSON").is_err());
         let mut oversized = document;
-        oversized.calculation.history = vec![("1".into(), "\t".repeat(8 * 1024)); MAX_HISTORY];
+        let entries = notebook_files::MAX_NOTEBOOK_BYTES / MAX_RESULT_BYTES + 1;
+        assert!(entries <= MAX_HISTORY);
+        oversized.calculation.history = vec![("1".into(), "x".repeat(MAX_RESULT_BYTES)); entries];
         oversized.validate().unwrap();
         assert!(
             oversized.to_bytes().is_err(),
-            "Escaped JSON must respect the file limit too"
+            "Serialized JSON must respect the file limit too"
         );
     }
 
@@ -841,6 +1290,8 @@ mod tests {
             "settings",
             "attachments",
             "pending",
+            "recovery",
+            "data_dir",
         ] {
             assert!(value.get(key).is_none(), "Unexpected document field {key}");
         }
@@ -857,5 +1308,21 @@ mod tests {
                 "Tutor runtime field {key} must remain local"
             );
         }
+        for key in [
+            "tool",
+            "selection",
+            "undo",
+            "pointer",
+            "file_path",
+            "recovery",
+        ] {
+            assert!(
+                value["canvas"].get(key).is_none(),
+                "Canvas runtime field {key} must not leak"
+            );
+        }
+        let mut unexpected_runtime = value;
+        unexpected_runtime["canvas"]["tool"] = "eraser".into();
+        assert!(Notebook::decode(&serde_json::to_vec(&unexpected_runtime).unwrap()).is_err());
     }
 }

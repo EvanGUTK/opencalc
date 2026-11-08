@@ -27,6 +27,10 @@ No proprietary system-font files are distributed by this project. On Windows, th
 
 The Rust packages recorded in `Cargo.lock` retain their upstream licenses. OpenCalc's MIT license does not replace those licenses or any notices required when distributing a compiled application. Preserve applicable upstream license files when packaging dependencies or binaries.
 
+Windows release packages contain `dependency-licenses/index.json` with the exact locked versions, source provenance and hashes of unchanged upstream notice texts. The bundle includes notices for 344 packages as a superset of the Windows runtime graph; its one explicit exclusion is Apple-only `dispatch 0.2.0`, which is absent from that graph and does not supply a standalone notice in its published source. Packaging fails on unaccounted notice gaps. See [Windows packaging](docs/notes/windows-release.md).
+
+The installer also includes `assets/licenses/NSIS-COPYING.txt` from the checksum-verified portable NSIS distribution used to compile it. OpenCalc's license does not replace those component terms.
+
 ## Optional external applications
 
 MATLAB integration requires the user's separately licensed MATLAB installation. Optional local AI uses a separately installed Ollama service and model; those components and model weights are not bundled with OpenCalc. Their respective license terms apply independently.

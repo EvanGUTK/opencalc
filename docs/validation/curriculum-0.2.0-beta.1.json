@@ -1,0 +1,4162 @@
+{
+  "schema": 1,
+  "application_version": "0.2.0-beta.1",
+  "scope": "production calculation checks; native OS and assistive hardware not tested",
+  "passed": 138,
+  "failed": 0,
+  "rows": [
+    {
+      "case_id": "k3-count-five",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 5.0,
+        "display": "5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-cross-ten",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 13,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 13.0,
+        "display": "13"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-subtract",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 8,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 8.0,
+        "display": "8"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-zero",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.0,
+        "display": "0"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-multiply",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 42,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 42.0,
+        "display": "42"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-share-equally",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 4,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 4.0,
+        "display": "4"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-place-value",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 63,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 63.0,
+        "display": "63"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-three-addends",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 29,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 29.0,
+        "display": "29"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-division-one",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 9.0,
+        "display": "9"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "k3-parentheses",
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 14,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 14.0,
+        "display": "14"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-fraction-add",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.875,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.875,
+        "display": "0.875"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-fraction-subtract",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.625,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.625,
+        "display": "0.625"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-fraction-product",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.6,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.6,
+        "display": "0.6"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-fraction-division",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.6666666666666666,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.6666666666666666,
+        "display": "0.6666666667"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-percent",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 30,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 30.0,
+        "display": "30"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-percent-postfix",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.5,
+        "display": "0.5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-negative-add",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": -5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": -5.0,
+        "display": "-5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-negative-product",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 24,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 24.0,
+        "display": "24"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-square-negative",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 9.0,
+        "display": "9"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-unary-precedence",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": -9,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": -9.0,
+        "display": "-9"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-right-power",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 512,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 512.0,
+        "display": "512"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-decimal",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.3,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.30000000000000004,
+        "display": "0.3"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-square-root",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 12,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 12.0,
+        "display": "12"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-cube-root",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": -5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": -5.0,
+        "display": "-5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-implicit-product",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 14,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 14.0,
+        "display": "14"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "middle-last-answer",
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 5.0,
+        "display": "5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-sin-degrees",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.49999999999999994,
+        "display": "0.5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-cos-degrees",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.5000000000000001,
+        "display": "0.5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-tan-degrees",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.9999999999999999,
+        "display": "1"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-sin-radians",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 1.0,
+        "display": "1"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-cos-radians",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": -1,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": -1.0,
+        "display": "-1"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-inverse-degrees",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 30,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 30.000000000000004,
+        "display": "30"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-inverse-radians",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1.0471975511965976,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 1.0471975511965979,
+        "display": "1.0471975512"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-degree-conversion",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 180,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 180.0,
+        "display": "180"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-radian-conversion",
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3.141592653589793,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 3.141592653589793,
+        "display": "3.1415926536"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-scientific-notation",
+      "stage": "high",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.005,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-16,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.005,
+        "display": "0.005"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-tiny-result",
+      "stage": "high",
+      "subject": "scientific-notation",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1.0000000000000001e-24,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 1e-24,
+        "display": "1e-24"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-quadratic-substitution",
+      "stage": "high",
+      "subject": "algebra",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 30,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 30.0,
+        "display": "30"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-stored-variable",
+      "stage": "high",
+      "subject": "algebra",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 36,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 36.0,
+        "display": "36"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-combinations",
+      "stage": "high",
+      "subject": "combinatorics",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 56,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 56.0,
+        "display": "56"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-sample-variance",
+      "stage": "high",
+      "subject": "statistics",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 4,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 4.0,
+        "display": "4"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "high-population-variance",
+      "stage": "high",
+      "subject": "statistics",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 2.6666666666666665,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 2.6666666666666665,
+        "display": "2.6666666667"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "college-polynomial-derivative",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 88,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.00002,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 88.00000001173393,
+        "display": "88.0000000117"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "derivatives"
+      ]
+    },
+    {
+      "case_id": "college-log-derivative",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-7,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.5,
+        "display": "0.5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "derivatives"
+      ]
+    },
+    {
+      "case_id": "college-polynomial-integral",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-7,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 9.0,
+        "display": "9"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "integration"
+      ]
+    },
+    {
+      "case_id": "college-odd-integral",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-9,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.0,
+        "display": "0"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "integration"
+      ]
+    },
+    {
+      "case_id": "college-sine-integral",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 2,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-7,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 1.9999999999999893,
+        "display": "2"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "integration",
+        "unit-circle"
+      ]
+    },
+    {
+      "case_id": "college-reversed-integral",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": -9,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-7,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": -9.0,
+        "display": "-9"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "integration"
+      ]
+    },
+    {
+      "case_id": "college-square-root-equation",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1.4142135623730951,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-8,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 1.4142135623746899,
+        "display": "1.4142135624"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "college-trig-fixed-point",
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.7390851332151607,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-8,
+        "rel_tolerance": 2e-9,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.7390851332151607,
+        "display": "0.7390851332"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-complex-square",
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "complex",
+        "value": null,
+        "re": 0.0,
+        "im": 2.0,
+        "values": [],
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "complex",
+        "re": 0.0,
+        "im": 2.0,
+        "display": "2i"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-complex-reciprocal",
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "complex",
+        "value": null,
+        "re": 0.5,
+        "im": -0.5,
+        "values": [],
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "complex",
+        "re": 0.5,
+        "im": -0.5,
+        "display": "0.5 - 0.5i"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-principal-log",
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "complex",
+        "value": null,
+        "re": 0.0,
+        "im": 3.141592653589793,
+        "values": [],
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "complex",
+        "re": 0.0,
+        "im": 3.141592653589793,
+        "display": "3.1415926536i"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-euler-identity",
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "complex",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "complex",
+        "re": 0.0,
+        "im": 1.2246467991473532e-16,
+        "display": "1.2246467991e-16i"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-complex-magnitude",
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "complex",
+        "value": null,
+        "re": 5.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 5.0,
+        "display": "5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-conjugate-product",
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "complex",
+        "value": null,
+        "re": 25.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 25.0,
+        "display": "25"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-divide-zero",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Cannot divide by zero"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-real-square-root",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Result is outside the real-number domain"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-real-log-zero",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Result is outside the real-number domain"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-tangent-pole",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Tangent is undefined at this angle"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-factorial-negative",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Factorial needs a whole number from 0 to 170"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-function-arity",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "arity"
+      },
+      "actual": {
+        "type": "error",
+        "message": "sin needs 1 argument(s)"
+      },
+      "reason": "Invalid input rejected (fixture class: arity); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-function-unknown",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "syntax"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Unknown function: unknown"
+      },
+      "reason": "Invalid input rejected (fixture class: syntax); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-exponential-overflow",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "nonfinite"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Result is outside the real-number domain"
+      },
+      "reason": "Invalid input rejected (fixture class: nonfinite); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-root-no-real-zero",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "No finite root converged. Try another starting value; a small function value alone does not establish a root."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-root-asymptote",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "No finite root converged. Try another starting value; a small function value alone does not establish a root."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-derivative-corner",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "A finite two-sided derivative could not be established here; the expression may be undefined, discontinuous or too steep for numerical differentiation."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "error-integral-pole",
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Numerical integration requires finite values throughout the interval, including both endpoints. Improper integrals are unsupported."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-quadratic-root",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.0,
+        "display": "0"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-quadratic-negative-x",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 5.0,
+        "display": "5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-linear",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 11,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 11.0,
+        "display": "11"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-sine-degrees",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 0.49999999999999994,
+        "display": "0.5"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-sine-radians",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 1.0,
+        "display": "1"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-error-pole",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Cannot divide by zero"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graph-error-square-root",
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Result is outside the real-number domain"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-product",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            19.0,
+            22.0
+          ],
+          [
+            43.0,
+            50.0
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-addition",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            6,
+            8
+          ],
+          [
+            10,
+            12
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            6.0,
+            8.0
+          ],
+          [
+            10.0,
+            12.0
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-rectangular-transpose",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            1.0,
+            4.0
+          ],
+          [
+            2.0,
+            5.0
+          ],
+          [
+            3.0,
+            6.0
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-determinant-three",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            -306
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            -305.99999999999994
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-inverse-two",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            0.6,
+            -0.7
+          ],
+          [
+            -0.2,
+            0.4
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            0.6000000000000001,
+            -0.7000000000000001
+          ],
+          [
+            -0.2,
+            0.4
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-inverse-three",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            -24,
+            18,
+            5
+          ],
+          [
+            20,
+            -15,
+            -4
+          ],
+          [
+            -5,
+            4,
+            1
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            -24.0,
+            18.0,
+            5.0
+          ],
+          [
+            20.0,
+            -15.0,
+            -4.0
+          ],
+          [
+            -5.0,
+            4.0,
+            1.0
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-linear-system",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            0.6
+          ],
+          [
+            -0.2
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            0.6
+          ],
+          [
+            -0.2
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "graduate-hamiltonian-eigenpair",
+      "stage": "graduate_representative",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            3
+          ],
+          [
+            3
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            3.0
+          ],
+          [
+            3.0
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-small-determinant",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            9.999999999999999e-31
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            1e-30
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-small-inverse",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            1000000000000000.0,
+            0
+          ],
+          [
+            0,
+            1000000000000000.0
+          ]
+        ],
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "matrix",
+        "value": [
+          [
+            999999999999999.9,
+            0.0
+          ],
+          [
+            0.0,
+            999999999999999.9
+          ]
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-error-singular",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "This matrix is singular; it has no inverse"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-error-nonsquare",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Use a square matrix"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-error-product-dimension",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Columns of A must equal rows of B"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "matrix-error-add-dimension",
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Addition needs matrices of the same size"
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "physics-force",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 8,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          8.0
+        ],
+        "units": [
+          "N"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "newton"
+      ]
+    },
+    {
+      "case_id": "physics-kinetic-energy",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          9.0
+        ],
+        "units": [
+          "J"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "kinetic-energy"
+      ]
+    },
+    {
+      "case_id": "physics-momentum",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 6,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          6.0
+        ],
+        "units": [
+          "kg m/s"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "momentum"
+      ]
+    },
+    {
+      "case_id": "physics-work-angle",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 25,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          25.000000000000007
+        ],
+        "units": [
+          "J"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "work",
+        "unit-circle"
+      ]
+    },
+    {
+      "case_id": "physics-average-power",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 40,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          40.0
+        ],
+        "units": [
+          "W"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "power"
+      ]
+    },
+    {
+      "case_id": "physics-gravitation",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 8.342875e-10,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          8.342874999999999e-10
+        ],
+        "units": [
+          "N"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "nist-gravitation"
+      ]
+    },
+    {
+      "case_id": "physics-wave-speed",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 330,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          330.0
+        ],
+        "units": [
+          "m/s"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "physics-ohm-current",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          3.0
+        ],
+        "units": [
+          "A"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ohm"
+      ]
+    },
+    {
+      "case_id": "physics-electric-power",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 24,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          24.0
+        ],
+        "units": [
+          "W"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ohm",
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "physics-capacitor-energy",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.1,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          0.1,
+          0.02
+        ],
+        "units": [
+          "J",
+          "C"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "capacitor"
+      ]
+    },
+    {
+      "case_id": "physics-rc-discharge",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3.6787944117144233,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          3.6787944117144233,
+          1.0
+        ],
+        "units": [
+          "V",
+          "s"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "rc"
+      ]
+    },
+    {
+      "case_id": "physics-rlc-impedance",
+      "stage": "graduate_representative",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3.000287113814798,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          3.0002871138147986,
+          3.3330143485118735,
+          -0.7926596114473501,
+          33.326953942158084,
+          0.999904304553562
+        ],
+        "units": [
+          "ohm",
+          "A",
+          "degrees",
+          "W",
+          ""
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "rlc"
+      ]
+    },
+    {
+      "case_id": "physics-ideal-gas-pressure",
+      "stage": "college",
+      "subject": "thermodynamics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 103930.7827269155,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          103930.7827269155
+        ],
+        "units": [
+          "Pa"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "gas",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "physics-heat",
+      "stage": "college",
+      "subject": "thermodynamics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 20920,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          20920.0
+        ],
+        "units": [
+          "J"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "heat"
+      ]
+    },
+    {
+      "case_id": "physics-photon-energy",
+      "stage": "graduate_representative",
+      "subject": "quantum-physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3.972891714297857e-19,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          3.972891714297857e-19,
+          599584916000000.0,
+          2.479683968664005
+        ],
+        "units": [
+          "J",
+          "Hz",
+          "eV"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "photon",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "physics-debroglie",
+      "stage": "graduate_representative",
+      "subject": "quantum-physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 6.62607015e-10,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          6.62607015e-10
+        ],
+        "units": [
+          "m"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "debroglie",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "physics-relativistic-total-energy",
+      "stage": "graduate_representative",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1.123443973421022e+17,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          1.123443973421022e+17,
+          2.2468879468420452e+16,
+          224844343.50000003,
+          1.25
+        ],
+        "units": [
+          "J",
+          "J",
+          "kg m/s",
+          ""
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "relativity",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "physics-radioactive-half-lives",
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 100,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          100.00000000000003,
+          0.06931471805599453
+        ],
+        "units": [
+          "initial amount units",
+          "per input time unit"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "decay"
+      ]
+    },
+    {
+      "case_id": "physics-boltzmann-equal-degeneracy",
+      "stage": "graduate_representative",
+      "subject": "statistical-physics",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.36787944117144233,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          0.36787944117144233
+        ],
+        "units": [
+          ""
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "boltzmann",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "chem-half-mole-particles",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3.01107038e+23,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          3.01107038e+23
+        ],
+        "units": [
+          "specified entities"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "mole",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "chem-particles-to-moles",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          0.5
+        ],
+        "units": [
+          "mol"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "mole",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "chem-avogadro-volume",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 40,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          40.0
+        ],
+        "units": [
+          "L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "gas"
+      ]
+    },
+    {
+      "case_id": "chem-water-molar-mass",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 18.015,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          18.015
+        ],
+        "units": [
+          "g/mol"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ]
+    },
+    {
+      "case_id": "chem-parenthesized-molar-mass",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 74.092,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          74.092
+        ],
+        "units": [
+          "g/mol"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ]
+    },
+    {
+      "case_id": "chem-mass-to-moles",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 2,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          2.0,
+          18.015
+        ],
+        "units": [
+          "mol",
+          "g/mol"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ]
+    },
+    {
+      "case_id": "chem-moles-to-mass",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 36.03,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          36.03,
+          18.015
+        ],
+        "units": [
+          "g",
+          "g/mol"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ]
+    },
+    {
+      "case_id": "chem-molarity",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          0.5
+        ],
+        "units": [
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "molarity"
+      ]
+    },
+    {
+      "case_id": "chem-dilution",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.4,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          0.4
+        ],
+        "units": [
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "molarity"
+      ]
+    },
+    {
+      "case_id": "chem-ph-acid",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 3,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          3.0,
+          11.0,
+          1e-11
+        ],
+        "units": [
+          "",
+          "",
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ph"
+      ]
+    },
+    {
+      "case_id": "chem-ph-neutral",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 7,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          7.0,
+          7.0,
+          1.0000000000000001e-7
+        ],
+        "units": [
+          "",
+          "",
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ph"
+      ]
+    },
+    {
+      "case_id": "chem-neutralization-equivalence",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 7,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          7.0,
+          1e-7,
+          1.0000000000000001e-7
+        ],
+        "units": [
+          "",
+          "mol/L",
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ph",
+        "stoichiometry"
+      ]
+    },
+    {
+      "case_id": "chem-neutralization-acid-excess",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 1.4771212547157535,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          1.4771212547157537,
+          0.033333333333633336,
+          2.999999999973e-13
+        ],
+        "units": [
+          "",
+          "mol/L",
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ph",
+        "stoichiometry"
+      ]
+    },
+    {
+      "case_id": "chem-neutralization-base-excess",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 12.522878745284244,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          12.522878745284245,
+          2.999999999973e-13,
+          0.033333333333633336
+        ],
+        "units": [
+          "",
+          "mol/L",
+          "mol/L"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "ph",
+        "stoichiometry"
+      ]
+    },
+    {
+      "case_id": "chem-arrhenius-rate-ratio",
+      "stage": "graduate_representative",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 6.186122084855493,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          6.186122084855502
+        ],
+        "units": [
+          ""
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "arrhenius",
+        "bipm-si"
+      ]
+    },
+    {
+      "case_id": "chem-beer-lambert",
+      "stage": "graduate_representative",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 0.2,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          0.2,
+          0.6309573444801932
+        ],
+        "units": [
+          "",
+          "fraction"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "beer"
+      ]
+    },
+    {
+      "case_id": "chem-percent-yield",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 80,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "science",
+        "values": [
+          80.0
+        ],
+        "units": [
+          "%"
+        ]
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "yield"
+      ]
+    },
+    {
+      "case_id": "chem-stoichiometry-water",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 72.06,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 72.06,
+        "display": "72.06"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "stoichiometry",
+        "mole",
+        "ciaaw-2024"
+      ]
+    },
+    {
+      "case_id": "chem-limiting-reagent",
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "calculator",
+      "passed": true,
+      "expected": {
+        "type": "real",
+        "value": 2,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12,
+        "code_class": ""
+      },
+      "actual": {
+        "type": "real",
+        "value": 2.0,
+        "display": "2"
+      },
+      "reason": "Matches the independent expected value within the fixture's absolute and relative tolerances.",
+      "source_ids": [
+        "yield",
+        "stoichiometry"
+      ]
+    },
+    {
+      "case_id": "science-error-gas-zero-volume",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Volume (m³) must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-ph-zero",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Hydronium concentration (mol/L) must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-photon-zero-wavelength",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Vacuum wavelength (m) must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-decay-zero-half-life",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Half-life must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-relativity-light-speed",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "A massive particle's speed must be strictly less than the speed of light."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-negative-molarity-volume",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Solution volume (L) must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-malformed-number",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "syntax"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Mass (kg): Use not(...) for a function"
+      },
+      "reason": "Invalid input rejected (fixture class: syntax); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-unknown-element",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Element 'Xx' has no supported conventional atomic weight. Element symbols are case-sensitive; isotope labels and charges are not supported."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-unbalanced-formula",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "syntax"
+      },
+      "actual": {
+        "type": "error",
+        "message": "A formula group is missing its closing parenthesis or bracket."
+      },
+      "reason": "Invalid input rejected (fixture class: syntax); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-rlc-zero-capacitance",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Capacitance (F) must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    },
+    {
+      "case_id": "science-error-dilution-zero-final-volume",
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "passed": true,
+      "expected": {
+        "type": "error",
+        "value": null,
+        "re": 0.0,
+        "im": 0.0,
+        "values": [],
+        "abs_tolerance": 0.0,
+        "rel_tolerance": 0.0,
+        "code_class": "domain"
+      },
+      "actual": {
+        "type": "error",
+        "message": "Final volume (L) must be greater than zero."
+      },
+      "reason": "Invalid input rejected (fixture class: domain); error wording is not an oracle.",
+      "source_ids": [
+        "original-arithmetic"
+      ]
+    }
+  ],
+  "sources": {
+    "arrhenius": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: Collision Theory",
+      "url": "https://openstax.org/books/chemistry-2e/pages/12-5-collision-theory"
+    },
+    "beer": {
+      "checked_on": "2026-11-08",
+      "note": "Primary Delhi teaching PDF read. IUPAC entry returned403 and is not claimed read.",
+      "title": "University of Delhi Chemistry: UV-Visible Spectrophotometry",
+      "url": "https://chemistry.du.ac.in/wp-content/uploads/2023/01/UV-Visible-Spectrophotometry.pdf"
+    },
+    "bipm-si": {
+      "checked_on": "2026-11-08",
+      "title": "BIPM: SI defining constants",
+      "url": "https://www.bipm.org/en/measurement-units/si-defining-constants"
+    },
+    "boltzmann": {
+      "checked_on": "2026-11-08",
+      "note": "Use current BIPM constants with the distribution relation, not historical rounded constants in lecture.",
+      "title": "MIT10.40 Lecture21: Statistical Mechanics, Bernhardt Trout",
+      "url": "https://ocw.mit.edu/courses/10-40-chemical-engineering-thermodynamics-fall-2003/fdd38846e422a48a9b872a045e9f65f7_lecture21notes.pdf"
+    },
+    "capacitor": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics2: Energy Stored in a Capacitor",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/8-3-energy-stored-in-a-capacitor"
+    },
+    "ciaaw-2024": {
+      "checked_on": "2026-11-08",
+      "title": "CIAAW: Abridged Standard Atomic Weights 2024",
+      "url": "https://ciaaw.org/abridged-atomic-weights.htm"
+    },
+    "complex-principal": {
+      "checked_on": "2026-11-08",
+      "title": "NIST DLMF4.2: Logarithm, Exponential, Powers",
+      "url": "https://dlmf.nist.gov/4.2"
+    },
+    "debroglie": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics3: De Broglie's Matter Waves",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/6-5-de-broglies-matter-waves"
+    },
+    "decay": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics3: Radioactive Decay",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/10-3-radioactive-decay"
+    },
+    "derivatives": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Calculus Volume1: Differentiation Rules",
+      "url": "https://openstax.org/books/calculus-volume-1/pages/3-3-differentiation-rules"
+    },
+    "gas": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: Ideal Gas Law",
+      "url": "https://openstax.org/books/chemistry-2e/pages/9-2-relating-pressure-volume-amount-and-temperature-the-ideal-gas-law"
+    },
+    "heat": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics2: Heat Transfer, Specific Heat, Calorimetry",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/1-4-heat-transfer-specific-heat-and-calorimetry"
+    },
+    "integration": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Calculus Volume1: Fundamental Theorem of Calculus",
+      "url": "https://openstax.org/books/calculus-volume-1/pages/5-3-the-fundamental-theorem-of-calculus"
+    },
+    "kinetic-energy": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics1: Kinetic Energy",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/7-2-kinetic-energy"
+    },
+    "matrix-inverse": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Algebra and Trigonometry 2e: Solving Systems with Inverses",
+      "url": "https://openstax.org/books/algebra-and-trigonometry-2e/pages/11-7-solving-systems-with-inverses"
+    },
+    "molarity": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: Molarity",
+      "url": "https://openstax.org/books/chemistry-2e/pages/3-3-molarity"
+    },
+    "mole": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: Formula Mass and Mole Concept",
+      "url": "https://openstax.org/books/chemistry-2e/pages/3-1-formula-mass-and-the-mole-concept"
+    },
+    "momentum": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics1: Linear Momentum",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/9-1-linear-momentum"
+    },
+    "newton": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics1: Newton's Second Law",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/5-3-newtons-second-law"
+    },
+    "nist-gravitation": {
+      "checked_on": "2026-11-08",
+      "title": "NIST: How Do You Measure the Strength of Gravity?",
+      "url": "https://www.nist.gov/how-do-you-measure-it/how-do-you-measure-strength-gravity"
+    },
+    "ohm": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics2: Ohm's Law",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/9-4-ohms-law"
+    },
+    "original-arithmetic": {
+      "checked_on": "2026-11-08",
+      "method": "Original Fraction/Decimal arithmetic and analytic identities; no app evaluator.",
+      "title": "Original analytic arithmetic and algebra derivations",
+      "url": null
+    },
+    "ph": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: pH and pOH",
+      "url": "https://openstax.org/books/chemistry-2e/pages/14-2-ph-and-poh"
+    },
+    "photon": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics3: Photoelectric Effect",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/6-2-photoelectric-effect"
+    },
+    "power": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics1: Power",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/7-4-power"
+    },
+    "prealgebra": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Prealgebra 2e: Add Whole Numbers",
+      "url": "https://openstax.org/books/prealgebra-2e/pages/1-2-add-whole-numbers"
+    },
+    "rc": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics2: RC Circuits",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/10-5-rc-circuits"
+    },
+    "relativity": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics3: Relativistic Energy",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/5-9-relativistic-energy"
+    },
+    "rlc": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics2: RLC Series Circuits with AC",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/15-3-rlc-series-circuits-with-ac"
+    },
+    "stoichiometry": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: Reaction Stoichiometry",
+      "url": "https://openstax.org/books/chemistry-2e/pages/4-3-reaction-stoichiometry"
+    },
+    "unit-circle": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Algebra and Trigonometry 2e: Unit Circle",
+      "url": "https://openstax.org/books/algebra-and-trigonometry-2e/pages/7-3-unit-circle"
+    },
+    "work": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax University Physics1: Work",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/7-1-work"
+    },
+    "yield": {
+      "checked_on": "2026-11-08",
+      "title": "OpenStax Chemistry2e: Reaction Yields",
+      "url": "https://openstax.org/books/chemistry-2e/pages/4-4-reaction-yields"
+    }
+  }
+}

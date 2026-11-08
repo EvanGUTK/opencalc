@@ -1,10 +1,22 @@
+#![cfg_attr(
+    all(target_os = "windows", not(debug_assertions)),
+    windows_subsystem = "windows"
+)]
+
+#[cfg(test)]
+mod acceptance_tests;
 mod accessibility;
+#[cfg(test)]
+mod accessibility_acceptance;
 mod accessibility_help;
 mod accessibility_panel;
 mod accessible_calculator;
+mod app_paths;
 mod appearance;
 mod audio_trace;
+mod canvas;
 mod complex;
+mod curriculum_checks;
 mod device;
 mod graph_tools;
 mod handheld;
@@ -17,6 +29,8 @@ mod notebook_files;
 mod notebook_ui;
 mod practice;
 mod programs;
+mod recovery;
+mod science;
 mod speech;
 mod toolkit;
 mod tutor;
@@ -51,6 +65,7 @@ struct Settings {
     speech: bool,
     scale: f32,
     precision: usize,
+    protect_unsaved_work: bool,
     access: accessibility::AccessibilitySettings,
 }
 impl Default for Settings {
@@ -64,6 +79,7 @@ impl Default for Settings {
             speech: false,
             scale: 1.0,
             precision: 8,
+            protect_unsaved_work: false,
             access: accessibility::AccessibilitySettings::default(),
         }
     }
@@ -77,6 +93,7 @@ enum Tab {
     Tutor,
     Toolkit,
     Practice,
+    Notebook,
 }
 enum AppShortcut {
     Help,
@@ -142,6 +159,9 @@ struct EqualApp {
     graph_tools: graph_tools::GraphTools,
     graph_audio: audio_trace::GraphAudio,
     notebook: notebook_ui::NotebookState,
+    canvas: canvas::CanvasEditor,
+    recovery: recovery::RecoveryManager,
+    data_dir: Option<PathBuf>,
 }
 impl EqualApp {
     fn new(cc: &eframe::CreationContext<'_>, screenshot: Option<PathBuf>) -> Self {
@@ -215,6 +235,9 @@ impl EqualApp {
             graph_tools: graph_tools::GraphTools::default(),
             graph_audio: audio_trace::GraphAudio::default(),
             notebook: notebook_ui::NotebookState::default(),
+            canvas: canvas::CanvasEditor::default(),
+            recovery: recovery::RecoveryManager::new(None),
+            data_dir: None,
         }
     }
     fn speak(&mut self, text: &str) {
@@ -242,6 +265,7 @@ impl EqualApp {
             || self.a11y.show_shortcuts
             || self.a11y.show_glossary
             || self.notebook.overlay_open()
+            || self.canvas.overlay_open()
     }
     pub(crate) fn stop_audio(&mut self) {
         let speech = self.speech.stop();
@@ -314,6 +338,7 @@ impl EqualApp {
                     (egui::Key::Num4, Tab::Tutor),
                     (egui::Key::Num5, Tab::Toolkit),
                     (egui::Key::Num6, Tab::Practice),
+                    (egui::Key::Num7, Tab::Notebook),
                 ] {
                     if input.consume_key(egui::Modifiers::ALT, key) {
                         return Some(AppShortcut::Workspace(tab));
@@ -442,7 +467,21 @@ impl EqualApp {
     }
     fn sync_overlay_focus(&mut self, ctx: &egui::Context) {
         let open = self.access_overlay_open();
+        let pending_id = egui::Id::new("overlay-pending-return-focus");
+        if !open && !self.a11y.overlay_was_open {
+            let pending = ctx.data_mut(|data| {
+                let pending = data.get_temp::<egui::Id>(pending_id);
+                data.remove::<egui::Id>(pending_id);
+                pending
+            });
+            if let Some(origin) = pending
+                && ctx.memory(|memory| memory.focused().is_none())
+            {
+                ctx.memory_mut(|memory| memory.request_focus(origin));
+            }
+        }
         if open && !self.a11y.overlay_was_open {
+            ctx.data_mut(|data| data.remove::<egui::Id>(pending_id));
             self.a11y.overlay_return_focus = self.a11y.workspace_focus;
             self.a11y.overlay_had_settings = self.show_settings;
             egui::Popup::close_all(ctx);
@@ -465,6 +504,9 @@ impl EqualApp {
                 });
             if let Some(origin) = origin {
                 ctx.memory_mut(|memory| memory.request_focus(origin));
+                // The closing frame drew the workspace disabled. Restore once more
+                // after its controls are enabled, if no new control took focus.
+                ctx.data_mut(|data| data.insert_temp(pending_id, origin));
             }
             self.a11y.overlay_had_settings = false;
         }
@@ -610,6 +652,22 @@ impl eframe::App for EqualApp {
 }
 fn main() -> eframe::Result {
     let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|value| value == "--version") {
+        println!("OpenCalc {}", env!("CARGO_PKG_VERSION"));
+        return Ok(());
+    }
+    if args.iter().any(|value| value == "--self-test") {
+        let report = curriculum_checks::run();
+        let failed = report.failed;
+        match serde_json::to_string_pretty(&report) {
+            Ok(json) => println!("{json}"),
+            Err(error) => {
+                eprintln!("Could not write the verification report: {error}");
+                std::process::exit(2);
+            }
+        }
+        std::process::exit(if failed == 0 { 0 } else { 1 });
+    }
     let argument = |name: &str| {
         args.windows(2)
             .find(|pair| pair[0] == name)
@@ -671,9 +729,34 @@ fn main() -> eframe::Result {
         .windows(2)
         .find(|a| a[0] == "--preview")
         .map(|a| a[1].clone());
+    let explicit_profile = argument("--data-dir").map(PathBuf::from);
+    let isolated_profile = explicit_profile.is_some();
+    let portable = args.iter().any(|value| value == "--portable");
+    let storage_root = if screenshot.is_some() {
+        std::env::temp_dir().join(format!("opencalc-capture-{}", std::process::id()))
+    } else {
+        match app_paths::data_dir(explicit_profile, portable) {
+            Ok(path) => path,
+            Err(error) => {
+                eprintln!("{error}");
+                std::process::exit(2);
+            }
+        }
+    };
+    if let Err(error) = std::fs::create_dir_all(&storage_root) {
+        eprintln!("Could not prepare the OpenCalc data directory: {error}");
+        std::process::exit(2);
+    }
+    if screenshot.is_none()
+        && !isolated_profile
+        && let Err(error) = app_paths::migrate_legacy_preferences(&storage_root)
+    {
+        eprintln!("Could not migrate existing preferences: {error}");
+    }
+    let app_data_dir = screenshot.is_none().then_some(storage_root.clone());
     let options = eframe::NativeOptions {
         persist_window: false,
-        persistence_path: Some(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("preferences.ron")),
+        persistence_path: Some(storage_root.join("preferences.ron")),
         viewport: egui::ViewportBuilder::default()
             .with_inner_size(size.unwrap_or([462.0, 840.0]))
             .with_min_inner_size([320.0, 400.0])
@@ -685,6 +768,9 @@ fn main() -> eframe::Result {
         options,
         Box::new(move |cc| {
             let mut app = EqualApp::new(cc, screenshot);
+            app.data_dir = app_data_dir;
+            app.recovery = recovery::RecoveryManager::new(app.data_dir.clone());
+            app.recovery.set_enabled(app.settings.protect_unsaved_work);
             if let Some(level) = level {
                 app.settings.level = level;
             }
@@ -776,6 +862,11 @@ fn main() -> eframe::Result {
                     Some("glossary") => app.a11y.show_glossary = true,
                     Some("shortcuts") => app.a11y.show_shortcuts = true,
                     Some("notebook") => app.notebook.show = true,
+                    Some("pages") => app.tab = Tab::Notebook,
+                    Some("science") => {
+                        app.tab = Tab::Toolkit;
+                        app.toolkit.science_open = true;
+                    }
                     Some("graph") => app.tab = Tab::Graph,
                     Some("toolkit") => app.tab = Tab::Toolkit,
                     Some("practice") => app.tab = Tab::Practice,

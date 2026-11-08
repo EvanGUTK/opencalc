@@ -22,3 +22,5 @@ cargo build --locked
 On the original Windows workspace, the ignored `.cargo/config.toml` uses local vendored crates. Set `CARGO_HOME` to `.cargo-cache`, use `--offline`, and choose a separate temporary `--target-dir` if Windows locks an existing build. Public source omits the vendor override and uses normal registry dependencies.
 
 The app has a native `--screenshot PATH --size WIDTHxHEIGHT` capture mode. Core UI behavior is also checked with native egui interaction tests. Neither screenshots nor synthetic tests establish actual screen-reader, Braille, switch or eye-tracker compatibility.
+
+Use `--data-dir PATH` for isolated native testing; `--self-test` runs the bundled independent curriculum fixture without loading preferences. Windows packaging and isolated installer checks are documented in `docs/notes/windows-release.md`; keep generated artifacts under ignored `target/`.

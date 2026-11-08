@@ -277,16 +277,21 @@ impl EqualApp {
             self.select_trace_curve(0);
             return;
         }
-        let position = active
-            .iter()
-            .position(|index| *index == self.graph_access.selected)
-            .unwrap_or(0);
-        let position = if forward {
-            (position + 1) % active.len()
+        let selected = if forward {
+            active
+                .iter()
+                .copied()
+                .find(|index| *index > self.graph_access.selected)
+                .unwrap_or(active[0])
         } else {
-            (position + active.len() - 1) % active.len()
+            active
+                .iter()
+                .rev()
+                .copied()
+                .find(|index| *index < self.graph_access.selected)
+                .unwrap_or(active[active.len() - 1])
         };
-        self.select_trace_curve(active[position]);
+        self.select_trace_curve(selected);
     }
     pub(crate) fn trace_text(&self) -> String {
         let selected = if self.surface {
@@ -1073,16 +1078,28 @@ impl EqualApp {
             ui.columns(2, |cols| {
                 cols[0].label(R::new("MATRIX A").strong().color(TEAL));
                 let w = cols[0].available_width();
-                cols[0].add_sized(
+                let matrix_a = cols[0].add_sized(
                     [w, 130.0],
                     egui::TextEdit::multiline(&mut self.matrix_a).font(egui::TextStyle::Monospace),
                 );
+                matrix_a.widget_info(|| {
+                    egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, true, "Matrix A")
+                });
+                cols[0].ctx().accesskit_node_builder(matrix_a.id, |node| {
+                    node.set_role(egui::accesskit::Role::MultilineTextInput)
+                });
                 cols[1].label(R::new("MATRIX B").strong().color(TEAL));
                 let w = cols[1].available_width();
-                cols[1].add_sized(
+                let matrix_b = cols[1].add_sized(
                     [w, 130.0],
                     egui::TextEdit::multiline(&mut self.matrix_b).font(egui::TextStyle::Monospace),
                 );
+                matrix_b.widget_info(|| {
+                    egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, true, "Matrix B")
+                });
+                cols[1].ctx().accesskit_node_builder(matrix_b.id, |node| {
+                    node.set_role(egui::accesskit::Role::MultilineTextInput)
+                });
             });
             ui.add_space(12.0);
             ui.horizontal(|ui| {
@@ -1098,6 +1115,15 @@ impl EqualApp {
                         ] {
                             ui.selectable_value(&mut self.matrix_op, op.to_string(), op);
                         }
+                    })
+                    .response
+                    .widget_info(|| egui::WidgetInfo {
+                        current_text_value: Some(self.matrix_op.clone()),
+                        ..egui::WidgetInfo::labeled(
+                            egui::WidgetType::ComboBox,
+                            true,
+                            "Matrix operation",
+                        )
                     });
                 if primary(ui, "Calculate").clicked() {
                     let result = (|| {
@@ -1236,6 +1262,127 @@ impl EqualApp {
 #[cfg(test)]
 mod graph_tests {
     use super::*;
+
+    #[test]
+    fn matrix_fields_are_named_multiline_editable_and_preserve_values() {
+        let ctx = egui::Context::default();
+        ctx.enable_accesskit();
+        let mut app = EqualApp::with_settings(Settings::default(), None);
+        app.matrix_a = "1 2\n3 4".into();
+        app.matrix_b = "5 6\n7 8".into();
+        app.matrix_op = "Transpose A".into();
+        let frame = |app: &mut EqualApp, events| {
+            ctx.run(
+                egui::RawInput {
+                    screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(900.0, 850.0))),
+                    events,
+                    ..Default::default()
+                },
+                |ctx| {
+                    egui::CentralPanel::default().show(ctx, |ui| app.matrix_workspace(ui));
+                },
+            )
+        };
+        let output = frame(&mut app, vec![]);
+        let nodes = &output.platform_output.accesskit_update.unwrap().nodes;
+        for (label, value) in [("Matrix A", "1 2\n3 4"), ("Matrix B", "5 6\n7 8")] {
+            assert!(
+                nodes.iter().any(|(_, node)| node.label() == Some(label)
+                    && node.role() == egui::accesskit::Role::MultilineTextInput
+                    && node.value() == Some(value)),
+                "Missing named multiline matrix input {label} or its value"
+            );
+        }
+        assert!(
+            nodes
+                .iter()
+                .any(|(_, node)| node.label() == Some("Matrix operation")
+                    && node.role() == egui::accesskit::Role::ComboBox
+                    && node.value() == Some("Transpose A"))
+        );
+        let matrix_a = nodes
+            .iter()
+            .find(|(_, node)| node.label() == Some("Matrix A"))
+            .unwrap()
+            .0;
+        frame(
+            &mut app,
+            vec![egui::Event::AccessKitActionRequest(
+                egui::accesskit::ActionRequest {
+                    action: egui::accesskit::Action::Focus,
+                    target: matrix_a,
+                    data: None,
+                },
+            )],
+        );
+        let output = frame(
+            &mut app,
+            vec![
+                egui::Event::Key {
+                    key: egui::Key::A,
+                    physical_key: None,
+                    pressed: true,
+                    repeat: false,
+                    modifiers: egui::Modifiers::COMMAND,
+                },
+                egui::Event::Text("2 1;0 3".into()),
+            ],
+        );
+        assert_eq!(app.matrix_a, "2 1;0 3");
+        assert_eq!(app.matrix_b, "5 6\n7 8");
+        let calculate = output
+            .platform_output
+            .accesskit_update
+            .unwrap()
+            .nodes
+            .iter()
+            .find(|(_, node)| node.label() == Some("Calculate"))
+            .unwrap()
+            .0;
+        frame(
+            &mut app,
+            vec![egui::Event::AccessKitActionRequest(
+                egui::accesskit::ActionRequest {
+                    action: egui::accesskit::Action::Click,
+                    target: calculate,
+                    data: None,
+                },
+            )],
+        );
+        assert_eq!(app.matrix_result, "2    0\n1    3");
+    }
+
+    #[test]
+    fn sparse_curve_tracing_skips_cleared_slots_and_keeps_angle_units_in_csv() {
+        let mut app = EqualApp::with_settings(Settings::default(), None);
+        for index in 0..10 {
+            app.graph_function_mut(index).clear();
+        }
+        *app.graph_function_mut(0) = "x".into();
+        *app.graph_function_mut(3) = "x^2".into();
+        app.graph_access.selected = 9;
+        app.cycle_trace_curve(true);
+        assert_eq!(app.graph_access.selected, 0);
+        app.graph_access.selected = 9;
+        app.cycle_trace_curve(false);
+        assert_eq!(app.graph_access.selected, 3);
+        app.graph_access.selected = 2;
+        app.cycle_trace_curve(true);
+        assert_eq!(app.graph_access.selected, 3);
+        app.graph_access.selected = 2;
+        app.cycle_trace_curve(false);
+        assert_eq!(app.graph_access.selected, 0);
+        app.graph_a.clear();
+        app.graph_extra[1].clear();
+        app.graph_extra[7] = "sin(x)".into();
+        app.graph_access.table_start = 90.0;
+        app.graph_access.table_rows = 1;
+        app.settings.degrees = true;
+        assert_eq!(app.graph_table_csv().unwrap(), "x,Y10\n90,1\n");
+        app.settings.degrees = false;
+        assert!((app.graph_value(9, 90.0).unwrap() - 90.0_f64.sin()).abs() < 1e-12);
+        assert!(!app.graph_table_csv().unwrap().contains("90,1\n"));
+    }
 
     #[test]
     fn graph_notebook_roundtrip_preserves_sparse_functions_and_preferences() {

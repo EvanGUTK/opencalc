@@ -1,0 +1,3555 @@
+{
+  "schema_version": 1,
+  "criteria_version": "teacher-oracle-v1-2026-11-08",
+  "base_revision": "624014ae70489e060a33ae53a5ad98d27ffb202a",
+  "generated_on": "2026-11-08",
+  "oracle_method": "Original examples; Python stdlib Fraction/Decimal at60decimal digits, analytic identities and Python math for pi and independent bisection. No OpenCalc evaluator derived expected answers.",
+  "comparison_rule": "abs(actual-expected)<=abs_tolerance+rel_tolerance*abs(expected); finite outputs; each complex component and matrix entry checked separately. Science compares values[0]. Nonempty error required, not exact wording.",
+  "scope_limit": "Representative answer checks; not comprehensive graduate curriculum, professional teacher accreditation, native E2E usability or assistive-hardware validation.",
+  "constants": {
+    "speed_of_light_m_s": "299792458",
+    "planck_J_s": "6.62607015E-34",
+    "boltzmann_J_K": "1.380649E-23",
+    "avogadro_mol_inverse": "6.02214076E+23",
+    "gas_constant_J_mol_K": "8.31446261815324",
+    "exact_si_source": "bipm-si",
+    "nominal_gravitation_m3_kg_s2": "6.67430e-11",
+    "gravitation_source": "nist-gravitation",
+    "teaching_Kw_25C": "1e-14",
+    "conventional_atomic_mass_g_mol": {
+      "H": "1.008",
+      "O": "15.999",
+      "Ca": "40.078"
+    },
+    "atomic_mass_source": "ciaaw-2024"
+  },
+  "sources": {
+    "original-arithmetic": {
+      "title": "Original analytic arithmetic and algebra derivations",
+      "url": null,
+      "checked_on": "2026-11-08",
+      "method": "Original Fraction/Decimal arithmetic and analytic identities; no app evaluator."
+    },
+    "bipm-si": {
+      "title": "BIPM: SI defining constants",
+      "url": "https://www.bipm.org/en/measurement-units/si-defining-constants",
+      "checked_on": "2026-11-08"
+    },
+    "ciaaw-2024": {
+      "title": "CIAAW: Abridged Standard Atomic Weights 2024",
+      "url": "https://ciaaw.org/abridged-atomic-weights.htm",
+      "checked_on": "2026-11-08"
+    },
+    "prealgebra": {
+      "title": "OpenStax Prealgebra 2e: Add Whole Numbers",
+      "url": "https://openstax.org/books/prealgebra-2e/pages/1-2-add-whole-numbers",
+      "checked_on": "2026-11-08"
+    },
+    "unit-circle": {
+      "title": "OpenStax Algebra and Trigonometry 2e: Unit Circle",
+      "url": "https://openstax.org/books/algebra-and-trigonometry-2e/pages/7-3-unit-circle",
+      "checked_on": "2026-11-08"
+    },
+    "derivatives": {
+      "title": "OpenStax Calculus Volume1: Differentiation Rules",
+      "url": "https://openstax.org/books/calculus-volume-1/pages/3-3-differentiation-rules",
+      "checked_on": "2026-11-08"
+    },
+    "integration": {
+      "title": "OpenStax Calculus Volume1: Fundamental Theorem of Calculus",
+      "url": "https://openstax.org/books/calculus-volume-1/pages/5-3-the-fundamental-theorem-of-calculus",
+      "checked_on": "2026-11-08"
+    },
+    "matrix-inverse": {
+      "title": "OpenStax Algebra and Trigonometry 2e: Solving Systems with Inverses",
+      "url": "https://openstax.org/books/algebra-and-trigonometry-2e/pages/11-7-solving-systems-with-inverses",
+      "checked_on": "2026-11-08"
+    },
+    "complex-principal": {
+      "title": "NIST DLMF4.2: Logarithm, Exponential, Powers",
+      "url": "https://dlmf.nist.gov/4.2",
+      "checked_on": "2026-11-08"
+    },
+    "newton": {
+      "title": "OpenStax University Physics1: Newton's Second Law",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/5-3-newtons-second-law",
+      "checked_on": "2026-11-08"
+    },
+    "kinetic-energy": {
+      "title": "OpenStax University Physics1: Kinetic Energy",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/7-2-kinetic-energy",
+      "checked_on": "2026-11-08"
+    },
+    "momentum": {
+      "title": "OpenStax University Physics1: Linear Momentum",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/9-1-linear-momentum",
+      "checked_on": "2026-11-08"
+    },
+    "work": {
+      "title": "OpenStax University Physics1: Work",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/7-1-work",
+      "checked_on": "2026-11-08"
+    },
+    "power": {
+      "title": "OpenStax University Physics1: Power",
+      "url": "https://openstax.org/books/university-physics-volume-1/pages/7-4-power",
+      "checked_on": "2026-11-08"
+    },
+    "nist-gravitation": {
+      "title": "NIST: How Do You Measure the Strength of Gravity?",
+      "url": "https://www.nist.gov/how-do-you-measure-it/how-do-you-measure-strength-gravity",
+      "checked_on": "2026-11-08"
+    },
+    "ohm": {
+      "title": "OpenStax University Physics2: Ohm's Law",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/9-4-ohms-law",
+      "checked_on": "2026-11-08"
+    },
+    "capacitor": {
+      "title": "OpenStax University Physics2: Energy Stored in a Capacitor",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/8-3-energy-stored-in-a-capacitor",
+      "checked_on": "2026-11-08"
+    },
+    "rc": {
+      "title": "OpenStax University Physics2: RC Circuits",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/10-5-rc-circuits",
+      "checked_on": "2026-11-08"
+    },
+    "rlc": {
+      "title": "OpenStax University Physics2: RLC Series Circuits with AC",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/15-3-rlc-series-circuits-with-ac",
+      "checked_on": "2026-11-08"
+    },
+    "heat": {
+      "title": "OpenStax University Physics2: Heat Transfer, Specific Heat, Calorimetry",
+      "url": "https://openstax.org/books/university-physics-volume-2/pages/1-4-heat-transfer-specific-heat-and-calorimetry",
+      "checked_on": "2026-11-08"
+    },
+    "photon": {
+      "title": "OpenStax University Physics3: Photoelectric Effect",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/6-2-photoelectric-effect",
+      "checked_on": "2026-11-08"
+    },
+    "debroglie": {
+      "title": "OpenStax University Physics3: De Broglie's Matter Waves",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/6-5-de-broglies-matter-waves",
+      "checked_on": "2026-11-08"
+    },
+    "relativity": {
+      "title": "OpenStax University Physics3: Relativistic Energy",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/5-9-relativistic-energy",
+      "checked_on": "2026-11-08"
+    },
+    "decay": {
+      "title": "OpenStax University Physics3: Radioactive Decay",
+      "url": "https://openstax.org/books/university-physics-volume-3/pages/10-3-radioactive-decay",
+      "checked_on": "2026-11-08"
+    },
+    "boltzmann": {
+      "title": "MIT10.40 Lecture21: Statistical Mechanics, Bernhardt Trout",
+      "url": "https://ocw.mit.edu/courses/10-40-chemical-engineering-thermodynamics-fall-2003/fdd38846e422a48a9b872a045e9f65f7_lecture21notes.pdf",
+      "checked_on": "2026-11-08",
+      "note": "Use current BIPM constants with the distribution relation, not historical rounded constants in lecture."
+    },
+    "mole": {
+      "title": "OpenStax Chemistry2e: Formula Mass and Mole Concept",
+      "url": "https://openstax.org/books/chemistry-2e/pages/3-1-formula-mass-and-the-mole-concept",
+      "checked_on": "2026-11-08"
+    },
+    "gas": {
+      "title": "OpenStax Chemistry2e: Ideal Gas Law",
+      "url": "https://openstax.org/books/chemistry-2e/pages/9-2-relating-pressure-volume-amount-and-temperature-the-ideal-gas-law",
+      "checked_on": "2026-11-08"
+    },
+    "molarity": {
+      "title": "OpenStax Chemistry2e: Molarity",
+      "url": "https://openstax.org/books/chemistry-2e/pages/3-3-molarity",
+      "checked_on": "2026-11-08"
+    },
+    "ph": {
+      "title": "OpenStax Chemistry2e: pH and pOH",
+      "url": "https://openstax.org/books/chemistry-2e/pages/14-2-ph-and-poh",
+      "checked_on": "2026-11-08"
+    },
+    "arrhenius": {
+      "title": "OpenStax Chemistry2e: Collision Theory",
+      "url": "https://openstax.org/books/chemistry-2e/pages/12-5-collision-theory",
+      "checked_on": "2026-11-08"
+    },
+    "beer": {
+      "title": "University of Delhi Chemistry: UV-Visible Spectrophotometry",
+      "url": "https://chemistry.du.ac.in/wp-content/uploads/2023/01/UV-Visible-Spectrophotometry.pdf",
+      "checked_on": "2026-11-08",
+      "note": "Primary Delhi teaching PDF read. IUPAC entry returned403 and is not claimed read."
+    },
+    "stoichiometry": {
+      "title": "OpenStax Chemistry2e: Reaction Stoichiometry",
+      "url": "https://openstax.org/books/chemistry-2e/pages/4-3-reaction-stoichiometry",
+      "checked_on": "2026-11-08"
+    },
+    "yield": {
+      "title": "OpenStax Chemistry2e: Reaction Yields",
+      "url": "https://openstax.org/books/chemistry-2e/pages/4-4-reaction-yields",
+      "checked_on": "2026-11-08"
+    }
+  },
+  "cases": [
+    {
+      "id": "k3-count-five",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "1+1+1+1+1",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Five units total5.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-cross-ten",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "8+5",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 13,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "8+2+3=10+3.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-subtract",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "17-9",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 8,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "17-7-2=8.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-zero",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "14-14",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Equal quantities subtract to zero.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-multiply",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "6*7",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 42,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Six groups of seven total42.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-share-equally",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "24/6",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 4,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Six groups of four reconstruct24.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-place-value",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "100-37",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 63,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "63+37 reconstructs100.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-three-addends",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "12+8+9",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 29,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "12+8=20; then add9.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-division-one",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "9/1",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "One group contains the full quantity.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "k3-parentheses",
+      "level": 0,
+      "stage": "k3",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "2*(3+4)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 14,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Seven inside parentheses, then double.",
+      "source_ids": [
+        "prealgebra",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-fraction-add",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "3/4+1/8",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.875,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "6/8+1/8=7/8.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-fraction-subtract",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "3/4-1/8",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.625,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "6/8-1/8=5/8.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-fraction-product",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "(2/3)*(9/10)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.6,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "18/30 reduces to3/5.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-fraction-division",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "(3/5)/(9/10)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.6666666666666666,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "3/5 multiplied by10/9 reduces to2/3.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-percent",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "200*15%",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 30,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "15/100 of200 equals30.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-percent-postfix",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "50%",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Postfix percent divides by100.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-negative-add",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "-12+7",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": -5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Seven steps toward zero from-12 gives-5.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-negative-product",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "(-6)*(-4)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 24,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Product of two negatives is positive.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-square-negative",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "(-3)^2",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Parenthesized base-3 is squared.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-unary-precedence",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "-3^2",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": -9,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Exponentiation precedes the leading minus.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-right-power",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "2^3^2",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 512,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Right-associative convention:2^(3^2).",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-decimal",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "0.1+0.2",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.3,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Exact decimal addition; binary rounding allowed by tolerance.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-square-root",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "sqrt(144)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 12,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "12 squared is144.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-cube-root",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "cbrt(-125)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": -5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "(-5)^3=-125.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-implicit-product",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "2(3+4)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 14,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Juxtaposition denotes multiplication.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "middle-last-answer",
+      "level": 1,
+      "stage": "middle",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "ans/4",
+      "degrees": true,
+      "steps": [
+        "12+8",
+        "ans/4"
+      ],
+      "expected": {
+        "type": "real",
+        "value": 5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Previous result20 divided by4 is5.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-sin-degrees",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "sin(30)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Special triangle ratio is1/2.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-cos-degrees",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "cos(60)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Special triangle ratio is1/2.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-tan-degrees",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "tan(45)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 1,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Equal opposite and adjacent sides.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-sin-radians",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "sin(pi/2)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 1,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Top unit-circle point has ordinate1.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-cos-radians",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "cos(pi)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": -1,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Left unit-circle point has abscissa-1.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-inverse-degrees",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "asin(0.5)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 30,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Principal inverse sine in degrees.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-inverse-radians",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "acos(0.5)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 1.0471975511965976,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Principal inverse cosine ispi/3radians.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-degree-conversion",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "deg(pi)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 180,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Pi radians equals180degrees.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-radian-conversion",
+      "level": 2,
+      "stage": "high",
+      "subject": "trigonometry",
+      "kind": "calculator",
+      "input": "rad(180)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 3.141592653589793,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "180degrees equals pi radians.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-scientific-notation",
+      "level": 2,
+      "stage": "high",
+      "subject": "arithmetic",
+      "kind": "calculator",
+      "input": "1.25e-3*4",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.005,
+        "abs_tolerance": 1e-16,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Decimal exponent arithmetic.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-tiny-result",
+      "level": 2,
+      "stage": "high",
+      "subject": "scientific-notation",
+      "kind": "calculator",
+      "input": "1e-12*1e-12",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 1e-24,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Exponents add to-24; a nonzero value must stay nonzero.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-quadratic-substitution",
+      "level": 2,
+      "stage": "high",
+      "subject": "algebra",
+      "kind": "calculator",
+      "input": "((-3)^2-5*(-3)+6)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 30,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Substitute-3 into x^2-5x+6:9+15+6=30.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-stored-variable",
+      "level": 2,
+      "stage": "high",
+      "subject": "algebra",
+      "kind": "calculator",
+      "input": "A^2+2*A+1",
+      "degrees": true,
+      "steps": [
+        "5->A",
+        "A^2+2*A+1"
+      ],
+      "expected": {
+        "type": "real",
+        "value": 36,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Store A=5, then evaluate(5+1)^2.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-combinations",
+      "level": 2,
+      "stage": "high",
+      "subject": "combinatorics",
+      "kind": "calculator",
+      "input": "ncr(8,3)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 56,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "8*7*6/(3*2*1)=56.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-sample-variance",
+      "level": 2,
+      "stage": "high",
+      "subject": "statistics",
+      "kind": "calculator",
+      "input": "variance(2,4,6)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 4,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Mean4; squared deviations sum8; divide by n-1=2.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "high-population-variance",
+      "level": 2,
+      "stage": "high",
+      "subject": "statistics",
+      "kind": "calculator",
+      "input": "variancep(2,4,6)",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 2.6666666666666665,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Squared deviations sum8; divide by population size3.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-polynomial-derivative",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "diff(3*x^4-2*x^2+7,2)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 88,
+        "abs_tolerance": 2e-05,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Derivative12x^3-4x at2 gives96-8=88.",
+      "source_ids": [
+        "derivatives"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-log-derivative",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "diff(ln(x),2)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 2e-07,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Derivative1/x at2 is1/2.",
+      "source_ids": [
+        "derivatives"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-polynomial-integral",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "integral(x^2,0,3)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "abs_tolerance": 2e-07,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Antiderivative x^3/3 gives9.",
+      "source_ids": [
+        "integration"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-odd-integral",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "integral(x^3,-2,2)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 0,
+        "abs_tolerance": 2e-09,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Odd-function signed areas cancel.",
+      "source_ids": [
+        "integration"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-sine-integral",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "integral(sin(x),0,pi)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 2,
+        "abs_tolerance": 2e-07,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Antiderivative-cos(x) changes from-1to1.",
+      "source_ids": [
+        "integration",
+        "unit-circle"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-reversed-integral",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "integral(x^2,3,0)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": -9,
+        "abs_tolerance": 2e-07,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Reversed limits change the sign.",
+      "source_ids": [
+        "integration"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-square-root-equation",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "root(x^2-2,1)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 1.4142135623730951,
+        "abs_tolerance": 2e-08,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Positive zero is sqrt2.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "college-trig-fixed-point",
+      "level": 3,
+      "stage": "college",
+      "subject": "calculus",
+      "kind": "calculator",
+      "input": "root(cos(x)-x,1)",
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 0.7390851332151607,
+        "abs_tolerance": 2e-08,
+        "rel_tolerance": 2e-09
+      },
+      "reasoning": "Independent80-step bisection of cos(x)-x on[0,1].",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graduate-complex-square",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "input": "(1+i)^2",
+      "degrees": false,
+      "complex_mode": true,
+      "expected": {
+        "type": "complex",
+        "re": 0,
+        "im": 2,
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10
+      },
+      "reasoning": "1+2i+i^2=2i.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Complex mode; principal branches; radians."
+      ]
+    },
+    {
+      "id": "graduate-complex-reciprocal",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "input": "1/(1+i)",
+      "degrees": false,
+      "complex_mode": true,
+      "expected": {
+        "type": "complex",
+        "re": 0.5,
+        "im": -0.5,
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10
+      },
+      "reasoning": "Multiply by conjugate: (1-i)/2.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Complex mode; principal branches; radians."
+      ]
+    },
+    {
+      "id": "graduate-principal-log",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "input": "ln(-1)",
+      "degrees": false,
+      "complex_mode": true,
+      "expected": {
+        "type": "complex",
+        "re": 0,
+        "im": 3.141592653589793,
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10
+      },
+      "reasoning": "Principal argument pi; logarithm of magnitude1 is0.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Complex mode; principal branches; radians."
+      ]
+    },
+    {
+      "id": "graduate-euler-identity",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "input": "exp(i*pi)+1",
+      "degrees": false,
+      "complex_mode": true,
+      "expected": {
+        "type": "complex",
+        "re": 0,
+        "im": 0,
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10
+      },
+      "reasoning": "Euler identity; floating residual may round near zero.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Complex mode; principal branches; radians."
+      ]
+    },
+    {
+      "id": "graduate-complex-magnitude",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "input": "abs(3+4*i)",
+      "degrees": false,
+      "complex_mode": true,
+      "expected": {
+        "type": "complex",
+        "re": 5,
+        "im": 0,
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10
+      },
+      "reasoning": "Magnitude sqrt(9+16)=5.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Complex mode; principal branches; radians."
+      ]
+    },
+    {
+      "id": "graduate-conjugate-product",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "complex-analysis",
+      "kind": "calculator",
+      "input": "(3+4*i)*(3-4*i)",
+      "degrees": false,
+      "complex_mode": true,
+      "expected": {
+        "type": "complex",
+        "re": 25,
+        "im": 0,
+        "abs_tolerance": 2e-10,
+        "rel_tolerance": 2e-10
+      },
+      "reasoning": "Conjugate product9+16=25.",
+      "source_ids": [
+        "complex-principal",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Complex mode; principal branches; radians."
+      ]
+    },
+    {
+      "id": "error-divide-zero",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "1/0",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "No finite division by zero.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-real-square-root",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "sqrt(-1)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "No real square root; keep real mode.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-real-log-zero",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "ln(0)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Real logarithm requires positive input.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-tangent-pole",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "tan(90)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Cosine90degrees is zero.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-factorial-negative",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "(-1)!",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Integer factorial requires nonnegative input.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-function-arity",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "sin(1,2)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "arity"
+      },
+      "reasoning": "Sine takes one argument.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-function-unknown",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "unknown(2)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "syntax"
+      },
+      "reasoning": "Unknown functions must be rejected.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-exponential-overflow",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "exp(1000)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "nonfinite"
+      },
+      "reasoning": "Result is outside finite f64 range.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-root-no-real-zero",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "root(x^2+1,0)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "x^2+1 stays positive for real x.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-root-asymptote",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "root(1/x,1)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "1/x has no finite zero.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-derivative-corner",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "diff(abs(x),0)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Left derivative-1 and right derivative1 disagree.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "error-integral-pole",
+      "level": 3,
+      "stage": "college",
+      "subject": "error-handling",
+      "kind": "calculator",
+      "input": "integral(1/x,-1,1)",
+      "degrees": true,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Ordinary improper integral diverges; principal value is separate.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-quadratic-root",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "x^2-4",
+      "x": 2,
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 0,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "2^2-4=0.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-quadratic-negative-x",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "x^2-4",
+      "x": -3,
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "(-3)^2-4=5.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-linear",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "2*x+3",
+      "x": 4,
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 11,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "2*4+3=11.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-sine-degrees",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "sin(x)",
+      "x": 30,
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Sine30degrees is1/2.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-sine-radians",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "sin(x)",
+      "x": 1.5707963267948966,
+      "degrees": false,
+      "expected": {
+        "type": "real",
+        "value": 1,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Sinepi/2radians is1.",
+      "source_ids": [
+        "unit-circle",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-error-pole",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "1/x",
+      "x": 0,
+      "degrees": false,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "No ordinate at x=0.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graph-error-square-root",
+      "level": 2,
+      "stage": "high",
+      "subject": "graphing",
+      "kind": "graph",
+      "input": "sqrt(x)",
+      "x": -1,
+      "degrees": false,
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Real domain excludes x=-1.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-product",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "matrix_b": [
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "operation": "A × B",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Row-column dot products;1*5+2*7=19.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-addition",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "matrix_b": [
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "operation": "A + B",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            6,
+            8
+          ],
+          [
+            10,
+            12
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Corresponding entries are added.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-rectangular-transpose",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Transpose A",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Row and column indices swap.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-determinant-three",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          6,
+          1,
+          1
+        ],
+        [
+          4,
+          -2,
+          5
+        ],
+        [
+          2,
+          8,
+          7
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Determinant A",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            -306
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Cofactor expansion:6*(-54)-18+36=-306.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-inverse-two",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          4,
+          7
+        ],
+        [
+          2,
+          6
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Inverse A",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            0.6,
+            -0.7
+          ],
+          [
+            -0.2,
+            0.4
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Determinant10; divide adjugate by10.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-inverse-three",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          5,
+          6,
+          0
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Inverse A",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            -24,
+            18,
+            5
+          ],
+          [
+            20,
+            -15,
+            -4
+          ],
+          [
+            -5,
+            4,
+            1
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Determinant1; integer adjugate times A gives identity.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-linear-system",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          0.6,
+          -0.7
+        ],
+        [
+          -0.2,
+          0.4
+        ]
+      ],
+      "matrix_b": [
+        [
+          1
+        ],
+        [
+          0
+        ]
+      ],
+      "operation": "A × B",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            0.6
+          ],
+          [
+            -0.2
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Known inverse solves4x+7y=1,2x+6y=0.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "graduate-hamiltonian-eigenpair",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "matrix_b": [
+        [
+          1
+        ],
+        [
+          1
+        ]
+      ],
+      "operation": "A × B",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            3
+          ],
+          [
+            3
+          ]
+        ],
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "Two-state symmetric Hamiltonian maps(1,1) to3*(1,1).",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-small-determinant",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1e-15,
+          0
+        ],
+        [
+          0,
+          1e-15
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Determinant A",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            1e-30
+          ]
+        ],
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Diagonal determinant1e-15*1e-15=1e-30; small scale is not singular.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-small-inverse",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1e-15,
+          0
+        ],
+        [
+          0,
+          1e-15
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Inverse A",
+      "expected": {
+        "type": "matrix",
+        "value": [
+          [
+            1000000000000000.0,
+            0
+          ],
+          [
+            0,
+            1000000000000000.0
+          ]
+        ],
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Invert nonzero diagonal entries independently.",
+      "source_ids": [
+        "matrix-inverse",
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-error-singular",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Inverse A",
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Second row is twice first, determinant zero.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-error-nonsquare",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ]
+      ],
+      "matrix_b": [
+        [
+          0
+        ]
+      ],
+      "operation": "Determinant A",
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Determinant requires square shape.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-error-product-dimension",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "matrix_b": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "operation": "A × B",
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Inner dimensions3 and2 disagree.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "matrix-error-add-dimension",
+      "level": 3,
+      "stage": "college",
+      "subject": "linear-algebra",
+      "kind": "matrix",
+      "matrix_a": [
+        [
+          1,
+          2
+        ]
+      ],
+      "matrix_b": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "operation": "A + B",
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Addition requires equal shapes.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-force",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "newton-force",
+      "inputs": [
+        "2.5",
+        "3.2"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 8,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "F=ma=2.5*3.2=8N.",
+      "source_ids": [
+        "newton"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-kinetic-energy",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "kinetic-energy",
+      "inputs": [
+        "2",
+        "3"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 9,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "K=mv^2/2=2*9/2=9J.",
+      "source_ids": [
+        "kinetic-energy"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-momentum",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "momentum",
+      "inputs": [
+        "2",
+        "3"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 6,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "p=mv=6kg m/s.",
+      "source_ids": [
+        "momentum"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-work-angle",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "work",
+      "inputs": [
+        "10",
+        "5",
+        "60"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 25,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "W=Fd*cos(theta)=50*(1/2)=25J.",
+      "source_ids": [
+        "work",
+        "unit-circle"
+      ],
+      "assumptions": [
+        "Constant force; tool angle is degrees."
+      ]
+    },
+    {
+      "id": "physics-average-power",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "power",
+      "inputs": [
+        "120",
+        "3"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 40,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "120J/3s=40W.",
+      "source_ids": [
+        "power"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-gravitation",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "gravitation",
+      "inputs": [
+        "5",
+        "10",
+        "2"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 8.342875e-10,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "G*m1*m2/r^2=8.342875e-10N.",
+      "source_ids": [
+        "nist-gravitation"
+      ],
+      "assumptions": [
+        "Point masses or external spherical symmetry; fixed nominal G, not an uncertainty claim."
+      ]
+    },
+    {
+      "id": "physics-wave-speed",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "wave-speed",
+      "inputs": [
+        "440",
+        "0.75"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 330,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Frequency*wavelength=440*0.75=330m/s.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "Frequency and wavelength of the same propagating wave."
+      ]
+    },
+    {
+      "id": "physics-ohm-current",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "ohms-law",
+      "inputs": [
+        "12",
+        "4"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 3,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "I=V/R=12/4=3A.",
+      "source_ids": [
+        "ohm"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-electric-power",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "electric-power",
+      "inputs": [
+        "12",
+        "2"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 24,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "P=VI=24W.",
+      "source_ids": [
+        "ohm",
+        "original-arithmetic"
+      ],
+      "assumptions": [
+        "DC voltage/current."
+      ]
+    },
+    {
+      "id": "physics-capacitor-energy",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "capacitor-energy",
+      "inputs": [
+        "0.002",
+        "10"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 0.1,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "U=C*V^2/2=0.1J.",
+      "source_ids": [
+        "capacitor"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-rc-discharge",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "rc-decay",
+      "inputs": [
+        "10",
+        "1000",
+        "0.001",
+        "1"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 3.6787944117144233,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "RC=1s; V=10*exp(-t/RC)=10/e.",
+      "source_ids": [
+        "rc"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-rlc-impedance",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "series-rlc",
+      "inputs": [
+        "3",
+        "0.01",
+        "0.001",
+        "50",
+        "10"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 3.0002871138147986,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Z=sqrt(R^2+(2*pi*f*L-1/(2*pi*f*C))^2).",
+      "source_ids": [
+        "rlc"
+      ],
+      "assumptions": [
+        "Ideal components; sinusoidal steady state; input voltage RMS; compare impedance in ohms."
+      ]
+    },
+    {
+      "id": "physics-ideal-gas-pressure",
+      "level": 3,
+      "stage": "college",
+      "subject": "thermodynamics",
+      "kind": "science",
+      "tool_id": "ideal-gas",
+      "inputs": [
+        "1",
+        "300",
+        "0.024"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 103930.7827269155,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "P=nRT/V; R=N_A*k_B, output pascals.",
+      "source_ids": [
+        "gas",
+        "bipm-si"
+      ],
+      "assumptions": [
+        "Ideal gas; kelvin and cubic metres."
+      ]
+    },
+    {
+      "id": "physics-heat",
+      "level": 3,
+      "stage": "college",
+      "subject": "thermodynamics",
+      "kind": "science",
+      "tool_id": "heat",
+      "inputs": [
+        "0.5",
+        "4184",
+        "10"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 20920,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Q=m*c*deltaT=0.5*4184*10=20920J.",
+      "source_ids": [
+        "heat"
+      ],
+      "assumptions": [
+        "Constant specified specific heat; no phase change or heat loss."
+      ]
+    },
+    {
+      "id": "physics-photon-energy",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "quantum-physics",
+      "kind": "science",
+      "tool_id": "photon-energy",
+      "inputs": [
+        "5e-7"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 3.972891714297857e-19,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "E=h*c/lambda;500nm expressed in metres.",
+      "source_ids": [
+        "photon",
+        "bipm-si"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "physics-debroglie",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "quantum-physics",
+      "kind": "science",
+      "tool_id": "de-broglie",
+      "inputs": [
+        "1e-27",
+        "1000"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 6.62607015e-10,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "lambda=h/(m*v)=6.62607015e-10m.",
+      "source_ids": [
+        "debroglie",
+        "bipm-si"
+      ],
+      "assumptions": [
+        "Nonrelativistic momentum; v much smaller than c."
+      ]
+    },
+    {
+      "id": "physics-relativistic-total-energy",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "relativistic-energy",
+      "inputs": [
+        "1",
+        "179875474.8"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 1.123443973421022e+17,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "v=0.6c gives gamma1.25; total energy gamma*m*c^2.",
+      "source_ids": [
+        "relativity",
+        "bipm-si"
+      ],
+      "assumptions": [
+        "Rest mass1kg; index0 includes rest energy."
+      ]
+    },
+    {
+      "id": "physics-radioactive-half-lives",
+      "level": 3,
+      "stage": "college",
+      "subject": "physics",
+      "kind": "science",
+      "tool_id": "radioactive-decay",
+      "inputs": [
+        "800",
+        "30",
+        "10"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 100,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Three half-lives give800/2^3=100.",
+      "source_ids": [
+        "decay"
+      ],
+      "assumptions": [
+        "Time units agree; mean remaining amount, not a particular random sample."
+      ]
+    },
+    {
+      "id": "physics-boltzmann-equal-degeneracy",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "statistical-physics",
+      "kind": "science",
+      "tool_id": "boltzmann-ratio",
+      "inputs": [
+        "4.14194700E-21",
+        "300"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 0.36787944117144233,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "deltaE=k_B*T gives exp(-1).",
+      "source_ids": [
+        "boltzmann",
+        "bipm-si"
+      ],
+      "assumptions": [
+        "Thermal equilibrium; equal degeneracy; per-particle energy."
+      ]
+    },
+    {
+      "id": "chem-half-mole-particles",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "moles-particles",
+      "inputs": [
+        "0.5"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 3.01107038e+23,
+        "abs_tolerance": 0,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "N=n*N_A=3.01107038e23.",
+      "source_ids": [
+        "mole",
+        "bipm-si"
+      ],
+      "assumptions": [
+        "Entity type must be specified in the problem."
+      ]
+    },
+    {
+      "id": "chem-particles-to-moles",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "particles-moles",
+      "inputs": [
+        "3.01107038e23"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "n=N/N_A=0.5mol.",
+      "source_ids": [
+        "mole",
+        "bipm-si"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-avogadro-volume",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "avogadro-volume",
+      "inputs": [
+        "10",
+        "0.5",
+        "2"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 40,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "V2=V1*n2/n1=40L.",
+      "source_ids": [
+        "gas"
+      ],
+      "assumptions": [
+        "Ideal gas; unchanged T and P."
+      ]
+    },
+    {
+      "id": "chem-water-molar-mass",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "molar-mass",
+      "inputs": [
+        "H2O"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 18.015,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "2*1.008+15.999=18.015g/mol.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ],
+      "assumptions": [
+        "Conventional rounded masses; no specific isotope."
+      ]
+    },
+    {
+      "id": "chem-parenthesized-molar-mass",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "molar-mass",
+      "inputs": [
+        "Ca(OH)2"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 74.092,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "40.078+2*(15.999+1.008)=74.092g/mol.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-mass-to-moles",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "mass-moles",
+      "inputs": [
+        "36.03",
+        "H2O"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 2,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "36.03/18.015=2mol.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-moles-to-mass",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "moles-mass",
+      "inputs": [
+        "2",
+        "H2O"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 36.03,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "2*18.015=36.03g.",
+      "source_ids": [
+        "mole",
+        "ciaaw-2024"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-molarity",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "molarity",
+      "inputs": [
+        "0.25",
+        "0.5"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 0.5,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "0.25mol/0.5L=0.5mol/L.",
+      "source_ids": [
+        "molarity"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-dilution",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "dilution",
+      "inputs": [
+        "2",
+        "0.1",
+        "0.5"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 0.4,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Conserved solute: C2=C1*V1/V2.",
+      "source_ids": [
+        "molarity"
+      ],
+      "assumptions": [
+        "Final solution volume0.5L; no solute loss."
+      ]
+    },
+    {
+      "id": "chem-ph-acid",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "ph",
+      "inputs": [
+        "0.001"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 3,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "pH=-log10(10^-3)=3.",
+      "source_ids": [
+        "ph"
+      ],
+      "assumptions": [
+        "Actual equilibrium hydronium input; ideal activities."
+      ]
+    },
+    {
+      "id": "chem-ph-neutral",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "ph",
+      "inputs": [
+        "1e-7"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 7,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "pH=-log10(10^-7)=7.",
+      "source_ids": [
+        "ph"
+      ],
+      "assumptions": [
+        "Equilibrium hydronium, not analytical acid concentration."
+      ]
+    },
+    {
+      "id": "chem-neutralization-equivalence",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "strong-acid-base",
+      "inputs": [
+        ".1",
+        ".05",
+        ".1",
+        ".05"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 7,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Equal amounts cancel; water gives H+=sqrt(Kw)=1e-7.",
+      "source_ids": [
+        "ph",
+        "stoichiometry"
+      ],
+      "assumptions": [
+        "Strong monoprotic acid/base; additive volumes;25degrees C; Kw=1e-14; ideal activities."
+      ]
+    },
+    {
+      "id": "chem-neutralization-acid-excess",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "strong-acid-base",
+      "inputs": [
+        ".1",
+        ".1",
+        ".1",
+        ".05"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 1.4771212547157537,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Excess0.005mol/0.15L=1/30M; positive root H^2-cH-Kw=0.",
+      "source_ids": [
+        "ph",
+        "stoichiometry"
+      ],
+      "assumptions": [
+        "Strong monoprotic acid/base; additive volumes;25degrees C; Kw=1e-14; ideal activities."
+      ]
+    },
+    {
+      "id": "chem-neutralization-base-excess",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "strong-acid-base",
+      "inputs": [
+        ".1",
+        ".05",
+        ".1",
+        ".1"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 12.522878745284245,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Same hydroxide excess; pH=14-pOH.",
+      "source_ids": [
+        "ph",
+        "stoichiometry"
+      ],
+      "assumptions": [
+        "Strong monoprotic acid/base; additive volumes;25degrees C; Kw=1e-14; ideal activities."
+      ]
+    },
+    {
+      "id": "chem-arrhenius-rate-ratio",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "arrhenius-ratio",
+      "inputs": [
+        "50000",
+        "300",
+        "330"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 6.186122084855493,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "k2/k1=exp((Ea/R)*(1/T1-1/T2)).",
+      "source_ids": [
+        "arrhenius",
+        "bipm-si"
+      ],
+      "assumptions": [
+        "Fixed pre-exponential factor and activation energy."
+      ]
+    },
+    {
+      "id": "chem-beer-lambert",
+      "level": 3,
+      "stage": "graduate_representative",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "beer-lambert",
+      "inputs": [
+        "100",
+        ".002",
+        "1"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 0.2,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "A=epsilon*c*l=0.2.",
+      "source_ids": [
+        "beer"
+      ],
+      "assumptions": [
+        "Dilute homogeneous solution; monochromatic light; epsilon L/(mol cm), length cm."
+      ]
+    },
+    {
+      "id": "chem-percent-yield",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "science",
+      "tool_id": "percent-yield",
+      "inputs": [
+        "8",
+        "10"
+      ],
+      "quantity_index": 0,
+      "expected": {
+        "type": "real",
+        "value": 80,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 2e-12
+      },
+      "reasoning": "Actual/theoretical*100=80%.",
+      "source_ids": [
+        "yield"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-stoichiometry-water",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "calculator",
+      "input": "(4/2)*2*18.015",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 72.06,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "2H2+O2->2H2O:4mol H2 with excess O2 gives4mol water,72.060g.",
+      "source_ids": [
+        "stoichiometry",
+        "mole",
+        "ciaaw-2024"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "chem-limiting-reagent",
+      "level": 3,
+      "stage": "college",
+      "subject": "chemistry",
+      "kind": "calculator",
+      "input": "min(3/2,1)*2",
+      "degrees": true,
+      "expected": {
+        "type": "real",
+        "value": 2,
+        "abs_tolerance": 1e-12,
+        "rel_tolerance": 1e-12
+      },
+      "reasoning": "2H2+O2->2H2O:3mol H2 and1mol O2 give extent min(3/2,1)=1, water2mol.",
+      "source_ids": [
+        "yield",
+        "stoichiometry"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-gas-zero-volume",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "ideal-gas",
+      "inputs": [
+        "1",
+        "300",
+        "0"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Gas volume must be positive.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-ph-zero",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "ph",
+      "inputs": [
+        "0"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Logarithm of zero is undefined.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-photon-zero-wavelength",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "photon-energy",
+      "inputs": [
+        "0"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Wavelength must be positive.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-decay-zero-half-life",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "radioactive-decay",
+      "inputs": [
+        "800",
+        "30",
+        "0"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Half-life must be positive.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-relativity-light-speed",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "relativistic-energy",
+      "inputs": [
+        "1",
+        "299792458"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Massive particle has no finite gamma at v=c.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-negative-molarity-volume",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "molarity",
+      "inputs": [
+        "1",
+        "-2"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Volume cannot be negative.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-malformed-number",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "newton-force",
+      "inputs": [
+        "not-a-number",
+        "2"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "syntax"
+      },
+      "reasoning": "Malformed numeric input must not acquire a fabricated value.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-unknown-element",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "molar-mass",
+      "inputs": [
+        "Xx2"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Unsupported element has no atomic mass.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-unbalanced-formula",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "molar-mass",
+      "inputs": [
+        "Ca(OH2"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "syntax"
+      },
+      "reasoning": "Unmatched chemical parentheses must be rejected.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-rlc-zero-capacitance",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "series-rlc",
+      "inputs": [
+        "3",
+        ".01",
+        "0",
+        "50",
+        "10"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Reactance formula requires positive capacitance.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "science-error-dilution-zero-final-volume",
+      "level": 3,
+      "stage": "college",
+      "subject": "science-error-handling",
+      "kind": "science",
+      "tool_id": "dilution",
+      "inputs": [
+        "1",
+        ".1",
+        "0"
+      ],
+      "expected": {
+        "type": "error",
+        "code_class": "domain"
+      },
+      "reasoning": "Final volume must be positive.",
+      "source_ids": [
+        "original-arithmetic"
+      ],
+      "assumptions": []
+    }
+  ]
+}

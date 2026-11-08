@@ -523,6 +523,16 @@ impl EqualApp {
                         ctx.data_mut(|data| data.insert_temp(egui::Id::new("glossary-all-topics"), all_topics));
                     }
                 });
+                if let Some(notice) = ctx.data(|data| data.get_temp::<String>(egui::Id::new("glossary-copy-status"))) {
+                    let response = ui.label(&notice);
+                    ctx.accesskit_node_builder(response.id, |node| {
+                        node.set_role(egui::accesskit::Role::Status);
+                        node.set_label(notice.as_str());
+                        node.clear_value();
+                        node.set_live(egui::accesskit::Live::Polite);
+                        node.set_live_atomic();
+                    });
+                }
                 if self.settings.access.show_help_text {
                     ui.label(crate::appearance::paragraph(ctx, "With no search, entries follow your learning level. Searching includes every topic. Definitions are stored in the app and work offline."));
                 }
@@ -539,10 +549,12 @@ impl EqualApp {
                     ui.horizontal_wrapped(|ui| {
                         ui.push_id(entry.term, |ui| {
                             let definition = format!("{}. {} Example: {}", entry.term, entry.meaning, entry.example);
-                            if ui.button("Read definition").on_hover_text(format!("Read {}", entry.term)).clicked() { self.speak(&definition); }
-                            if ui.button("Copy definition").on_hover_text(format!("Copy {}", entry.term)).clicked() {
+                            if ui.add(egui::Button::new(format!("Read {}", entry.term)).wrap()).clicked() { self.speak(&definition); }
+                            if ui.add(egui::Button::new(format!("Copy {}", entry.term)).wrap()).clicked() {
                                 ui.ctx().copy_text(definition);
                                 self.message = format!("{} definition copied.", entry.term);
+                                if self.settings.access.captions { self.a11y.latest_announcement = self.message.clone(); }
+                                ctx.data_mut(|data| data.insert_temp(egui::Id::new("glossary-copy-status"), self.message.clone()));
                             }
                         });
                     });

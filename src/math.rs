@@ -14,6 +14,14 @@ const MAX_NORMALIZED_CHARS: usize = 8192;
 const MAX_GROUPS: usize = 48;
 const MAX_PARSE_DEPTH: usize = 128;
 
+// Exact SI definitions represented as f64, in the SI units stated by NIST:
+// https://www.nist.gov/pml/special-publication-330/sp-330-section-2
+pub(crate) const AVOGADRO: f64 = 6.022_140_76e23; // mol^-1
+pub(crate) const PLANCK: f64 = 6.626_070_15e-34; // J s
+pub(crate) const BOLTZMANN: f64 = 1.380_649e-23; // J/K
+pub(crate) const LIGHTSPEED: f64 = 299_792_458.0; // m/s
+pub(crate) const GAS_CONSTANT: f64 = 8.314_462_618_153_24; // J/(mol K), N_A * k
+
 /// Converts supported decimal digit scripts and mathematical punctuation without
 /// changing argument separators into guessed thousands separators.
 pub(crate) fn normalize_input(text: &str, decimal_comma: bool) -> Result<String, String> {
@@ -228,13 +236,18 @@ impl Parser {
                     self.pos += 1;
                 }
             }
-            Expr::Number(
-                self.chars[start..self.pos]
-                    .iter()
-                    .collect::<String>()
-                    .parse()
-                    .map_err(|_| "Check the decimal number")?,
-            )
+            let literal: String = self.chars[start..self.pos].iter().collect();
+            let value: f64 = literal.parse().map_err(|_| "Check the decimal number")?;
+            if value == 0.0
+                && literal.split(['e', 'E']).next().is_some_and(|mantissa| {
+                    mantissa.chars().any(|digit| ('1'..='9').contains(&digit))
+                })
+            {
+                return Err(
+                    "This nonzero number is smaller than the representable numeric range.".into(),
+                );
+            }
+            Expr::Number(value)
         } else if c.is_ascii_alphabetic() {
             let start = self.pos;
             while self
@@ -251,6 +264,11 @@ impl Parser {
             match name.as_str() {
                 "pi" => Expr::Number(PI),
                 "e" => Expr::Number(E),
+                "avogadro" => Expr::Number(AVOGADRO),
+                "planck" => Expr::Number(PLANCK),
+                "boltzmann" => Expr::Number(BOLTZMANN),
+                "lightspeed" => Expr::Number(LIGHTSPEED),
+                "gasconstant" => Expr::Number(GAS_CONSTANT),
                 "x" => Expr::Var('x'),
                 "y" => Expr::Var('y'),
                 "ans" => Expr::Var('a'),
@@ -357,14 +375,30 @@ impl Expr {
                 match op {
                     '+' => a + b,
                     '-' => a - b,
-                    '*' => a * b,
+                    '*' => {
+                        let product = a * b;
+                        if product == 0.0 && a != 0.0 && b != 0.0 {
+                            return Err("This nonzero product is smaller than the representable numeric range.".into());
+                        }
+                        product
+                    }
                     '/' => {
                         if b == 0.0 {
                             return Err("Cannot divide by zero".into());
                         }
-                        a / b
+                        let quotient = a / b;
+                        if quotient == 0.0 && a != 0.0 {
+                            return Err("This nonzero quotient is smaller than the representable numeric range.".into());
+                        }
+                        quotient
                     }
-                    '^' => a.powf(b),
+                    '^' => {
+                        let power = a.powf(b);
+                        if power == 0.0 && a != 0.0 {
+                            return Err("This nonzero power is smaller than the representable numeric range.".into());
+                        }
+                        power
+                    }
                     _ => return Err("Unknown operator".into()),
                 }
             }
@@ -437,7 +471,13 @@ impl Expr {
                     "cbrt" => a.cbrt(),
                     "ln" => a.ln(),
                     "log" => a.log10(),
-                    "exp" => a.exp(),
+                    "exp" => {
+                        let exponential = a.exp();
+                        if exponential == 0.0 {
+                            return Err("This nonzero exponential is smaller than the representable numeric range.".into());
+                        }
+                        exponential
+                    }
                     "abs" => a.abs(),
                     "floor" => a.floor(),
                     "ceil" => a.ceil(),
@@ -534,6 +574,9 @@ impl Expr {
                                     let difference = value - mean;
                                     mean += difference / (index + 1) as f64;
                                     squared_differences += difference * (value - mean);
+                                    if !mean.is_finite() || !squared_differences.is_finite() {
+                                        return Err("Statistical accumulation exceeded the finite numeric range; rescale the data.".into());
+                                    }
                                 }
                                 if name == "mean" {
                                     mean
@@ -556,53 +599,9 @@ impl Expr {
                     "min" => a.min(arg(1)?),
                     "max" => a.max(arg(1)?),
                     "hypot" => a.hypot(arg(1)?),
-                    "diff" => {
-                        let at = arg(1)?;
-                        let h = 1e-5 * (1.0 + at.abs());
-                        (args[0].eval(at + h, y, ans, degrees)?
-                            - args[0].eval(at - h, y, ans, degrees)?)
-                            / (2.0 * h)
-                    }
-                    "integral" => {
-                        let lo = arg(1)?;
-                        let hi = arg(2)?;
-                        let h = (hi - lo) / 1000.0;
-                        let mut sum = 0.0;
-                        for i in 0..=1000 {
-                            let w = if i == 0 || i == 1000 {
-                                1.0
-                            } else if i % 2 == 0 {
-                                2.0
-                            } else {
-                                4.0
-                            };
-                            sum += w * args[0].eval(lo + i as f64 * h, y, ans, degrees)?;
-                        }
-                        sum * h / 3.0
-                    }
-                    "root" => {
-                        let mut at = arg(1)?;
-                        let mut converged = false;
-                        for _ in 0..100 {
-                            let f = args[0].eval(at, y, ans, degrees)?;
-                            if f.abs() < 1e-10 {
-                                converged = true;
-                                break;
-                            }
-                            let h = 1e-5 * (1.0 + at.abs());
-                            let d = (args[0].eval(at + h, y, ans, degrees)?
-                                - args[0].eval(at - h, y, ans, degrees)?)
-                                / (2.0 * h);
-                            if d.abs() < 1e-12 {
-                                break;
-                            }
-                            at -= f / d;
-                        }
-                        if !converged {
-                            return Err("No root found. Try another starting value".into());
-                        }
-                        at
-                    }
+                    "diff" => numerical_derivative(&args[0], arg(1)?, y, ans, degrees)?,
+                    "integral" => numerical_integral(&args[0], arg(1)?, arg(2)?, y, ans, degrees)?,
+                    "root" => numerical_root(&args[0], arg(1)?, y, ans, degrees)?,
                     _ => return Err(format!("Unknown function: {name}")),
                 }
             }
@@ -614,12 +613,258 @@ impl Expr {
         }
     }
 }
+fn numerical_derivative(
+    expression: &Expr,
+    at: f64,
+    y: f64,
+    ans: f64,
+    degrees: bool,
+) -> Result<f64, String> {
+    let undefined = "A finite two-sided derivative could not be established here; the expression may be undefined, discontinuous or too steep for numerical differentiation.";
+    let center = expression
+        .eval(at, y, ans, degrees)
+        .map_err(|_| undefined.to_string())?;
+    let mut h = f64::EPSILON.cbrt() * at.abs().max(1.0);
+    let mut previous = None;
+    let mut reference_slope: f64 = 0.0;
+    for _ in 0..48 {
+        let left_at = at - h;
+        let right_at = at + h;
+        if !left_at.is_finite() || !right_at.is_finite() || left_at == at || right_at == at {
+            break;
+        }
+        let left = expression
+            .eval(left_at, y, ans, degrees)
+            .map_err(|_| undefined.to_string())?;
+        let right = expression
+            .eval(right_at, y, ans, degrees)
+            .map_err(|_| undefined.to_string())?;
+        let left_slope = (center - left) / (at - left_at);
+        let right_slope = (right - center) / (right_at - at);
+        let slope = left_slope / 2.0 + right_slope / 2.0;
+        reference_slope = reference_slope.max(left_slope.abs()).max(right_slope.abs());
+        let tolerance = 1e-6 * reference_slope;
+        if slope.is_finite()
+            && (left_slope - right_slope).abs() <= tolerance
+            && previous.is_some_and(|old: f64| (old - slope).abs() <= tolerance)
+        {
+            return Ok(slope);
+        }
+        previous = Some(slope);
+        h /= 2.0;
+    }
+    Err(undefined.into())
+}
+
+fn numerical_root(
+    expression: &Expr,
+    mut at: f64,
+    y: f64,
+    ans: f64,
+    degrees: bool,
+) -> Result<f64, String> {
+    let no_root = "No finite root converged. Try another starting value; a small function value alone does not establish a root.";
+    let mut value = expression.eval(at, y, ans, degrees)?;
+    let initial_residual = value.abs();
+    for _ in 0..100 {
+        if value == 0.0 {
+            return Ok(at);
+        }
+        let derivative = numerical_derivative(expression, at, y, ans, degrees)?;
+        if derivative == 0.0 {
+            return Err(no_root.into());
+        }
+        let step = value / derivative;
+        if !step.is_finite() {
+            return Err(no_root.into());
+        }
+        if step.abs() <= 1e-10 * at.abs().max(1.0) && value.abs() <= 1e-10 * initial_residual {
+            return Ok(at);
+        }
+        let mut factor = 1.0;
+        let mut next = None;
+        for _ in 0..24 {
+            let candidate = at - factor * step;
+            if candidate.is_finite()
+                && candidate != at
+                && let Ok(candidate_value) = expression.eval(candidate, y, ans, degrees)
+                && candidate_value.abs() < value.abs()
+            {
+                next = Some((candidate, candidate_value));
+                break;
+            }
+            factor /= 2.0;
+        }
+        let Some((candidate, candidate_value)) = next else {
+            return Err(no_root.into());
+        };
+        at = candidate;
+        value = candidate_value;
+    }
+    Err(no_root.into())
+}
+
+struct Integrator<'a> {
+    expression: &'a Expr,
+    y: f64,
+    ans: f64,
+    degrees: bool,
+    evaluations: usize,
+}
+
+#[derive(Clone, Copy)]
+struct SimpsonPanel {
+    lo: f64,
+    hi: f64,
+    left: f64,
+    middle: f64,
+    right: f64,
+    estimate: f64,
+}
+
+impl Integrator<'_> {
+    fn sample(&mut self, at: f64) -> Result<f64, String> {
+        const EVALUATION_LIMIT: usize = 32_768;
+        if self.evaluations >= EVALUATION_LIMIT {
+            return Err("Numerical integration did not converge within its evaluation limit; singular or rapidly varying integrands are unsupported.".into());
+        }
+        self.evaluations += 1;
+        self.expression.eval(at, self.y, self.ans, self.degrees).map_err(|_| "Numerical integration requires finite values throughout the interval, including both endpoints. Improper integrals are unsupported.".into())
+    }
+    fn refine(&mut self, panel: SimpsonPanel, tolerance: f64, depth: usize) -> Result<f64, String> {
+        let middle_at = panel.lo / 2.0 + panel.hi / 2.0;
+        let left_at = panel.lo / 2.0 + middle_at / 2.0;
+        let right_at = middle_at / 2.0 + panel.hi / 2.0;
+        if left_at == panel.lo || right_at == panel.hi {
+            return Err("The integration interval is too small to resolve numerically.".into());
+        }
+        let left_middle = self.sample(left_at)?;
+        let right_middle = self.sample(right_at)?;
+        let left_estimate =
+            simpson_estimate(middle_at - panel.lo, panel.left, left_middle, panel.middle);
+        let right_estimate = simpson_estimate(
+            panel.hi - middle_at,
+            panel.middle,
+            right_middle,
+            panel.right,
+        );
+        let refined = left_estimate + right_estimate;
+        let difference = refined - panel.estimate;
+        // Independent Gauss-Legendre nodes prevent equal-spaced Simpson samples
+        // from mistaking an ordinary oscillating function for a constant.
+        let half_width = (panel.hi - panel.lo) / 2.0;
+        let gauss_offset = half_width * (3.0_f64 / 5.0).sqrt();
+        let gauss_left = self.sample(middle_at - gauss_offset)?;
+        let gauss_right = self.sample(middle_at + gauss_offset)?;
+        let gauss = (panel.hi - panel.lo)
+            * (gauss_left * (5.0 / 18.0) + panel.middle * (4.0 / 9.0) + gauss_right * (5.0 / 18.0));
+        let scale = [
+            panel.left,
+            panel.middle,
+            panel.right,
+            left_middle,
+            right_middle,
+            gauss_left,
+            gauss_right,
+        ]
+        .into_iter()
+        .map(f64::abs)
+        .fold(0.0, f64::max)
+            * (panel.hi - panel.lo).abs();
+        if !scale.is_finite()
+            || !refined.is_finite()
+            || !panel.estimate.is_finite()
+            || !gauss.is_finite()
+        {
+            return Err("Numerical integration exceeded the finite numeric range; rescale the integrand or interval.".into());
+        }
+        let roundoff = 64.0 * f64::EPSILON * scale;
+        let tolerance = if depth == 0 { 1e-10 * scale } else { tolerance };
+        let error = (difference.abs() / 15.0).max((gauss - refined).abs());
+        if error <= tolerance.max(roundoff) {
+            return Ok(refined + difference / 15.0);
+        }
+        if depth >= 60 {
+            return Err("Numerical integration did not converge; check for a discontinuity, singularity or rapidly varying integrand.".into());
+        }
+        let left = self.refine(
+            SimpsonPanel {
+                lo: panel.lo,
+                hi: middle_at,
+                left: panel.left,
+                middle: left_middle,
+                right: panel.middle,
+                estimate: left_estimate,
+            },
+            tolerance / 2.0,
+            depth + 1,
+        )?;
+        let right = self.refine(
+            SimpsonPanel {
+                lo: middle_at,
+                hi: panel.hi,
+                left: panel.middle,
+                middle: right_middle,
+                right: panel.right,
+                estimate: right_estimate,
+            },
+            tolerance / 2.0,
+            depth + 1,
+        )?;
+        Ok(left + right)
+    }
+}
+
+fn simpson_estimate(width: f64, left: f64, middle: f64, right: f64) -> f64 {
+    width * (left / 6.0 + middle * (2.0 / 3.0) + right / 6.0)
+}
+
+fn numerical_integral(
+    expression: &Expr,
+    lo: f64,
+    hi: f64,
+    y: f64,
+    ans: f64,
+    degrees: bool,
+) -> Result<f64, String> {
+    if !(hi - lo).is_finite() {
+        return Err("Use a finite, numerically resolvable integration interval.".into());
+    }
+    let mut integrator = Integrator {
+        expression,
+        y,
+        ans,
+        degrees,
+        evaluations: 0,
+    };
+    let left = integrator.sample(lo)?;
+    if lo == hi {
+        return Ok(0.0);
+    }
+    let middle = integrator.sample(lo / 2.0 + hi / 2.0)?;
+    let right = integrator.sample(hi)?;
+    integrator.refine(
+        SimpsonPanel {
+            lo,
+            hi,
+            left,
+            middle,
+            right,
+            estimate: simpson_estimate(hi - lo, left, middle, right),
+        },
+        0.0,
+        0,
+    )
+}
+
 pub fn calculate(s: &str, ans: f64, degrees: bool) -> Result<f64, String> {
     parse(s)?.eval(0.0, 0.0, ans, degrees)
 }
 pub fn format(v: f64, precision: usize) -> String {
+    // More decimal places cannot recover information beyond f64 precision.
+    let precision = precision.min(16);
     if v != 0.0 && (v.abs() >= 1e12 || v.abs() < 1e-8) {
-        return format!("{v:.precision$e}");
+        return scientific_format(v, precision);
     }
     let s = format!("{v:.precision$}");
     let s = if s.contains('.') {
@@ -627,10 +872,26 @@ pub fn format(v: f64, precision: usize) -> String {
     } else {
         &s
     };
-    if s.is_empty() || s == "-0" {
+    if v != 0.0 && (s == "0" || s == "-0") {
+        // Rounding a concentration or a small coefficient must not erase it.
+        scientific_format(v, precision)
+    } else if s.is_empty() || s == "-0" {
         "0".into()
     } else {
         s.into()
+    }
+}
+fn scientific_format(value: f64, precision: usize) -> String {
+    let scientific = format!("{value:.precision$e}");
+    if let Some((mantissa, exponent)) = scientific.split_once('e') {
+        let mantissa = if mantissa.contains('.') {
+            mantissa.trim_end_matches('0').trim_end_matches('.')
+        } else {
+            mantissa
+        };
+        format!("{mantissa}e{exponent}")
+    } else {
+        scientific
     }
 }
 pub type Matrix = Vec<Vec<f64>>;
@@ -665,8 +926,25 @@ pub fn matrix(s: &str) -> Result<Matrix, String> {
     Ok(m)
 }
 pub fn matrix_op(a: &Matrix, b: &Matrix, op: &str) -> Result<Matrix, String> {
+    let valid = |matrix: &Matrix| {
+        !matrix.is_empty()
+            && !matrix[0].is_empty()
+            && matrix.len() <= 12
+            && matrix[0].len() <= 12
+            && matrix.iter().all(|row| {
+                row.len() == matrix[0].len() && row.iter().all(|value| value.is_finite())
+            })
+    };
+    if !valid(a) {
+        return Err(
+            "Use a rectangular matrix of finite values, with at most 12 rows and columns.".into(),
+        );
+    }
+    if matches!(op, "A + B" | "A × B") && !valid(b) {
+        return Err("Matrix B must contain rectangular rows of finite values.".into());
+    }
     let (n, m) = (a.len(), a[0].len());
-    match op {
+    let result: Result<Matrix, String> = match op {
         "A + B" => {
             if n != b.len() || m != b[0].len() {
                 return Err("Addition needs matrices of the same size".into());
@@ -693,16 +971,30 @@ pub fn matrix_op(a: &Matrix, b: &Matrix, op: &str) -> Result<Matrix, String> {
                 return Err("Use a square matrix".into());
             }
             let mut work = a.clone();
+            let inverse_requested = op == "Inverse A";
+            let mut scales: Vec<f64> = a
+                .iter()
+                .map(|row| row.iter().map(|value| value.abs()).fold(0.0, f64::max))
+                .collect();
             let mut inv = vec![vec![0.0; n]; n];
             for (i, row) in inv.iter_mut().enumerate() {
                 row[i] = 1.0;
             }
-            let mut det = 1.0;
+            let mut det = ScaledProduct::new();
             for k in 0..n {
                 let p = (k..n)
-                    .max_by(|&i, &j| work[i][k].abs().total_cmp(&work[j][k].abs()))
+                    .max_by(|&i, &j| {
+                        let ratio = |row: usize| {
+                            if scales[row] == 0.0 {
+                                0.0
+                            } else {
+                                work[row][k].abs() / scales[row]
+                            }
+                        };
+                        ratio(i).total_cmp(&ratio(j))
+                    })
                     .unwrap();
-                if work[p][k].abs() < 1e-12 {
+                if work[p][k] == 0.0 {
                     return if op == "Determinant A" {
                         Ok(vec![vec![0.0]])
                     } else {
@@ -712,13 +1004,16 @@ pub fn matrix_op(a: &Matrix, b: &Matrix, op: &str) -> Result<Matrix, String> {
                 if p != k {
                     work.swap(p, k);
                     inv.swap(p, k);
-                    det = -det;
+                    scales.swap(p, k);
+                    det.negative = !det.negative;
                 }
                 let pivot = work[k][k];
-                det *= pivot;
+                det.multiply(pivot);
                 for j in 0..n {
                     work[k][j] /= pivot;
-                    inv[k][j] /= pivot;
+                    if inverse_requested {
+                        inv[k][j] /= pivot;
+                    }
                 }
                 for i in 0..n {
                     if i == k {
@@ -727,17 +1022,85 @@ pub fn matrix_op(a: &Matrix, b: &Matrix, op: &str) -> Result<Matrix, String> {
                     let f = work[i][k];
                     for j in 0..n {
                         work[i][j] -= f * work[k][j];
-                        inv[i][j] -= f * inv[k][j];
+                        if inverse_requested {
+                            inv[i][j] -= f * inv[k][j];
+                        }
                     }
+                }
+                if work
+                    .iter()
+                    .chain(inv.iter())
+                    .flatten()
+                    .any(|value| !value.is_finite())
+                {
+                    return Err(
+                        "Matrix elimination exceeded the finite numeric range; rescale the matrix."
+                            .into(),
+                    );
                 }
             }
             if op == "Determinant A" {
-                Ok(vec![vec![det]])
+                Ok(vec![vec![det.value()?]])
             } else {
                 Ok(inv)
             }
         }
         _ => Err("Choose a matrix operation".into()),
+    };
+    let result = result?;
+    if result.iter().flatten().any(|value| !value.is_finite()) {
+        Err("The matrix result is outside the finite numeric range.".into())
+    } else {
+        Ok(result)
+    }
+}
+
+struct ScaledProduct {
+    mantissa: f64,
+    exponent: i32,
+    negative: bool,
+}
+impl ScaledProduct {
+    fn new() -> Self {
+        Self {
+            mantissa: 1.0,
+            exponent: 0,
+            negative: false,
+        }
+    }
+    fn multiply(&mut self, value: f64) {
+        self.negative ^= value.is_sign_negative();
+        let mut bits = value.abs().to_bits();
+        let mut adjustment = 0;
+        if bits >> 52 == 0 {
+            bits = (value.abs() * 4_503_599_627_370_496.0).to_bits();
+            adjustment = -52;
+        }
+        self.exponent += (bits >> 52) as i32 - 1023 + adjustment;
+        self.mantissa *= f64::from_bits((bits & ((1_u64 << 52) - 1)) | (1023_u64 << 52));
+        if self.mantissa >= 2.0 {
+            self.mantissa /= 2.0;
+            self.exponent += 1;
+        }
+    }
+    fn value(self) -> Result<f64, String> {
+        let mut value = self.mantissa;
+        let mut exponent = self.exponent;
+        while exponent > 512 {
+            value *= 2.0_f64.powi(512);
+            exponent -= 512;
+        }
+        while exponent < -512 {
+            value *= 2.0_f64.powi(-512);
+            exponent += 512;
+        }
+        value *= 2.0_f64.powi(exponent);
+        if !value.is_finite() || value == 0.0 {
+            return Err(
+                "The nonzero determinant is outside the representable numeric range.".into(),
+            );
+        }
+        Ok(if self.negative { -value } else { value })
     }
 }
 #[cfg(test)]
@@ -781,6 +1144,59 @@ mod tests {
         near("cos(pi)", -1.0, false);
         near("asin(0.5)", 30.0, true);
         near("log(1000)", 3.0, false);
+    }
+    #[test]
+    fn named_si_constants_support_chemistry_and_physics_without_letter_aliases() {
+        let relative = |expression: &str, expected: f64| {
+            let actual = calculate(expression, 0.0, false).unwrap();
+            assert!(
+                (actual / expected - 1.0).abs() <= 2e-14,
+                "{expression}: {actual}"
+            );
+        };
+        relative("avogadro", 6.022_140_76e23);
+        relative("PLANCK", 6.626_070_15e-34);
+        relative("boltzmann", 1.380_649e-23);
+        relative("lightspeed", 299_792_458.0);
+        relative("gasconstant", 8.314_462_618_153_24);
+        relative("avogadro*boltzmann", 8.314_462_618_153_24);
+        relative("planck*lightspeed/(500E-9)", 3.972_891_714_297_857e-19);
+        relative("2avogadro", 1.204_428_152e24);
+        near("-log(1E-7)", 7.0, false);
+        relative("10^(-7.4)", 3.981_071_705_534_969e-8);
+        for letter in ["N", "H", "K", "C", "R"] {
+            assert!(parse(letter).is_err(), "{letter}");
+        }
+    }
+    #[test]
+    fn scientific_format_preserves_nonzero_magnitude_and_selected_precision() {
+        assert_eq!(format(6.626_070_15e-34, 8), "6.62607015e-34");
+        assert_eq!(format(6.022_140_76e23, 8), "6.02214076e23");
+        assert_eq!(format(1e-7, 2), "1e-7");
+        assert_eq!(format(-1e-7, 2), "-1e-7");
+        assert_eq!(format(1e-8, 8), "0.00000001");
+        assert_eq!(format(3.981_071_705_534_969e-8, 2), "3.98e-8");
+        assert_eq!(format(100.0, 0), "100");
+        assert_eq!(format(0.0, 0), "0");
+        assert_eq!(format(-0.0, 8), "0");
+        assert_eq!(format(0.125, 3), "0.125");
+        assert_eq!(format(1.0 / 3.0, 6), "0.333333");
+        assert_ne!(format(f64::from_bits(1), 8), "0");
+    }
+    #[test]
+    fn nonzero_underflow_never_becomes_a_false_zero_or_root() {
+        for expression in [
+            "1E-999",
+            "exp(-1000)",
+            "1E-300*1E-100",
+            "1E-300/1E100",
+            "(1E-200)^2",
+            "root(exp(x),-1000)",
+        ] {
+            assert!(calculate(expression, 0.0, false).is_err(), "{expression}");
+        }
+        assert_eq!(calculate("0E-999", 0.0, false).unwrap(), 0.0);
+        assert!(calculate("5E-324", 0.0, false).unwrap() > 0.0);
     }
     #[test]
     fn implicit_multiplication_and_power_precedence() {
@@ -882,6 +1298,66 @@ mod tests {
         near("root(x^2-2,1)", 2f64.sqrt(), false);
     }
     #[test]
+    fn numerical_derivatives_require_a_defined_two_sided_limit() {
+        near("diff(x^2,0)", 0.0, false);
+        near("diff(x^3,0)", 0.0, false);
+        near(
+            "diff(sin(x),30)",
+            30.0_f64.to_radians().cos() * PI / 180.0,
+            true,
+        );
+        for expression in [
+            "diff(abs(x),0)",
+            "diff(1E-15*abs(x),0)",
+            "diff(sqrt(x),0)",
+            "diff(1/x,0)",
+            "diff(floor(x),0)",
+            "diff(sign(x),0)",
+        ] {
+            assert!(calculate(expression, 0.0, false).is_err(), "{expression}");
+        }
+    }
+    #[test]
+    fn numerical_integrals_converge_or_report_unsupported_domains() {
+        near("integral(exp(-x^2),0,1)", 0.746_824_132_812_427_1, false);
+        near("integral(sqrt(x),0,1)", 2.0 / 3.0, false);
+        near("integral(x^2,3,0)", -9.0, false);
+        near("integral(sin(x),0,2pi)", 0.0, false);
+        near("integral(cos(8pi*x),0,1)", 0.0, false);
+        near(
+            "integral(sin(100x),0,1)",
+            (1.0 - 100.0_f64.cos()) / 100.0,
+            false,
+        );
+        let tiny = calculate("integral(planck*x,0,2)", 0.0, false).unwrap();
+        assert!((tiny / 1.325_214_03e-33 - 1.0).abs() < 1e-12);
+        for expression in [
+            "integral(1/x,-1,1)",
+            "integral(ln(x),0,1)",
+            "integral(tan(x),0,pi)",
+            "integral(1/(x-0.1234567),0,1)",
+            "integral(1/(x-0.1250000001)^2,-1,1)",
+        ] {
+            assert!(calculate(expression, 0.0, false).is_err(), "{expression}");
+        }
+    }
+    #[test]
+    fn numerical_roots_require_step_and_residual_convergence() {
+        near("root(ln(x),0.1)", 1.0, false);
+        near("root(sqrt(x),1)", 0.0, false);
+        near("root(1E-100*(x-2),1)", 2.0, false);
+        near("root(x^2,1)", 0.0, false);
+        for expression in [
+            "root(1/x,1)",
+            "root(1/(x-0.1),1)",
+            "root(exp(x),0)",
+            "root(x^2+1,0)",
+            "root(1E-100,2)",
+        ] {
+            assert!(calculate(expression, 0.0, false).is_err(), "{expression}");
+        }
+    }
+    #[test]
     fn errors() {
         for s in ["1/0", "sqrt(-1)", "2+", "sin(2,3)", "foo(2)", "(-1)!"] {
             assert!(calculate(s, 0.0, false).is_err(), "{s}");
@@ -902,5 +1378,29 @@ mod tests {
         let identity = matrix_op(&a, &inv, "A × B").unwrap();
         assert!((identity[0][0] - 1.0).abs() < 1e-8);
         assert!(matrix("1 2;3").is_err());
+    }
+    #[test]
+    fn matrix_singularity_and_determinants_are_independent_of_unit_scale() {
+        let small = matrix("1E-15 0;0 1E-15").unwrap();
+        let determinant = matrix_op(&small, &small, "Determinant A").unwrap()[0][0];
+        assert!((determinant / 1e-30 - 1.0).abs() < 1e-12);
+        let inverse = matrix_op(&small, &small, "Inverse A").unwrap();
+        assert!((inverse[0][0] / 1e15 - 1.0).abs() < 1e-12);
+        assert!((inverse[1][1] / 1e15 - 1.0).abs() < 1e-12);
+        let balanced = matrix("1E200 0 0;0 1E200 0;0 0 1E-200").unwrap();
+        assert!(
+            (matrix_op(&balanced, &balanced, "Determinant A").unwrap()[0][0] / 1e200 - 1.0).abs()
+                < 1e-12
+        );
+        let subnormal = matrix("5E-324").unwrap();
+        assert_eq!(
+            matrix_op(&subnormal, &subnormal, "Determinant A").unwrap()[0][0],
+            f64::from_bits(1)
+        );
+        assert!(matrix_op(&subnormal, &subnormal, "Inverse A").is_err());
+        let unrepresentable = matrix("1E-200 0;0 1E-200").unwrap();
+        assert!(matrix_op(&unrepresentable, &unrepresentable, "Determinant A").is_err());
+        assert!(matrix_op(&vec![], &small, "Inverse A").is_err());
+        assert!(matrix_op(&small, &vec![], "A + B").is_err());
     }
 }
