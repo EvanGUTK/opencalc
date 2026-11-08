@@ -45,6 +45,18 @@ pub(crate) struct InputAccess {
 }
 
 impl InputAccess {
+    #[cfg(test)]
+    pub(crate) fn dwell_evidence(&self) -> String {
+        format!(
+            "key={:?}, since={:?}, fired={}, wait_for_leave={}, last_activation={:?}",
+            self.dwell_key,
+            self.dwell_since,
+            self.dwell_fired,
+            self.dwell_wait_for_leave,
+            self.last_activation
+        )
+    }
+
     pub(crate) fn is_running(&self) -> bool {
         self.scan_running
     }
@@ -549,7 +561,27 @@ impl EqualApp {
                 .input_access
                 .owns_focus(ctx.memory(|memory| memory.focused()))
         {
-            self.input_access.suspend();
+            if self.input_access.is_running() {
+                self.input_access.notice =
+                    "Scanning paused. Choose Start scanning when ready.".into();
+            }
+            self.input_access.pause();
+            // Key insertion focuses the expression for later editing. That
+            // focus alone must not permanently disable a deliberate next hover.
+            let editing = ctx.input(|input| {
+                input.events.iter().any(|event| {
+                    matches!(
+                        event,
+                        egui::Event::Text(_)
+                            | egui::Event::Paste(_)
+                            | egui::Event::Cut
+                            | egui::Event::Key { pressed: true, .. }
+                    )
+                })
+            });
+            if editing {
+                self.input_access.suspend_dwell();
+            }
             return false;
         }
         let now = ctx.input(|input| input.time);
@@ -645,7 +677,15 @@ impl EqualApp {
         if self.settings.access.speak_keys && !(key == "enter" && self.settings.speech) {
             self.speak(effective_key_name(key, self.second, self.device.alpha));
         }
+        let scanner_focus = ctx.memory(|memory| memory.focused()).filter(|focused| {
+            self.input_access.is_running() && self.input_access.owns_focus(Some(*focused))
+        });
         self.press_device_key(ctx, key);
+        if let Some(focused) = scanner_focus
+            && !self.access_input_blocked(ctx)
+        {
+            ctx.memory_mut(|memory| memory.request_focus(focused));
+        }
         self.input_access.second = self.second;
         self.input_access.alpha = self.device.alpha;
     }
@@ -766,37 +806,43 @@ impl EqualApp {
                                 _ if self.settings.access.word_labels => name,
                                 _ => printed_key(key, false),
                             };
+                            let mut font = egui::TextStyle::Button.resolve(ui.style());
+                            font.size = 16.0 * self.settings.access.font_scale;
+                            let mut job = egui::text::LayoutJob::simple(
+                                label.to_string(),
+                                font,
+                                if selected {
+                                    palette.selected_text
+                                } else {
+                                    palette.ink
+                                },
+                                (key_width - ui.spacing().button_padding.x * 2.0).max(1.0),
+                            );
+                            // Long word labels must fit the key even when text
+                            // magnification and a narrow window are combined.
+                            job.wrap.break_anywhere = true;
+                            let text = ui.fonts_mut(|fonts| fonts.layout_job(job));
                             let response = ui
                                 .push_id(("accessible-key", key), |ui| {
                                     ui.add_enabled_ui(enabled, |ui| {
                                         ui.add_sized(
                                             Vec2::new(key_width, target),
-                                            egui::Button::new(
-                                                R::new(label)
-                                                    .size(16.0 * self.settings.access.font_scale)
-                                                    .color(if selected {
-                                                        palette.selected_text
-                                                    } else {
-                                                        palette.ink
-                                                    }),
-                                            )
-                                            .wrap()
-                                            .min_size(Vec2::new(key_width, target))
-                                            .fill(if selected {
-                                                palette.accent
-                                            } else {
-                                                palette.paper
-                                            })
-                                            .stroke(
-                                                egui::Stroke::new(
+                                            egui::Button::new(text)
+                                                .wrap()
+                                                .min_size(Vec2::new(key_width, target))
+                                                .fill(if selected {
+                                                    palette.accent
+                                                } else {
+                                                    palette.paper
+                                                })
+                                                .stroke(egui::Stroke::new(
                                                     if selected { 3.0_f32 } else { 1.0_f32 },
                                                     if selected {
                                                         palette.accent
                                                     } else {
                                                         palette.border
                                                     },
-                                                ),
-                                            ),
+                                                )),
                                         )
                                     })
                                     .inner
@@ -844,7 +890,14 @@ impl EqualApp {
                             {
                                 clicked = Some(key);
                             }
-                            if response.hovered() && enabled {
+                            // egui retains interaction position when PointerGone
+                            // arrives. Dwell must use the current hover position,
+                            // so leaving immediately cancels and rearms the hold.
+                            if enabled
+                                && response.hover_pos().is_some_and(|point| {
+                                    response.rect.contains(point) && ui.clip_rect().contains(point)
+                                })
+                            {
                                 hovered = Some(key);
                                 hovered_rect = Some(response.rect);
                             }

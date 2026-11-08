@@ -103,16 +103,10 @@ fn read_picture_from(path: &std::path::Path) -> Result<Option<Vec<u8>>, String> 
 }
 
 fn read_local_picture(filename: &str) -> Result<Option<Vec<u8>>, String> {
-    let mut roots = Vec::new();
-    if let Ok(executable) = std::env::current_exe()
-        && let Some(folder) = executable.parent()
-    {
-        roots.push(folder.join("assets/ti"));
-    }
+    let mut roots = vec![crate::app_paths::reference_image_root()];
     if let Ok(folder) = std::env::current_dir() {
         roots.push(folder.join("assets/ti"));
     }
-    roots.push(std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets/ti"));
     for root in roots {
         if let Some(bytes) = read_picture_from(&root.join(filename))? {
             return Ok(Some(bytes));

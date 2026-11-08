@@ -8,6 +8,8 @@
 /notebooks/
 *.opencalc.json
 *.opencalc.json.*
+.opencalc-notebook-*.tmp
+.equal-notebook-*.tmp
 *.exe
 *.pdb
 *.log

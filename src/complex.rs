@@ -39,6 +39,20 @@ impl Complex {
             im: self.re * other.im + self.im * other.re,
         }
     }
+    fn checked_product(self, other: Self) -> Result<Self, String> {
+        let product = self.mul(other).checked()?;
+        if product.re == 0.0
+            && product.im == 0.0
+            && (self.re != 0.0 || self.im != 0.0)
+            && (other.re != 0.0 || other.im != 0.0)
+        {
+            return Err(
+                "This nonzero product is smaller than the representable complex-number range."
+                    .into(),
+            );
+        }
+        Ok(product)
+    }
     pub fn div(self, other: Self) -> Result<Self, String> {
         let scale = other.re.abs().max(other.im.abs());
         if scale == 0.0 {
@@ -62,7 +76,14 @@ impl Complex {
                 im: ((self.im / denominator) * real - (self.re / denominator) * imaginary) / scale,
             }
         };
-        result.checked()
+        let result = result.checked()?;
+        if result.re == 0.0 && result.im == 0.0 && (self.re != 0.0 || self.im != 0.0) {
+            return Err(
+                "This nonzero quotient is smaller than the representable complex-number range."
+                    .into(),
+            );
+        }
+        Ok(result)
     }
     fn scale(self, value: f64) -> Self {
         Self {
@@ -99,6 +120,12 @@ impl Complex {
     }
     fn exponential(self) -> Result<Self, String> {
         let magnitude = self.re.exp();
+        if magnitude == 0.0 {
+            return Err(
+                "This nonzero exponential is smaller than the representable complex-number range."
+                    .into(),
+            );
+        }
         let result = if magnitude.is_finite() {
             Self {
                 re: magnitude * self.im.cos(),
@@ -154,11 +181,11 @@ impl Complex {
             let mut result = Self::from_real(1.0);
             while power != 0 {
                 if power & 1 == 1 {
-                    result = result.mul(factor).checked()?;
+                    result = result.checked_product(factor)?;
                 }
                 power >>= 1;
                 if power != 0 {
-                    factor = factor.mul(factor).checked()?;
+                    factor = factor.checked_product(factor)?;
                 }
             }
             return Ok(result);
@@ -170,7 +197,7 @@ impl Complex {
                 Err("This power of zero is undefined".into())
             };
         }
-        self.logarithm()?.mul(exponent).exponential()
+        self.logarithm()?.checked_product(exponent)?.exponential()
     }
     fn sine(self) -> Self {
         Self {
@@ -357,7 +384,7 @@ fn eval(expression: &Expr, ans: Complex, degrees: bool) -> Result<Complex, Strin
             match operation {
                 '+' => left.add(right),
                 '-' => left.sub(right),
-                '*' => left.mul(right),
+                '*' => left.checked_product(right)?,
                 '/' => left.div(right)?,
                 '^' => left.pow(right)?,
                 _ => return Err("Unknown complex operator".into()),
@@ -602,6 +629,37 @@ mod tests {
         let variables = BTreeMap::from([('A', Complex::from_real(2.0))]);
         let derivative = evaluate("diff(A*x^2,3)", Complex::default(), false, &variables).unwrap();
         assert!((derivative.re - 12.0).abs() < 1e-8 && derivative.im == 0.0);
+    }
+    #[test]
+    fn scientific_constants_remain_distinct_from_stored_letter_variables() {
+        let variables = BTreeMap::from([
+            ('P', Complex::from_real(7.0)),
+            ('A', Complex::from_real(3.0)),
+        ]);
+        let result = evaluate("planck/P", Complex::default(), false, &variables).unwrap();
+        assert!((result.re / (6.626_070_15e-34 / 7.0) - 1.0).abs() < 1e-14 && result.im == 0.0);
+        assert_eq!(
+            evaluate("A+2E3", Complex::default(), false, &variables).unwrap(),
+            Complex::from_real(2003.0)
+        );
+        assert_eq!(
+            Complex::from_real(6.626_070_15e-34).format(8),
+            "6.62607015e-34"
+        );
+        assert_eq!(Complex { re: 0.0, im: 1e-7 }.format(2), "1e-7i");
+        for expression in [
+            "exp(-1000)",
+            "(1E-200)^2",
+            "1E-300*1E-100",
+            "1E-300/1E100",
+            "diff(abs(x),0)",
+            "root(1/x,1)",
+        ] {
+            assert!(
+                evaluate(expression, Complex::default(), false, &variables).is_err(),
+                "{expression}"
+            );
+        }
     }
     #[test]
     fn bounded_errors_and_large_finite_division_are_explicit() {

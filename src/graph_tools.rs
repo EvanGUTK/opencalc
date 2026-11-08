@@ -240,9 +240,9 @@ fn sampled_zero<F: Fn(f64) -> Result<f64, String>>(
             return Ok(root);
         }
     }
-    // A tangent zero need not change sign. Refine the smallest sampled residual,
-    // while retaining an interval-relative residual check to reject tiny 1/x values.
-    if let Some((start, _)) = samples
+    // A tangent zero need not change sign. Require improvement from this local
+    // candidate; a huge sample near a pole must not relax its residual check.
+    if let Some((start, initial)) = samples
         .iter()
         .filter_map(|(x, y)| y.as_ref().ok().map(|y| (*x, *y)))
         .min_by(|a, b| a.1.abs().total_cmp(&b.1.abs()))
@@ -250,7 +250,7 @@ fn sampled_zero<F: Fn(f64) -> Result<f64, String>>(
         let mut x = start;
         for _ in 0..48 {
             let value = f(x)?;
-            if value == 0.0 || value.abs() <= scale.max(f64::MIN_POSITIVE) * 1e-10 {
+            if value == 0.0 || value.abs() <= initial.abs().max(f64::MIN_POSITIVE) * 1e-10 {
                 return Ok(x);
             }
             let h = (right - left) / 100_000.0;
@@ -323,12 +323,9 @@ fn extreme<F: Fn(f64) -> Result<f64, String>>(
     Ok(best)
 }
 
-fn integrate<F: Fn(f64) -> Result<f64, String>>(
-    f: &F,
-    left: f64,
-    right: f64,
-) -> Result<f64, String> {
+fn integrate(expression: &math::Expr, left: f64, right: f64, degrees: bool) -> Result<f64, String> {
     bounds(left, right)?;
+    let f = |x| evaluate(expression, x, degrees);
     let step = (right - left) / INTEGRAL_SAMPLES as f64;
     let mut values = Vec::with_capacity(INTEGRAL_SAMPLES + 1);
     for index in 0..=INTEGRAL_SAMPLES {
@@ -344,30 +341,21 @@ fn integrate<F: Fn(f64) -> Result<f64, String>>(
             && pair[0].is_sign_positive() != pair[1].is_sign_positive()
         {
             let a = left + step * index as f64;
-            bisect(f, a, a + step, pair[0], pair[1], scale)
+            bisect(&f, a, a + step, pair[0], pair[1], scale)
                 .map_err(|_| "An apparent discontinuity crosses the integral interval. Split the interval at the discontinuity.".to_string())?;
         }
     }
-    let sum: f64 = values
-        .iter()
-        .enumerate()
-        .map(|(index, value)| {
-            value
-                * if index == 0 || index == INTEGRAL_SAMPLES {
-                    1.0
-                } else if index.is_multiple_of(2) {
-                    2.0
-                } else {
-                    4.0
-                }
-        })
-        .sum();
-    let result = sum * step / 3.0;
-    if result.is_finite() {
-        Ok(result)
-    } else {
-        Err("Integral exceeded the finite numeric range.".into())
-    }
+    // Share the calculator's bounded convergence check. Fixed-grid quadrature
+    // alone can report a finite answer for an unresolved even-order pole.
+    math::Expr::Call(
+        "integral".into(),
+        vec![
+            expression.clone(),
+            math::Expr::Number(left),
+            math::Expr::Number(right),
+        ],
+    )
+    .eval(0.0, 0.0, 0.0, degrees)
 }
 
 pub(crate) fn analyze(
@@ -437,7 +425,7 @@ pub(crate) fn analyze(
             )
         }
         Analysis::Integral => (
-            integrate(&f, left, right)?,
+            integrate(&expression, left, right, degrees)?,
             None,
             "Approximate signed integral",
         ),
@@ -582,6 +570,15 @@ impl EqualApp {
                         operation.label(),
                     );
                 }
+            })
+            .response
+            .widget_info(|| egui::WidgetInfo {
+                current_text_value: Some(self.graph_tools.operation.label().into()),
+                ..egui::WidgetInfo::labeled(
+                    egui::WidgetType::ComboBox,
+                    true,
+                    "Graph calculation operation",
+                )
             });
         for (label, selected) in [
             ("First curve", &mut self.graph_tools.first),
@@ -599,6 +596,11 @@ impl EqualApp {
                         for index in 0..10 {
                             ui.selectable_value(selected, index, format!("Y{}", index + 1));
                         }
+                    })
+                    .response
+                    .widget_info(|| egui::WidgetInfo {
+                        current_text_value: Some(format!("Y{}", *selected + 1)),
+                        ..egui::WidgetInfo::labeled(egui::WidgetType::ComboBox, true, label)
                     });
             });
         }
@@ -843,6 +845,113 @@ impl EqualApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn graph_calculation_inputs_expose_names_and_selected_values() {
+        let ctx = egui::Context::default();
+        ctx.enable_accesskit();
+        let mut app = EqualApp::with_settings(crate::Settings::default(), None);
+        app.graph_tools.operation = Analysis::Intersection;
+        app.graph_tools.first = 9;
+        app.graph_tools.second = 0;
+        let output = ctx.run(
+            egui::RawInput {
+                screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(500.0, 700.0))),
+                ..Default::default()
+            },
+            |ctx| {
+                egui::CentralPanel::default().show(ctx, |ui| app.graph_calculation_menu(ui));
+            },
+        );
+        let nodes = output.platform_output.accesskit_update.unwrap().nodes;
+        for (label, value) in [
+            ("Graph calculation operation", "Intersection"),
+            ("First curve", "Y10"),
+            ("Second curve", "Y1"),
+        ] {
+            assert!(
+                nodes
+                    .iter()
+                    .any(|(_, node)| node.role() == egui::accesskit::Role::ComboBox
+                        && node.label() == Some(label)
+                        && node.value() == Some(value)),
+                "Missing named selector {label} with its selected value"
+            );
+        }
+        for (label, value) in [("Lower bound", -10.0), ("Upper bound", 10.0)] {
+            assert!(
+                nodes
+                    .iter()
+                    .any(|(_, node)| node.role() == egui::accesskit::Role::SpinButton
+                        && node.label() == Some(label)
+                        && node.numeric_value() == Some(value))
+            );
+        }
+    }
+
+    #[test]
+    fn poles_cannot_relax_root_residual_or_report_converged_integrals() {
+        assert!(
+            analyze(
+                Analysis::Zero,
+                "1/(x-0.1250000001)",
+                "",
+                -1.0,
+                1.0,
+                0.0,
+                false
+            )
+            .is_err()
+        );
+        assert!(
+            analyze(
+                Analysis::Integral,
+                "1/(x-0.1250000001)^2",
+                "",
+                -1.0,
+                1.0,
+                0.0,
+                false
+            )
+            .is_err()
+        );
+        let tangent = analyze(Analysis::Zero, "(x-0.12345)^2", "", -1.0, 1.0, 0.0, false).unwrap();
+        assert!((tangent.value - 0.12345).abs() < 1e-7);
+        let proper = analyze(
+            Analysis::Integral,
+            "1/(x-0.125)^2",
+            "",
+            1.0,
+            2.0,
+            0.0,
+            false,
+        )
+        .unwrap();
+        let expected = 1.0 / (1.0 - 0.125) - 1.0 / (2.0 - 0.125);
+        assert!((proper.value - expected).abs() < 1e-8);
+    }
+
+    #[test]
+    fn graph_calculus_uses_selected_angle_units() {
+        let radians = analyze(
+            Analysis::Integral,
+            "sin(x)",
+            "",
+            0.0,
+            std::f64::consts::PI,
+            0.0,
+            false,
+        )
+        .unwrap();
+        assert!((radians.value - 2.0).abs() < 1e-8);
+        let degrees = analyze(Analysis::Integral, "sin(x)", "", 0.0, 180.0, 0.0, true).unwrap();
+        assert!((degrees.value - 360.0 / std::f64::consts::PI).abs() < 1e-7);
+        let slope = analyze(Analysis::Derivative, "sin(x)", "", 0.0, 1.0, 30.0, true).unwrap();
+        assert!(
+            (slope.value - std::f64::consts::PI / 180.0 * (std::f64::consts::PI / 6.0).cos()).abs()
+                < 1e-8
+        );
+    }
 
     #[test]
     fn notebook_omits_transient_graph_results_audio_status_and_undo() {

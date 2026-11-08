@@ -16,7 +16,7 @@ use std::{
     process::{Command, Stdio},
 };
 
-pub(crate) const MAX_NOTEBOOK_BYTES: usize = 2 * 1024 * 1024;
+pub(crate) const MAX_NOTEBOOK_BYTES: usize = 16 * 1024 * 1024;
 const TEMP_FILE_ATTEMPTS: usize = 32;
 static TEMP_FILE_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
@@ -34,14 +34,14 @@ fn read_bounded(reader: impl Read) -> Result<Vec<u8>, String> {
         .read_to_end(&mut bytes)
         .map_err(|error| format!("Could not read the notebook: {error}"))?;
     if bytes.len() > MAX_NOTEBOOK_BYTES {
-        return Err("The notebook is larger than the 2 MiB file limit.".into());
+        return Err("The notebook is larger than the 16 MiB file limit.".into());
     }
     Ok(bytes)
 }
 
 pub(crate) fn write_notebook(path: &Path, bytes: &[u8]) -> Result<(), String> {
     if bytes.len() > MAX_NOTEBOOK_BYTES {
-        return Err("The notebook is larger than the 2 MiB file limit.".into());
+        return Err("The notebook is larger than the 16 MiB file limit.".into());
     }
     if path.file_name().is_none() {
         return Err("Choose a notebook file name.".into());
@@ -77,7 +77,7 @@ fn create_temporary(parent: &Path, destination: &Path) -> Result<(File, OwnedTem
     for _ in 0..TEMP_FILE_ATTEMPTS {
         let sequence = TEMP_FILE_SEQUENCE.fetch_add(1, Ordering::Relaxed);
         let path = parent.join(format!(
-            ".equal-notebook-{}-{timestamp}-{sequence}.tmp",
+            ".opencalc-notebook-{}-{timestamp}-{sequence}.tmp",
             std::process::id()
         ));
         if path == destination {
@@ -313,7 +313,7 @@ mod tests {
                 .expect("test clock")
                 .as_nanos();
             let path = std::env::temp_dir().join(format!(
-                "equal-notebook-tests-{}-{timestamp}-{sequence}",
+                "opencalc-notebook-tests-{}-{timestamp}-{sequence}",
                 std::process::id()
             ));
             fs::create_dir(&path).expect("create test directory");
@@ -347,7 +347,7 @@ mod tests {
         fs::write(&path, &limit).unwrap();
         assert_eq!(read_notebook(&path).unwrap(), limit);
         fs::write(&path, vec![b'x'; MAX_NOTEBOOK_BYTES + 1]).unwrap();
-        assert!(read_notebook(&path).unwrap_err().contains("2 MiB"));
+        assert!(read_notebook(&path).unwrap_err().contains("16 MiB"));
     }
 
     #[test]

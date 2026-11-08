@@ -318,6 +318,8 @@ pub struct Toolkit {
     group: &'static str,
     inputs: [String; 6],
     report: Option<Result<Report, String>>,
+    pub(crate) science: crate::science::ScienceWorkbench,
+    pub(crate) science_open: bool,
 }
 impl Default for Toolkit {
     fn default() -> Self {
@@ -327,6 +329,8 @@ impl Default for Toolkit {
             group: "Statistics",
             inputs: Default::default(),
             report: None,
+            science: Default::default(),
+            science_open: false,
         };
         this.select(0);
         this
@@ -342,6 +346,7 @@ impl Toolkit {
         self.report = None;
     }
     pub fn statistics(&mut self) {
+        self.science_open = false;
         self.select(0);
         self.group = "Statistics";
         self.search.clear();
@@ -945,12 +950,20 @@ fn calculate(kind: Kind, inputs: &[String; 6], precision: usize) -> Result<Repor
 
 impl EqualApp {
     pub fn toolkit_workspace(&mut self, ui: &mut egui::Ui) {
+        if self.toolkit.science_open {
+            self.science_workspace(ui);
+            return;
+        }
         let palette = crate::appearance::palette(ui.ctx());
         ui.horizontal_wrapped(|ui| {
             ui.heading("Math tools");
             ui.label(R::new("30 tools").color(palette.accent));
         });
         ui.label("Choose a tool and enter its inputs.");
+        if ui.button("Physics & chemistry").clicked() {
+            self.toolkit.science_open = true;
+            return;
+        }
         if ui.button("Practice").clicked() {
             self.tab = Tab::Practice;
             return;
@@ -1064,7 +1077,10 @@ impl EqualApp {
                 if response.changed() {
                     self.toolkit.report = None;
                 }
-                if response.has_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                if (response.has_focus() || response.lost_focus())
+                    && ui.input(|i| i.key_pressed(egui::Key::Enter))
+                {
+                    response.request_focus();
                     self.toolkit.run(self.settings.precision);
                 }
             }

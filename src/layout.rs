@@ -606,6 +606,7 @@ impl EqualApp {
                     Tab::Toolkit => "Enter: calculate tool / Tab: next control",
                     Tab::Tutor | Tab::Matrix => "Tab: next control / Shift+Tab: previous control",
                     Tab::Calculator => "Enter: calculate / Esc: clear",
+                    Tab::Notebook => "Tab: next control / Ctrl+S: save notebook",
                 };
                 ui.label(R::new(help).small());
             });
@@ -633,6 +634,7 @@ impl EqualApp {
                         Tab::Tutor => self.tutor_workspace(ui),
                         Tab::Toolkit => self.toolkit_workspace(ui),
                         Tab::Practice => self.practice_workspace(ui),
+                        Tab::Notebook => self.notebook_canvas(ui),
                     });
             });
     }
@@ -640,7 +642,7 @@ impl EqualApp {
     fn workspace_enabled(&self, tab: Tab) -> bool {
         matches!(
             tab,
-            Tab::Calculator | Tab::Tutor | Tab::Toolkit | Tab::Practice
+            Tab::Calculator | Tab::Tutor | Tab::Toolkit | Tab::Practice | Tab::Notebook
         ) || self.settings.level >= 2 && (tab != Tab::Matrix || self.settings.level == 3)
     }
 
@@ -648,13 +650,14 @@ impl EqualApp {
         let palette = crate::appearance::palette(ui.ctx());
         let compact = ui.available_width() < 330.0;
         let focus_hidden = self.settings.access.focus_mode && !self.a11y.focus_navigation;
-        const TABS: [(Tab, &str, &str); 6] = [
+        const TABS: [(Tab, &str, &str); 7] = [
             (Tab::Calculator, "Calculator", "Calc"),
             (Tab::Graph, "Graph", "Graph"),
             (Tab::Matrix, "Matrices", "Matrix"),
             (Tab::Tutor, "Learn", "Learn"),
             (Tab::Toolkit, "Tools", "Tools"),
             (Tab::Practice, "Practice", "Study"),
+            (Tab::Notebook, "Notebook pages", "Pages"),
         ];
         if focus_hidden || compact && !self.a11y.focus_navigation {
             let current = TABS

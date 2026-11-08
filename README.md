@@ -40,6 +40,8 @@ The core calculator, practice questions and built-in explanations run locally. N
 | **Learn** | Worked arithmetic, equations, polynomial derivatives and definite integrals; hints, vocabulary and answer checks |
 | **Practice** | 25 topics with Basic, Standard and Challenge questions, visual models and worked solutions |
 | **Tools** | 30 tools covering statistics, probability, fractions, algebra, conversions, percentages, finance and geometry |
+| **Physics & chemistry** | 32 calculators with explicit units, formulas and assumptions: mechanics, electricity, thermodynamics, photons, relativity, moles, molarity, gases, pH and more |
+| **Notebook pages** | Multiple pages with ink, text, lines, rectangles, ellipses, editable coordinates, descriptions, undo/redo and SVG export |
 
 The familiar layouts are TI-108-inspired for K–3, TI-34-inspired for 4–8, and TI-84-style for both 9–12 and Advanced. Their casing, keys and live display are drawn in the app. OpenCalc is an independent implementation; these layouts do not establish TI firmware compatibility.
 
@@ -94,7 +96,7 @@ Actual screen-reader, Braille, switch, eye-tracker, magnifier and disabled-learn
 | **Ctrl+G** | Math glossary |
 | **Ctrl+H** | Calculation history |
 | **Ctrl+Shift+Space** | Stop speech and graph audio |
-| **Alt+1…6** | Calculator, Graph, Matrices, Learn, Tools and Practice, where the selected level permits |
+| **Alt+1…7** | Calculator, Graph, Matrices, Learn, Tools, Practice and Notebook pages, where the selected level permits |
 | **Ctrl+Z / Ctrl+Y** | Undo/redo calculator editing when a text field is not focused |
 | **Alt+Up / Alt+Down** | Enable and move the reading guide |
 
@@ -128,17 +130,39 @@ Uploaded content and conversations stay in session memory and are not saved as p
 
 </details>
 
+## Physics and chemistry
+
+Open **Tools → Physics & chemistry**. Each tool states its input units, method and assumptions, and reports labeled results with units. Examples include particles ↔ moles using the exact Avogadro constant, molar mass from a chemical formula, ideal gases, dilution, photon energy, circuits and relativistic energy. See the [science scope and references](docs/notes/science-workbench.md).
+
+Use **Copy science result** to keep a report in notebook notes or a text object. Science forms themselves are session-only. Narrow windows put the tool browser behind **Choose science tool** so the current inputs stay close to the top.
+
+These are bounded numerical tools for representative school and college problems. They do not provide a symbolic algebra system, general chemical reaction balancing, a full physics simulator or complete graduate curriculum coverage. Numerical calculus rejects detected discontinuities and failed convergence; difficult functions can still require independent analysis.
+
+<p align="center">
+  <img src="assets/screenshots/science.png" alt="OpenCalc physics and chemistry tools with named quantities and explicit input units" width="100%">
+</p>
+
 ## Local notebooks
 
 Choose **Notebook** in the compact toolbar, or **More → Notebook** in the workspace. **Save**, **Open**, **New** and **Save as** use local `.opencalc.json` files. The title bar marks unsaved changes with `*`; New, Open and closing the app offer Save, Discard or Cancel when needed.
 
-A notebook keeps calculations and history, full answer memory, variables, lists, program drafts, ten graph functions, graph views/drawings, matrices, local worked lessons and notes. Practice progress and current answers are optional. Reopening restores the saved number notation while keeping your display, speech and motor-access preferences.
+A notebook keeps calculations and history, full answer memory, variables, lists, program drafts, ten graph functions, graph views/drawings, matrices, local worked lessons, notes and drawing pages. Practice progress and current answers are optional. Reopening restores the saved number notation while keeping your display, speech and motor-access preferences.
+
+Choose **Pages** or **Alt+7** for blank, ruled or grid pages. Draw ink, add text and shapes, or edit object coordinates and descriptions using ordinary controls. Page editing has undo/redo, zoom/pan and SVG export. Files support up to 64 pages, 4,096 objects and 100,000 ink points within the document size limit. This is a desktop notebook foundation; PDF import/annotation, handwriting recognition, cloud sync and phone/tablet companion apps are future work.
+
+In narrow windows, **Page tools** opens the editing controls and closes to give the page more room.
+
+**Protect unsaved work** is an optional local recovery setting, initially off. When enabled, OpenCalc keeps bounded recovery snapshots in its user-data folder and offers an explicit recovery decision on restart. Recovery does not replace saving a named file. Keeping the current session pauses replacement of an unresolved draft; discarding clears that draft before proceeding. Recovery data stays on this computer.
+
+<p align="center">
+  <img src="assets/screenshots/pages.png" alt="OpenCalc notebook page with drawing, text, shape, paper and page controls" width="100%">
+</p>
 
 <p align="center">
   <img src="assets/screenshots/notebook.png" alt="OpenCalc notebook panel with save, open, notes and optional practice progress" width="100%">
 </p>
 
-**Ctrl+S** saves, **Ctrl+Shift+S** saves to another file, **Ctrl+O** opens and **Ctrl+N** starts a new notebook. A typed-path option is available alongside the Windows file dialogs. Files are plain JSON in the location you choose; AI chats, attachments and running programs are not saved. Notebooks are limited to 2 MiB and validated before replacing your current work. [Notebook behavior and format](docs/notes/notebooks.md) describes the bounds and verification.
+**Ctrl+S** saves, **Ctrl+Shift+S** saves to another file, **Ctrl+O** opens and **Ctrl+N** starts a new notebook. A typed-path option is available alongside the Windows file dialogs. Files are plain JSON in the location you choose; AI chats, attachments and running programs are not saved. Version 2 notebooks are limited to 16 MiB, migrate version 1 files explicitly, and validate before replacing your current work. [Notebook behavior](docs/notes/notebooks.md) and the [version 2 format](docs/notes/notebook-format-v2.md) describe the bounds.
 
 ```powershell
 ./target/release/opencalc.exe --notebook "homework.opencalc.json"
@@ -146,7 +170,9 @@ A notebook keeps calculations and history, full answer memory, variables, lists,
 
 ## Get started
 
-OpenCalc is under active development. Build from source with a current [Rust toolchain](https://www.rust-lang.org/tools/install) supporting edition 2024. Windows is the tested platform; other desktop platforms are not yet verified.
+Download the Windows x64 **installer** or **portable ZIP** from [Releases](https://github.com/EvanGUTK/opencalc/releases). The installer is per user; the portable version stores its preferences beside the executable. Release assets include SHA-256 checksums, a file manifest and dependency license notices. The first release is an **unsigned beta**, with the testing scope and remaining limitations recorded in the [release-readiness report](docs/notes/release-readiness.md). Windows may show an unknown-publisher prompt.
+
+To build from source, use a current [Rust toolchain](https://www.rust-lang.org/tools/install) supporting edition 2024. Windows is the tested platform; other desktop platforms are not yet verified.
 
 Clone the source, then run it:
 
@@ -157,6 +183,8 @@ cargo run --release
 ```
 
 The first build downloads Rust dependencies. Once dependencies are available locally, the core app works offline. Windows speech uses the installed Windows voice service.
+
+The installed app stores preferences under `%LOCALAPPDATA%\OpenCalc`; `--data-dir PATH` selects an isolated profile. `--portable` or an adjacent `opencalc.portable` file selects a `data` folder beside the executable. `--self-test` runs the bundled independently derived curriculum checks and emits a JSON report; it does not test physical assistive devices or operating-system input.
 
 Choose a learning level in **Settings**. Use **Workspace** for the full navigation, or **More → Handheld view** for the compact calculator. Narrow windows use a scrolling Settings dialog; wide windows can show a sidebar. Changing views does not resize the window.
 
