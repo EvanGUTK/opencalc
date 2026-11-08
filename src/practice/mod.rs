@@ -4,9 +4,11 @@ mod view;
 mod visuals;
 
 use crate::math;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub(crate) enum Difficulty {
     Basic,
     Standard,
@@ -30,7 +32,8 @@ impl Difficulty {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub(crate) enum TopicId {
     Addition,
     Subtraction,
@@ -451,7 +454,8 @@ impl Question {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub(crate) enum FeedbackKind {
     #[default]
     None,
@@ -461,7 +465,8 @@ pub(crate) enum FeedbackKind {
     Revealed,
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct Progress {
     pub attempted: u32,
     pub correct: u32,
@@ -488,6 +493,119 @@ pub(crate) struct Practice {
     sessions: BTreeMap<(TopicId, Difficulty), Session>,
 }
 
+const MAX_NOTEBOOK_SESSIONS: usize = 75;
+const MAX_NOTEBOOK_RESPONSE_BYTES: usize = 4096;
+const MAX_NOTEBOOK_FEEDBACK_BYTES: usize = 8192;
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct PracticeNotebook {
+    level: usize,
+    selected: [TopicId; 4],
+    difficulties: [Difficulty; 4],
+    sessions: Vec<NotebookSession>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NotebookSession {
+    topic: TopicId,
+    difficulty: Difficulty,
+    response: String,
+    feedback: String,
+    feedback_kind: FeedbackKind,
+    hint_shown: bool,
+    show_steps: bool,
+    revealed_steps: usize,
+    show_visual: bool,
+    progress: Progress,
+    index: u32,
+    counted: bool,
+}
+
+impl PracticeNotebook {
+    pub(crate) fn validate(&self) -> Result<(), String> {
+        if self.level >= self.selected.len() {
+            return Err("The saved practice learning level is unavailable.".into());
+        }
+        for (level, selected) in self.selected.iter().enumerate() {
+            if !topics(level).any(|topic| topic.id == *selected) {
+                return Err("The saved practice topic does not match its learning level.".into());
+            }
+        }
+        if self.sessions.is_empty() || self.sessions.len() > MAX_NOTEBOOK_SESSIONS {
+            return Err(format!(
+                "A saved practice notebook must contain 1 to {MAX_NOTEBOOK_SESSIONS} sessions."
+            ));
+        }
+        let mut seen = std::collections::BTreeSet::new();
+        for session in &self.sessions {
+            if !seen.insert((session.topic, session.difficulty)) {
+                return Err("The saved practice notebook contains a duplicate session.".into());
+            }
+            session.validate()?;
+        }
+        if !seen.contains(&(self.selected[self.level], self.difficulties[self.level])) {
+            return Err("The saved practice notebook is missing its current session.".into());
+        }
+        Ok(())
+    }
+}
+
+impl NotebookSession {
+    fn validate(&self) -> Result<(), String> {
+        for (text, limit) in [
+            (&self.response, MAX_NOTEBOOK_RESPONSE_BYTES),
+            (&self.feedback, MAX_NOTEBOOK_FEEDBACK_BYTES),
+        ] {
+            if text.len() > limit
+                || text.chars().any(|character| {
+                    character.is_control() && !matches!(character, '\n' | '\r' | '\t')
+                })
+            {
+                return Err(
+                    "A saved practice response or feedback contains unsupported text.".into(),
+                );
+            }
+        }
+        let topic = TOPICS
+            .iter()
+            .find(|topic| topic.id == self.topic)
+            .ok_or("The saved practice topic is unavailable.")?;
+        let question = if topic.level < 2 {
+            elementary::generate(self.topic, self.difficulty, self.index)
+        } else {
+            secondary::generate(self.topic, self.difficulty, self.index)
+        }
+        .ok_or("The saved practice question is unavailable.")?;
+        if self.progress.correct > self.progress.attempted
+            || u64::from(self.progress.attempted)
+                > u64::from(self.index) + u64::from(u8::from(self.counted))
+            || (self.counted && self.progress.attempted == 0)
+        {
+            return Err("The saved practice score or counted state is inconsistent.".into());
+        }
+        if (self.show_steps
+            && (!self.counted || !(1..=question.steps.len()).contains(&self.revealed_steps)))
+            || (!self.show_steps && self.revealed_steps != 0)
+        {
+            return Err("The saved practice solution-step state is inconsistent.".into());
+        }
+        let checked = matches!(
+            self.feedback_kind,
+            FeedbackKind::Correct | FeedbackKind::Incorrect | FeedbackKind::Revealed
+        );
+        if (checked && !self.counted)
+            || (self.feedback_kind == FeedbackKind::Revealed && !self.show_steps)
+            || (self.feedback_kind == FeedbackKind::None && !self.feedback.is_empty())
+            || (self.feedback_kind != FeedbackKind::None && self.feedback.is_empty())
+        {
+            return Err("The saved practice feedback state is inconsistent.".into());
+        }
+        Ok(())
+    }
+}
+
 impl Default for Practice {
     fn default() -> Self {
         let mut practice = Self {
@@ -507,6 +625,60 @@ impl Default for Practice {
 }
 
 impl Practice {
+    pub(crate) fn notebook_snapshot(&self) -> PracticeNotebook {
+        PracticeNotebook {
+            level: self.level,
+            selected: self.selected,
+            difficulties: self.difficulties,
+            sessions: self
+                .sessions
+                .iter()
+                .map(|(&(topic, difficulty), session)| NotebookSession {
+                    topic,
+                    difficulty,
+                    response: session.response.clone(),
+                    feedback: session.feedback.clone(),
+                    feedback_kind: session.feedback_kind,
+                    hint_shown: session.hint_shown,
+                    show_steps: session.show_steps,
+                    revealed_steps: session.revealed_steps,
+                    show_visual: session.show_visual,
+                    progress: session.progress,
+                    index: session.index,
+                    counted: session.counted,
+                })
+                .collect(),
+        }
+    }
+
+    /// The complete notebook is validated before any workspace is restored.
+    pub(crate) fn apply_notebook(&mut self, notebook: PracticeNotebook) {
+        self.level = notebook.level;
+        self.selected = notebook.selected;
+        self.difficulties = notebook.difficulties;
+        self.sessions = notebook
+            .sessions
+            .into_iter()
+            .map(|session| {
+                (
+                    (session.topic, session.difficulty),
+                    Session {
+                        response: session.response,
+                        feedback: session.feedback,
+                        feedback_kind: session.feedback_kind,
+                        hint_shown: session.hint_shown,
+                        show_steps: session.show_steps,
+                        revealed_steps: session.revealed_steps,
+                        show_visual: session.show_visual,
+                        progress: session.progress,
+                        index: session.index,
+                        counted: session.counted,
+                    },
+                )
+            })
+            .collect();
+    }
+
     fn key(&self) -> (TopicId, Difficulty) {
         (self.selected[self.level], self.difficulties[self.level])
     }
@@ -652,6 +824,115 @@ impl Practice {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn practice_notebook_roundtrip_regenerates_questions_and_preserves_first_attempts() {
+        let mut source = Practice::default();
+        source.current_session_mut().response = source.current_question().answer.display();
+        source.check_answer();
+        source.set_level(1);
+        source.select_topic(TopicId::Fractions);
+        source.current_session_mut().response = " ٣/٤ ".into();
+        source.show_hint();
+        source.set_level(3);
+        source.select_topic(TopicId::Matrices);
+        source.select_difficulty(Difficulty::Standard);
+        source.reveal_answer_with_pacing(true);
+        source.current_session_mut().revealed_steps = 2;
+        source.current_session_mut().show_visual = false;
+        let problem = source.current_question().problem_text();
+        let saved = source.notebook_snapshot();
+        saved.validate().unwrap();
+        let json = serde_json::to_string(&saved).unwrap();
+        assert!(!json.contains("\"visual\":") && !json.contains("\"question\":"));
+        let decoded: PracticeNotebook = serde_json::from_str(&json).unwrap();
+        decoded.validate().unwrap();
+        let mut restored = Practice::default();
+        restored.apply_notebook(decoded.clone());
+        restored.apply_notebook(decoded);
+        assert_eq!(
+            serde_json::to_value(restored.notebook_snapshot()).unwrap(),
+            serde_json::to_value(saved).unwrap()
+        );
+        assert_eq!(restored.current_question().problem_text(), problem);
+        assert_eq!(restored.current_session().revealed_steps, 2);
+        assert!(!restored.current_session().show_visual);
+        restored.current_session_mut().response = restored.current_question().answer.display();
+        restored.check_answer();
+        assert_eq!(
+            restored.current_session().progress,
+            Progress {
+                attempted: 1,
+                correct: 0
+            }
+        );
+        restored.set_level(0);
+        restored.check_answer();
+        assert_eq!(
+            restored.current_session().progress,
+            Progress {
+                attempted: 1,
+                correct: 1
+            }
+        );
+        restored.set_level(1);
+        assert_eq!(restored.current_session().response, " ٣/٤ ");
+        assert!(restored.current_session().hint_shown);
+    }
+
+    #[test]
+    fn practice_notebook_rejects_duplicate_invalid_and_score_inflating_sessions() {
+        let valid = Practice::default().notebook_snapshot();
+        valid.validate().unwrap();
+        let mut invalid = valid.clone();
+        invalid.level = 4;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.selected[0] = TopicId::Matrices;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions.push(invalid.sessions[0].clone());
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions = vec![invalid.sessions[0].clone(); MAX_NOTEBOOK_SESSIONS + 1];
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions.clear();
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions[0].topic = TopicId::Subtraction;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions[0].response = "x".repeat(MAX_NOTEBOOK_RESPONSE_BYTES + 1);
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions[0].progress.correct = 1;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.sessions[0].progress.attempted = 1;
+        assert!(
+            invalid.validate().is_err(),
+            "An uncounted first question cannot already contribute a score"
+        );
+        invalid = valid.clone();
+        invalid.sessions[0].feedback_kind = FeedbackKind::Correct;
+        invalid.sessions[0].feedback = "Correct.".into();
+        assert!(
+            invalid.validate().is_err(),
+            "Checked feedback cannot lose the counted flag"
+        );
+        invalid = valid.clone();
+        invalid.sessions[0].show_steps = true;
+        invalid.sessions[0].revealed_steps = 1;
+        assert!(
+            invalid.validate().is_err(),
+            "Revealed answers must remain counted"
+        );
+        let mut unknown = serde_json::to_value(valid).unwrap();
+        unknown["sessions"][0]["question"] = "untrusted stored question".into();
+        assert!(serde_json::from_value::<PracticeNotebook>(unknown).is_err());
+    }
+
     #[test]
     fn locale_answers_accept_fractions_and_semicolon_lists_without_editing_the_response() {
         let fraction = Answer::Number {

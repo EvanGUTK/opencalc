@@ -15,6 +15,7 @@
   <a href="#what-you-can-do">Features</a> ·
   <a href="#accessibility">Accessibility</a> ·
   <a href="#learning-and-practice">Learning</a> ·
+  <a href="#local-notebooks">Notebooks</a> ·
   <a href="#development">Development</a>
 </p>
 
@@ -112,7 +113,7 @@ Built-in lessons and practice are generated locally without AI. Questions includ
 
 Answers accept equivalent fractions and constant expressions such as `sqrt(2)`. Multiple answers can be given in either order where appropriate. Trigonometry questions state their units; trig expressions entered as practice answers use radians. Rounding requirements appear in the question.
 
-Scores track first attempts separately by topic and difficulty. Repeated checks do not inflate progress; revealing an unanswered solution counts as an attempt. Scores can be hidden without removing feedback. Progress currently lasts for the app session; saved notebooks and persistent progress are planned. [Practice details](docs/notes/practice-learning.md) explain the scoring and conventions.
+Scores track first attempts separately by topic and difficulty. Repeated checks do not inflate progress; revealing an unanswered solution counts as an attempt. Scores can be hidden without removing feedback. Choose **Include practice progress and current answers** when saving a notebook to keep this work across restarts. [Practice details](docs/notes/practice-learning.md) explain the scoring and conventions.
 
 For a worked lesson, choose **Learn** or **Explain**, type a problem, or upload/drag in a UTF-8 TXT file. The local solver covers arithmetic, linear/quadratic equations and polynomial calculus through degree 8. Try `2*x + 3 = 11`, `diff(x^3, 2)` or `integral(x^2, 0, 3)`.
 
@@ -126,6 +127,22 @@ An installed vision model can transcribe an uploaded PNG/JPG problem. Review and
 Uploaded content and conversations stay in session memory and are not saved as preferences. OpenCalc sends these requests to loopback without a proxy. A live model has not been validated; serialization, parsing, error paths and HTTP transport with a local mock server have tests. The integration uses Ollama's [chat](https://docs.ollama.com/api/chat) and [vision](https://docs.ollama.com/capabilities/vision) interfaces.
 
 </details>
+
+## Local notebooks
+
+Choose **Notebook** in the compact toolbar, or **More → Notebook** in the workspace. **Save**, **Open**, **New** and **Save as** use local `.opencalc.json` files. The title bar marks unsaved changes with `*`; New, Open and closing the app offer Save, Discard or Cancel when needed.
+
+A notebook keeps calculations and history, full answer memory, variables, lists, program drafts, ten graph functions, graph views/drawings, matrices, local worked lessons and notes. Practice progress and current answers are optional. Reopening restores the saved number notation while keeping your display, speech and motor-access preferences.
+
+<p align="center">
+  <img src="assets/screenshots/notebook.png" alt="OpenCalc notebook panel with save, open, notes and optional practice progress" width="100%">
+</p>
+
+**Ctrl+S** saves, **Ctrl+Shift+S** saves to another file, **Ctrl+O** opens and **Ctrl+N** starts a new notebook. A typed-path option is available alongside the Windows file dialogs. Files are plain JSON in the location you choose; AI chats, attachments and running programs are not saved. Notebooks are limited to 2 MiB and validated before replacing your current work. [Notebook behavior and format](docs/notes/notebooks.md) describes the bounds and verification.
+
+```powershell
+./target/release/opencalc.exe --notebook "homework.opencalc.json"
+```
 
 ## Get started
 

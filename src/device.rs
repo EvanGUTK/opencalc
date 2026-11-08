@@ -7,7 +7,8 @@ const MAX_EDITOR_HISTORY: usize = 100;
 const MAX_TRANSFER_BYTES: usize = 160 * 1024;
 const MAX_LIST_BYTES: usize = 32_000;
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub(crate) enum DeviceScreen {
     #[default]
     Home,
@@ -39,7 +40,8 @@ pub(crate) enum DeviceScreen {
     Angles,
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 enum EditTarget {
     #[default]
     Home,
@@ -70,16 +72,234 @@ struct EditorSnapshot {
     cursor: Option<usize>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct TransferPacket {
     version: u32,
     variables: BTreeMap<char, f64>,
+    #[serde(deserialize_with = "deserialize_complex_variables")]
     complex_variables: BTreeMap<char, crate::complex::Complex>,
     lists: [String; 6],
     sequences: [String; 3],
     functions: Vec<String>,
     programs: BTreeMap<String, String>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StrictComplex {
+    re: f64,
+    im: f64,
+}
+
+fn deserialize_complex<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<crate::complex::Complex, D::Error> {
+    let value = StrictComplex::deserialize(deserializer)?;
+    Ok(crate::complex::Complex {
+        re: value.re,
+        im: value.im,
+    })
+}
+
+fn deserialize_complex_variables<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<BTreeMap<char, crate::complex::Complex>, D::Error> {
+    let values = BTreeMap::<char, StrictComplex>::deserialize(deserializer)?;
+    Ok(values
+        .into_iter()
+        .map(|(name, value)| {
+            (
+                name,
+                crate::complex::Complex {
+                    re: value.re,
+                    im: value.im,
+                },
+            )
+        })
+        .collect())
+}
+
+/// Calculator content and editable drafts; preferences and execution are kept out.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct DeviceNotebook {
+    version: u32,
+    data: TransferPacket,
+    real_answer: f64,
+    #[serde(deserialize_with = "deserialize_complex")]
+    complex_answer: crate::complex::Complex,
+    memory: f64,
+    display_value: f64,
+    display_complex: bool,
+    complex_mode: bool,
+    fraction: bool,
+    list_answer: Option<Vec<f64>>,
+    just_evaluated: bool,
+    power: bool,
+    insert_mode: bool,
+    screen: DeviceScreen,
+    input: EditTarget,
+    cursor: Option<usize>,
+    selection: Option<(usize, usize)>,
+    menu_index: usize,
+    store_target: bool,
+    selected_list: usize,
+    selected_sequence: usize,
+    statistics_draft: String,
+    sequence_index: String,
+    program_name: String,
+    program_source: String,
+    program_input: String,
+    window_inputs: [String; 3],
+    table_inputs: [String; 2],
+    transfer_draft: String,
+}
+
+impl DeviceNotebook {
+    pub(crate) fn validate(&self) -> Result<(), String> {
+        if self.version != 1 {
+            return Err("Unsupported calculator notebook version.".into());
+        }
+        validate_device_data_bounds(&self.data)?;
+        if !self.real_answer.is_finite()
+            || !self.memory.is_finite()
+            || !self.display_value.is_finite()
+            || !self.complex_answer.re.is_finite()
+            || !self.complex_answer.im.is_finite()
+        {
+            return Err("Calculator answers and memory must be finite.".into());
+        }
+        if self.real_answer != self.complex_answer.re {
+            return Err("Real and complex answer components disagree.".into());
+        }
+        if let Some(values) = &self.list_answer
+            && (values.is_empty()
+                || values.len() > 1000
+                || values.iter().any(|value| !value.is_finite()))
+        {
+            return Err("A saved list answer needs 1-1,000 finite values.".into());
+        }
+        if self.selected_list >= 6 || self.selected_sequence >= 3 {
+            return Err("Saved list or sequence selection is out of range.".into());
+        }
+        if matches!(self.input,EditTarget::ExtraFunction(index) if !(2..10).contains(&index))
+            || matches!(self.input,EditTarget::List(index) if index>=6)
+            || matches!(self.input,EditTarget::Sequence(index) if index>=3)
+        {
+            return Err("Saved calculator editor is out of range.".into());
+        }
+        let insertion_menu = matches!(
+            self.screen,
+            DeviceScreen::Math
+                | DeviceScreen::Catalog
+                | DeviceScreen::Tests
+                | DeviceScreen::Variables
+                | DeviceScreen::Angles
+        );
+        let editor_screen = screen_for_target(self.input);
+        let screen_has_editor = matches!(
+            self.screen,
+            DeviceScreen::Home
+                | DeviceScreen::Functions
+                | DeviceScreen::Window
+                | DeviceScreen::TableSettings
+                | DeviceScreen::Statistics
+                | DeviceScreen::Programs
+                | DeviceScreen::Matrices
+                | DeviceScreen::Lists
+                | DeviceScreen::Sequences
+                | DeviceScreen::Link
+        );
+        if !insertion_menu
+            && ((screen_has_editor && editor_screen != self.screen)
+                || (!screen_has_editor && self.input != EditTarget::Home))
+        {
+            return Err("Saved calculator screen and editor do not match.".into());
+        }
+        if self.input == EditTarget::ProgramInput {
+            return Err("A notebook cannot resume a running program input instruction.".into());
+        }
+        let menu_count = notebook_menu_count(self.screen);
+        if self.menu_index >= menu_count.max(1)
+            || self.store_target && self.screen != DeviceScreen::Variables
+        {
+            return Err("Saved calculator menu selection is invalid.".into());
+        }
+        if matches!(self.input,EditTarget::List(index) if usize::from(index)!=self.selected_list)
+            || matches!(self.input,EditTarget::Sequence(index) if usize::from(index)!=self.selected_sequence)
+        {
+            return Err("Saved calculator selection and editor disagree.".into());
+        }
+        validate_list_draft(&self.statistics_draft)?;
+        validate_notebook_text(&self.sequence_index, 1024, "Sequence index")?;
+        validate_notebook_text(&self.program_name, 64, "Current program name")?;
+        if self.program_name.chars().count() > 16 {
+            return Err("A current program name is limited to 16 characters.".into());
+        }
+        if self.program_name.chars().any(char::is_control) {
+            return Err("A current program name must stay on one line.".into());
+        }
+        validate_program_draft(&self.program_source)?;
+        validate_notebook_text(&self.program_input, 1024, "Program input")?;
+        for text in self.window_inputs.iter().chain(&self.table_inputs) {
+            validate_notebook_text(text, 1024, "Graph parameter draft")?;
+        }
+        validate_notebook_text(&self.transfer_draft, MAX_TRANSFER_BYTES, "Transfer draft")?;
+        self.validate_caret(self.editor_length_bound())
+    }
+
+    pub(crate) fn validate_editor_context(
+        &self,
+        home: &str,
+        matrix_a: &str,
+        matrix_b: &str,
+    ) -> Result<(), String> {
+        self.validate()?;
+        let count = match self.input {
+            EditTarget::Home => home.chars().count(),
+            EditTarget::MatrixA => matrix_a.chars().count(),
+            EditTarget::MatrixB => matrix_b.chars().count(),
+            _ => return Ok(()),
+        };
+        self.validate_caret(count)
+    }
+
+    fn validate_caret(&self, count: usize) -> Result<(), String> {
+        if self.cursor.is_some_and(|cursor| cursor > count)
+            || self
+                .selection
+                .is_some_and(|(first, second)| first > count || second > count)
+        {
+            return Err("Saved calculator caret is outside its editor.".into());
+        }
+        Ok(())
+    }
+
+    fn editor_length_bound(&self) -> usize {
+        match self.input {
+            EditTarget::Home => 1024,
+            EditTarget::MatrixA | EditTarget::MatrixB => 32 * 1024,
+            EditTarget::FirstFunction => self.data.functions[0].chars().count(),
+            EditTarget::SecondFunction => self.data.functions[1].chars().count(),
+            EditTarget::ExtraFunction(index) => {
+                self.data.functions[usize::from(index)].chars().count()
+            }
+            EditTarget::WindowX => self.window_inputs[0].chars().count(),
+            EditTarget::WindowY => self.window_inputs[1].chars().count(),
+            EditTarget::WindowRange => self.window_inputs[2].chars().count(),
+            EditTarget::TableStart => self.table_inputs[0].chars().count(),
+            EditTarget::TableStep => self.table_inputs[1].chars().count(),
+            EditTarget::Data => self.statistics_draft.chars().count(),
+            EditTarget::Program => self.program_source.chars().count(),
+            EditTarget::List(index) => self.data.lists[usize::from(index)].chars().count(),
+            EditTarget::Sequence(index) => self.data.sequences[usize::from(index)].chars().count(),
+            EditTarget::SequenceIndex => self.sequence_index.chars().count(),
+            EditTarget::ProgramName => self.program_name.chars().count(),
+            EditTarget::ProgramInput => self.program_input.chars().count(),
+            EditTarget::Transfer => self.transfer_draft.chars().count(),
+        }
+    }
 }
 
 const MATH_ITEMS: [(&str, &str); 10] = [
@@ -297,6 +517,133 @@ impl DeviceState {
 }
 
 impl EqualApp {
+    pub(crate) fn capture_device_notebook(&self) -> DeviceNotebook {
+        // Source is saved independently of a program's execution position. A
+        // restored Input draft is available when the user explicitly runs again.
+        let input = if self.device.input == EditTarget::ProgramInput {
+            EditTarget::Program
+        } else {
+            self.device.input
+        };
+        let mut notebook = DeviceNotebook {
+            version: 1,
+            data: TransferPacket {
+                version: 1,
+                variables: self.device.variables.clone(),
+                complex_variables: self.device.complex_variables.clone(),
+                lists: self.device.lists.clone(),
+                sequences: self.device.sequences.clone(),
+                functions: (0..10)
+                    .map(|index| self.graph_function(index).to_owned())
+                    .collect(),
+                programs: self.device.programs.clone(),
+            },
+            real_answer: self.answer,
+            complex_answer: self.device.complex_answer,
+            memory: self.device.memory,
+            display_value: self.device.display_value,
+            display_complex: self.device.display_complex,
+            complex_mode: self.device.complex_mode,
+            fraction: self.device.fraction,
+            list_answer: self.device.list_answer.clone(),
+            just_evaluated: self.device.just_evaluated,
+            power: self.device.power,
+            insert_mode: self.device.insert_mode,
+            screen: self.device.screen,
+            input,
+            cursor: if input == self.device.input {
+                self.device.cursor
+            } else {
+                None
+            },
+            selection: if input == self.device.input {
+                self.device.selection
+            } else {
+                None
+            },
+            menu_index: self
+                .device
+                .menu_index
+                .min(notebook_menu_count(self.device.screen).max(1) - 1),
+            store_target: self.device.store_target && self.device.screen == DeviceScreen::Variables,
+            selected_list: self.device.selected_list,
+            selected_sequence: self.device.selected_sequence,
+            statistics_draft: self.device.data.clone(),
+            sequence_index: self.device.sequence_index.clone(),
+            program_name: self.device.program_name.clone(),
+            program_source: self.device.program.clone(),
+            program_input: self.device.program_input.clone(),
+            window_inputs: self.device.window_inputs.clone(),
+            table_inputs: self.device.table_inputs.clone(),
+            transfer_draft: self.device.transfer.clone(),
+        };
+        let count = match input {
+            EditTarget::Home => self.expression.chars().count(),
+            EditTarget::MatrixA => self.matrix_a.chars().count(),
+            EditTarget::MatrixB => self.matrix_b.chars().count(),
+            _ => notebook.editor_length_bound(),
+        };
+        notebook.cursor = notebook.cursor.map(|cursor| cursor.min(count));
+        notebook.selection = notebook
+            .selection
+            .map(|(first, second)| (first.min(count), second.min(count)));
+        notebook
+    }
+
+    /// The document owner validates every section before applying any section.
+    pub(crate) fn apply_device_notebook(&mut self, notebook: DeviceNotebook) {
+        let TransferPacket {
+            variables,
+            complex_variables,
+            lists,
+            sequences,
+            functions,
+            programs,
+            ..
+        } = notebook.data;
+        for (index, source) in functions.into_iter().enumerate() {
+            *self.graph_function_mut(index) = source;
+        }
+        self.answer = notebook.real_answer;
+        self.second = false;
+        self.handheld_preview = false;
+        self.device = DeviceState {
+            screen: notebook.screen,
+            power: notebook.power,
+            memory: notebook.memory,
+            variables,
+            complex_variables,
+            fraction: notebook.fraction,
+            display_value: notebook.display_value,
+            just_evaluated: notebook.just_evaluated,
+            data: notebook.statistics_draft,
+            program: notebook.program_source,
+            program_name: notebook.program_name,
+            programs,
+            cursor: notebook.cursor,
+            selection: notebook.selection,
+            input: notebook.input,
+            menu_index: notebook.menu_index,
+            menu_selection_changed: true,
+            store_target: notebook.store_target,
+            insert_mode: notebook.insert_mode,
+            window_inputs: notebook.window_inputs,
+            table_inputs: notebook.table_inputs,
+            complex_mode: notebook.complex_mode,
+            complex_answer: notebook.complex_answer,
+            display_complex: notebook.display_complex,
+            list_answer: notebook.list_answer,
+            lists,
+            selected_list: notebook.selected_list,
+            sequences,
+            sequence_index: notebook.sequence_index,
+            selected_sequence: notebook.selected_sequence,
+            program_input: notebook.program_input,
+            transfer: notebook.transfer_draft,
+            ..DeviceState::default()
+        };
+    }
+
     pub(crate) fn evaluate(&mut self) {
         let normalized = match math::normalize_input(
             &self.expression.replace("->", "\u{2192}"),
@@ -2651,9 +2998,81 @@ fn valid_program_name(name: &str) -> bool {
         && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
-fn validate_transfer(packet: &TransferPacket) -> Result<(), String> {
+fn notebook_menu_count(screen: DeviceScreen) -> usize {
+    match screen {
+        DeviceScreen::Mode => 8,
+        DeviceScreen::Zoom => 3,
+        DeviceScreen::Math | DeviceScreen::Catalog => MATH_ITEMS.len(),
+        DeviceScreen::Tests => TEST_ITEMS.len(),
+        DeviceScreen::Apps => 6,
+        DeviceScreen::Memory => 2,
+        DeviceScreen::Variables => 26,
+        DeviceScreen::Angles => 4,
+        _ => 0,
+    }
+}
+
+fn validate_notebook_text(text: &str, limit: usize, name: &str) -> Result<(), String> {
+    if text.len() > limit {
+        return Err(format!("{name} exceeds its {limit}-byte limit."));
+    }
+    if text.chars().any(|character| {
+        (character.is_control() && !matches!(character, '\n' | '\r' | '\t'))
+            || matches!(character,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}')
+    }) {
+        return Err(format!("{name} contains an unsupported control character."));
+    }
+    Ok(())
+}
+
+fn validate_program_draft(source: &str) -> Result<(), String> {
+    validate_notebook_text(source, 8000, "Program source")?;
+    if source.lines().count() > 200 {
+        return Err("A program draft is limited to 200 lines.".into());
+    }
+    Ok(())
+}
+
+fn draft_list_count(source: &str, decimal_comma: bool) -> usize {
+    let mut count = 0;
+    let mut depth = 0_usize;
+    let mut item = false;
+    for character in source.chars() {
+        let separator = depth == 0
+            && (character.is_whitespace()
+                || matches!(character, ';' | '\u{ff1b}')
+                || !decimal_comma && matches!(character, ',' | '\u{ff0c}'));
+        if separator {
+            item = false;
+        } else {
+            if !item {
+                count += 1;
+                item = true;
+            }
+            if character == '(' {
+                depth += 1;
+            }
+            if character == ')' {
+                depth = depth.saturating_sub(1);
+            }
+        }
+    }
+    count
+}
+
+fn validate_list_draft(source: &str) -> Result<(), String> {
+    validate_notebook_text(source, MAX_LIST_BYTES, "List draft")?;
+    // A comma can be a decimal mark in an unfinished draft. Calculation applies
+    // the document's notation and checks the final scalar values before use.
+    if draft_list_count(source, false).min(draft_list_count(source, true)) > 1000 {
+        return Err("A list draft is limited to 1,000 entries.".into());
+    }
+    Ok(())
+}
+
+fn validate_device_data_bounds(packet: &TransferPacket) -> Result<(), String> {
     if packet.version != 1 || packet.functions.len() != 10 {
-        return Err("Expected OpenCalc transfer version 1 with ten graph functions.".into());
+        return Err("Expected OpenCalc calculator data version 1 with ten graph functions.".into());
     }
     if packet.variables.len() > 26
         || packet.complex_variables.len() > 26
@@ -2667,21 +3086,49 @@ fn validate_transfer(packet: &TransferPacket) -> Result<(), String> {
     {
         return Err("Variables must use A-Z and finite values.".into());
     }
+    for (name, value) in &packet.complex_variables {
+        if packet
+            .variables
+            .get(name)
+            .is_some_and(|real| value.im != 0.0 || *real != value.re)
+        {
+            return Err(format!(
+                "Stored real and complex values for {name} disagree."
+            ));
+        }
+    }
+    for source in &packet.lists {
+        validate_list_draft(source)?;
+    }
+    for source in packet.functions.iter().chain(&packet.sequences) {
+        validate_notebook_text(source, 1024, "Function draft")?;
+    }
+    if packet.programs.len() > 32 {
+        return Err("Save at most 32 named programs.".into());
+    }
+    for (name, source) in &packet.programs {
+        if !valid_program_name(name) {
+            return Err("Saved program names must start with a letter and use at most 16 letters, digits, or underscores.".into());
+        }
+        validate_program_draft(source)?;
+    }
+    Ok(())
+}
+
+fn validate_transfer(packet: &TransferPacket) -> Result<(), String> {
+    validate_device_data_bounds(packet)?;
     for list in &packet.lists {
         if !list.trim().is_empty() {
             parse_list_values(list, false)?;
         }
     }
     for source in &packet.functions {
-        if source.len() > 1024 {
-            return Err("A graph function exceeds 1,024 bytes.".into());
-        }
         if !source.trim().is_empty() {
             math::parse(source)?;
         }
     }
     for source in &packet.sequences {
-        if source.len() > 1024 || innermost_device_call(source)?.is_some() {
+        if innermost_device_call(source)?.is_some() {
             return Err("Sequence formulas must be bounded closed formulas in n.".into());
         }
         math::parse(&resolve_variables(
@@ -2689,13 +3136,7 @@ fn validate_transfer(packet: &TransferPacket) -> Result<(), String> {
             &packet.variables,
         )?)?;
     }
-    if packet.programs.len() > 32 {
-        return Err("Import at most 32 programs at a time.".into());
-    }
-    for (name, source) in &packet.programs {
-        if !valid_program_name(name) {
-            return Err("Program names must start with a letter and contain at most 16 letters, digits, or underscores.".into());
-        }
+    for source in packet.programs.values() {
         crate::programs::Program::parse(source)?;
     }
     Ok(())
@@ -2769,6 +3210,250 @@ fn format_dms(value: f64, precision: usize) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn notebook_round_trip_preserves_complex_content_and_unsaved_drafts_without_mutation() {
+        let mut source = EqualApp::with_settings(Settings::default(), None);
+        source.answer = 3.25;
+        source.device.complex_answer = crate::complex::Complex { re: 3.25, im: -2.5 };
+        source.device.display_value = 3.25;
+        source.device.display_complex = true;
+        source.device.complex_mode = true;
+        source.device.fraction = true;
+        source.device.memory = -7.5;
+        source.device.variables.insert('A', 2.5);
+        source
+            .device
+            .complex_variables
+            .insert('Z', crate::complex::Complex { re: -1.0, im: 2.0 });
+        source
+            .device
+            .programs
+            .insert("STORED".into(), "If A".into());
+        source.device.program_name = "New draft".into();
+        source.device.program = "Disp \"unfinished".into();
+        source.device.program_input = "7+".into();
+        source.device.lists[2] = "11; 12;".into();
+        source.device.sequences[1] = "n^".into();
+        source.device.sequence_index = "n+".into();
+        source.device.window_inputs = ["-".into(), "2e".into(), "bad(".into()];
+        source.device.table_inputs = ["1+".into(), "-".into()];
+        source.device.transfer = "{ unfinished".into();
+        *source.graph_function_mut(9) = "x+".into();
+        source.set_device_screen(DeviceScreen::Statistics);
+        source.device.selected_list = 2;
+        source.device.data = "1; sqrt(".into();
+        source.device.cursor = Some(5);
+        source.device.selection = Some((0, 2));
+        let saved_programs = source.device.programs.clone();
+        let snapshot = source.capture_device_notebook();
+        snapshot.validate().unwrap();
+        assert_eq!(source.device.data, "1; sqrt(");
+        assert_eq!(
+            source.device.programs, saved_programs,
+            "capture cannot auto-save the current program draft"
+        );
+        let json = serde_json::to_string(&snapshot).unwrap();
+        let restored: DeviceNotebook = serde_json::from_str(&json).unwrap();
+        restored.validate().unwrap();
+        let mut target = EqualApp::with_settings(Settings::default(), None);
+        target.expression = "owned by document".into();
+        target.matrix_a = "matrix owner A".into();
+        target.matrix_b = "matrix owner B".into();
+        target.settings.readable = true;
+        target.settings.access.decimal_comma = true;
+        target.apply_device_notebook(restored);
+        assert_eq!(target.answer, 3.25);
+        assert_eq!(
+            target.device.complex_answer,
+            crate::complex::Complex { re: 3.25, im: -2.5 }
+        );
+        assert_eq!(
+            target.device.complex_variables[&'Z'],
+            crate::complex::Complex { re: -1.0, im: 2.0 }
+        );
+        assert_eq!(target.device.memory, -7.5);
+        assert!(
+            target.device.display_complex && target.device.complex_mode && target.device.fraction
+        );
+        assert_eq!(target.device.data, "1; sqrt(");
+        assert_eq!(target.device.program, "Disp \"unfinished");
+        assert_eq!(target.device.program_name, "New draft");
+        assert_eq!(target.graph_function(9), "x+");
+        assert_eq!(target.expression, "owned by document");
+        assert_eq!(target.matrix_a, "matrix owner A");
+        assert_eq!(target.matrix_b, "matrix owner B");
+        assert!(target.settings.readable && target.settings.access.decimal_comma);
+        assert_eq!(
+            serde_json::to_value(target.capture_device_notebook()).unwrap(),
+            serde_json::to_value(snapshot).unwrap()
+        );
+    }
+
+    #[test]
+    fn notebook_resets_execution_and_undo_but_keeps_program_and_list_answer_drafts() {
+        let mut source = EqualApp::with_settings(Settings::default(), None);
+        source.set_device_screen(DeviceScreen::Programs);
+        source.device.program = "Input A\nDisp A".into();
+        source.run_device_program();
+        assert!(source.device.program_waiting && source.device.program_execution.is_some());
+        source.device.program_input = "11+2".into();
+        source.device.list_answer = Some(vec![1.5, 2.5]);
+        source.device.undo.push(EditorSnapshot {
+            target: EditTarget::Home,
+            text: "prior text".into(),
+            cursor: Some(2),
+        });
+        source.device.redo = source.device.undo.clone();
+        source.device.transfer_undo = Some(source.transfer_packet());
+        for index in 0..32 {
+            source
+                .device
+                .programs
+                .insert(format!("P{index}"), "If".into());
+        }
+        let snapshot = source.capture_device_notebook();
+        snapshot.validate().unwrap();
+        assert_eq!(snapshot.data.programs.len(), 32);
+        let json = serde_json::to_value(&snapshot).unwrap();
+        for key in [
+            "settings",
+            "preferences",
+            "path",
+            "file_path",
+            "undo",
+            "redo",
+            "transfer_undo",
+            "program_execution",
+            "program_snapshot",
+            "program_waiting",
+            "program_output",
+        ] {
+            assert!(json.get(key).is_none(), "unexpected persisted field: {key}");
+        }
+        assert!(
+            source.device.program_execution.is_some(),
+            "capture must not stop a live program"
+        );
+        assert_eq!(source.device.input, EditTarget::ProgramInput);
+        let mut target = EqualApp::with_settings(Settings::default(), None);
+        target.device.undo = source.device.undo.clone();
+        target.apply_device_notebook(snapshot);
+        assert!(target.device.program_execution.is_none());
+        assert!(!target.device.program_waiting);
+        assert!(
+            target.device.undo.is_empty()
+                && target.device.redo.is_empty()
+                && target.device.transfer_undo.is_none()
+        );
+        assert_eq!(target.device.input, EditTarget::Program);
+        assert_eq!(target.device.program, "Input A\nDisp A");
+        assert_eq!(target.device.program_input, "11+2");
+        assert_eq!(target.device.list_answer, Some(vec![1.5, 2.5]));
+    }
+
+    #[test]
+    fn notebook_validation_rejects_nonfinite_values_invalid_indices_and_oversized_text() {
+        let app = EqualApp::with_settings(Settings::default(), None);
+        let valid = app.capture_device_notebook();
+        valid.validate().unwrap();
+        let rejects = |change: fn(&mut DeviceNotebook)| {
+            let mut bad = valid.clone();
+            change(&mut bad);
+            assert!(bad.validate().is_err());
+        };
+        rejects(|note| note.memory = f64::INFINITY);
+        rejects(|note| note.complex_answer.im = f64::NAN);
+        rejects(|note| note.real_answer = 1.0);
+        rejects(|note| note.list_answer = Some(vec![1.0; 1001]));
+        rejects(|note| note.list_answer = Some(vec![f64::INFINITY]));
+        rejects(|note| {
+            note.data.variables.insert('a', 1.0);
+        });
+        rejects(|note| {
+            note.data.variables.insert('A', f64::INFINITY);
+        });
+        rejects(|note| {
+            note.data.complex_variables.insert(
+                'Z',
+                crate::complex::Complex {
+                    re: 0.0,
+                    im: f64::INFINITY,
+                },
+            );
+        });
+        rejects(|note| {
+            note.data.variables.insert('A', 1.0);
+            note.data
+                .complex_variables
+                .insert('A', crate::complex::Complex::from_real(2.0));
+        });
+        rejects(|note| {
+            note.data.functions.pop();
+        });
+        rejects(|note| note.data.functions[0] = "x".repeat(1025));
+        rejects(|note| note.data.lists[0] = "1;".repeat(1001));
+        rejects(|note| note.data.lists[0] = "x".repeat(MAX_LIST_BYTES + 1));
+        rejects(|note| note.program_source = "x".repeat(8001));
+        rejects(|note| note.program_source = "x\n".repeat(201));
+        rejects(|note| {
+            for index in 0..33 {
+                note.data
+                    .programs
+                    .insert(format!("P{index}"), String::new());
+            }
+        });
+        rejects(|note| note.program_name = "x".repeat(17));
+        rejects(|note| note.program_name = "New\nname".into());
+        rejects(|note| note.sequence_index = "\u{202e}1".into());
+        rejects(|note| note.transfer_draft = "\u{1b}[31m".into());
+        rejects(|note| note.transfer_draft = "x".repeat(MAX_TRANSFER_BYTES + 1));
+        rejects(|note| note.cursor = Some(usize::MAX));
+        rejects(|note| note.input = EditTarget::ExtraFunction(255));
+        rejects(|note| note.selected_list = 6);
+        rejects(|note| note.menu_index = 1);
+        rejects(|note| note.input = EditTarget::FirstFunction);
+    }
+
+    #[test]
+    fn notebook_schema_and_external_editor_bounds_are_strict() {
+        let mut app = EqualApp::with_settings(Settings::default(), None);
+        app.expression = "12".into();
+        app.device.cursor = Some(100);
+        let snapshot = app.capture_device_notebook();
+        assert_eq!(
+            app.device.cursor,
+            Some(100),
+            "capture must not move the live caret"
+        );
+        assert_eq!(snapshot.cursor, Some(2));
+        snapshot.validate_editor_context("12", "", "").unwrap();
+        assert!(snapshot.validate_editor_context("1", "", "").is_err());
+        let mut unknown = serde_json::to_value(&snapshot).unwrap();
+        unknown["unknown"] = true.into();
+        assert!(serde_json::from_value::<DeviceNotebook>(unknown).is_err());
+        let mut complex = serde_json::to_value(&snapshot).unwrap();
+        complex["complex_answer"]["unknown"] = true.into();
+        assert!(serde_json::from_value::<DeviceNotebook>(complex).is_err());
+        let mut variable = serde_json::to_value(&snapshot).unwrap();
+        variable["data"]["complex_variables"]["Z"] =
+            serde_json::json!({"re":1,"im":0,"unknown":true});
+        assert!(serde_json::from_value::<DeviceNotebook>(variable).is_err());
+        app.set_device_screen(DeviceScreen::Matrices);
+        app.matrix_a = "1 ".repeat(1000);
+        app.device.cursor = Some(1500);
+        let matrix = app.capture_device_notebook();
+        matrix.validate().unwrap();
+        matrix
+            .validate_editor_context(&app.expression, &app.matrix_a, &app.matrix_b)
+            .unwrap();
+        assert!(
+            matrix
+                .validate_editor_context(&app.expression, "1", &app.matrix_b)
+                .is_err()
+        );
+    }
+
     #[test]
     fn returning_home_from_an_editor_restores_the_calculation_input() {
         let ctx = egui::Context::default();

@@ -12,6 +12,9 @@ mod layout;
 mod learning;
 mod math;
 mod matlab;
+mod notebook;
+mod notebook_files;
+mod notebook_ui;
 mod practice;
 mod programs;
 mod speech;
@@ -138,6 +141,7 @@ struct EqualApp {
     graph_extra: [String; 8],
     graph_tools: graph_tools::GraphTools,
     graph_audio: audio_trace::GraphAudio,
+    notebook: notebook_ui::NotebookState,
 }
 impl EqualApp {
     fn new(cc: &eframe::CreationContext<'_>, screenshot: Option<PathBuf>) -> Self {
@@ -210,6 +214,7 @@ impl EqualApp {
             graph_extra: Default::default(),
             graph_tools: graph_tools::GraphTools::default(),
             graph_audio: audio_trace::GraphAudio::default(),
+            notebook: notebook_ui::NotebookState::default(),
         }
     }
     fn speak(&mut self, text: &str) {
@@ -236,6 +241,7 @@ impl EqualApp {
             || self.learning.overlay_open()
             || self.a11y.show_shortcuts
             || self.a11y.show_glossary
+            || self.notebook.overlay_open()
     }
     pub(crate) fn stop_audio(&mut self) {
         let speech = self.speech.stop();
@@ -384,7 +390,7 @@ impl EqualApp {
         if !self.access_overlay_open() && !self.a11y.overlay_was_open {
             self.a11y.workspace_focus = ctx.memory(|memory| memory.focused());
         }
-        let shortcut_consumed = self.application_shortcuts(ctx);
+        let shortcut_consumed = self.notebook_shortcuts(ctx) || self.application_shortcuts(ctx);
         let access_consumed = self.handle_access_input(ctx);
         let overlay_open = self.access_overlay_open() || egui::Popup::is_any_open(ctx);
         if ctx.input(|i| !i.raw.dropped_files.is_empty()) {
@@ -548,6 +554,7 @@ impl eframe::App for EqualApp {
             }
         }
         self.tutor.poll(ctx);
+        self.poll_notebook(ctx);
         if let Err(error) = self.speech.poll() {
             self.message = error;
         }
@@ -558,6 +565,7 @@ impl eframe::App for EqualApp {
         self.draw(ctx);
         self.windows(ctx);
         self.accessibility_help_windows(ctx);
+        self.notebook_windows(ctx);
         self.sync_overlay_focus(ctx);
         self.frame_count += 1;
         if self.screenshot.is_some() {
@@ -647,6 +655,7 @@ fn main() -> eframe::Result {
     let decimal_comma = args.iter().any(|value| value == "--decimal-comma");
     let initial_expression = argument("--expression");
     let complex_mode = args.iter().any(|value| value == "--complex");
+    let notebook_path = argument("--notebook").map(PathBuf::from);
     let font_scale = argument("--font-scale")
         .and_then(|value| value.parse::<f32>().ok())
         .filter(|value| value.is_finite());
@@ -685,8 +694,16 @@ fn main() -> eframe::Result {
             if readable {
                 app.settings.readable = true;
             }
-            if access_layout.as_deref() == Some("accessible") {
-                app.settings.access.layout = accessibility::CalculatorLayout::Accessible;
+            if let Some(layout) = access_layout.as_deref() {
+                match layout {
+                    "accessible" => {
+                        app.settings.access.layout = accessibility::CalculatorLayout::Accessible
+                    }
+                    "familiar" => {
+                        app.settings.access.layout = accessibility::CalculatorLayout::Familiar
+                    }
+                    _ => {}
+                }
             }
             if let Some(theme) = access_theme.as_deref() {
                 app.settings.access.theme = match theme {
@@ -758,6 +775,7 @@ fn main() -> eframe::Result {
                     Some("settings") => app.show_settings = true,
                     Some("glossary") => app.a11y.show_glossary = true,
                     Some("shortcuts") => app.a11y.show_shortcuts = true,
+                    Some("notebook") => app.notebook.show = true,
                     Some("graph") => app.tab = Tab::Graph,
                     Some("toolkit") => app.tab = Tab::Toolkit,
                     Some("practice") => app.tab = Tab::Practice,
@@ -802,6 +820,9 @@ fn main() -> eframe::Result {
             }
             if show_solution && app.tab == Tab::Practice {
                 app.practice.reveal_answer();
+            }
+            if let Some(path) = notebook_path {
+                app.open_notebook_path(&cc.egui_ctx, path);
             }
             app.initial_window_size = Some(size.unwrap_or(if app.tab != Tab::Calculator {
                 [1360.0, 940.0]

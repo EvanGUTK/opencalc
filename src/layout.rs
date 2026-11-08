@@ -117,6 +117,10 @@ impl EqualApp {
                     }
                     ui.menu_button("More", |ui| {
                         ui.set_max_width((ctx.content_rect().width() - 20.0).clamp(40.0, 240.0));
+                        if ui.add(egui::Button::new("Notebook").wrap()).clicked() {
+                            self.open_notebook_window(ctx);
+                            ui.close();
+                        }
                         if ui.add(egui::Button::new("Quick guide").wrap()).clicked() {
                             self.show_help = true;
                             ui.close();

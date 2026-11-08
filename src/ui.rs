@@ -44,6 +44,9 @@ impl EqualApp {
                     if ui.button("Workspace").clicked() {
                         self.show_workspace = true;
                     }
+                    if ui.button("Notebook").clicked() {
+                        self.open_notebook_window(ctx);
+                    }
                     if ui.button("Read answer").clicked() {
                         self.speak(&self.result.clone());
                     }

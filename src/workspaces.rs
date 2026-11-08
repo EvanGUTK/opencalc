@@ -6,7 +6,8 @@ const MIN_TRACE_STEP: f64 = 0.000_000_1;
 const MAX_GRAPH_COORDINATE: f64 = 1.0e12;
 const MAX_TABLE_ROWS: usize = 100;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct GraphAccess {
     pub(crate) trace_x: f64,
     pub(crate) trace_step: f64,
@@ -15,6 +16,67 @@ pub(crate) struct GraphAccess {
     pub(crate) table_step: f64,
     pub(crate) table_rows: usize,
     pub(crate) keyboard_trace: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct GraphNotebook {
+    pub(crate) range: f64,
+    pub(crate) center: [f64; 2],
+    pub(crate) surface: bool,
+    pub(crate) table: bool,
+    pub(crate) trace: GraphAccess,
+    pub(crate) drawings: Vec<graph_tools::Drawing>,
+}
+
+impl GraphNotebook {
+    pub(crate) fn validate(&self) -> Result<(), String> {
+        if !self.range.is_finite() || !(0.05..=1000.0).contains(&self.range) {
+            return Err("Graph range must be between 0.05 and 1000.".into());
+        }
+        if self
+            .center
+            .iter()
+            .any(|value| !value.is_finite() || value.abs() > MAX_GRAPH_COORDINATE)
+        {
+            return Err(
+                "Graph center coordinates must be finite and between -1e12 and 1e12.".into(),
+            );
+        }
+        if !self.trace.trace_x.is_finite() || self.trace.trace_x.abs() > MAX_GRAPH_COORDINATE {
+            return Err("Graph trace x must be finite and between -1e12 and 1e12.".into());
+        }
+        if !self.trace.trace_step.is_finite()
+            || !(MIN_TRACE_STEP..=1.0e6).contains(&self.trace.trace_step)
+        {
+            return Err("Graph trace step must be between 0.0000001 and 1000000.".into());
+        }
+        if self.trace.selected >= 10 {
+            return Err("Graph trace must select a curve from Y1 to Y10.".into());
+        }
+        if self.trace.table_step.abs() > MAX_GRAPH_COORDINATE {
+            return Err(
+                "Graph table step must be between -1e12 and 1e12 and cannot be zero.".into(),
+            );
+        }
+        table_coordinates(
+            self.trace.table_start,
+            self.trace.table_step,
+            self.trace.table_rows,
+        )?;
+        if self.drawings.len() > graph_tools::MAX_DRAWINGS {
+            return Err(format!(
+                "Graph notebooks support at most {} drawings.",
+                graph_tools::MAX_DRAWINGS
+            ));
+        }
+        for (index, drawing) in self.drawings.iter().enumerate() {
+            drawing
+                .validate()
+                .map_err(|error| format!("Graph drawing {}: {error}", index + 1))?;
+        }
+        Ok(())
+    }
 }
 impl Default for GraphAccess {
     fn default() -> Self {
@@ -108,6 +170,28 @@ fn curve_pattern_name(index: usize) -> &'static str {
 }
 
 impl EqualApp {
+    pub(crate) fn capture_graph_notebook(&self) -> GraphNotebook {
+        GraphNotebook {
+            range: self.range,
+            center: self.center,
+            surface: self.surface,
+            table: self.table,
+            trace: self.graph_access.clone(),
+            drawings: self.graph_tools.drawings.clone(),
+        }
+    }
+
+    pub(crate) fn apply_graph_notebook(&mut self, notebook: GraphNotebook) {
+        self.range = notebook.range;
+        self.center = notebook.center;
+        self.surface = notebook.surface;
+        self.table = notebook.table;
+        self.graph_access = notebook.trace;
+        self.graph_tools = graph_tools::GraphTools::default();
+        self.graph_tools.drawings = notebook.drawings;
+        self.graph_error.clear();
+    }
+
     pub(crate) fn graph_function_count(&self) -> usize {
         10
     }
@@ -1152,6 +1236,159 @@ impl EqualApp {
 #[cfg(test)]
 mod graph_tests {
     use super::*;
+
+    #[test]
+    fn graph_notebook_roundtrip_preserves_sparse_functions_and_preferences() {
+        let mut source = EqualApp::with_settings(Settings::default(), None);
+        for index in 0..10 {
+            source.graph_function_mut(index).clear();
+        }
+        *source.graph_function_mut(0) = "x^2".into();
+        *source.graph_function_mut(9) = "sin(x)+10".into();
+        source.range = 21.5;
+        source.center = [12.0, -7.5];
+        source.surface = false;
+        source.table = true;
+        source.graph_access = GraphAccess {
+            trace_x: 1.25,
+            trace_step: 0.125,
+            selected: 9,
+            table_start: -2.5,
+            table_step: -0.25,
+            table_rows: 13,
+            keyboard_trace: true,
+        };
+        source.graph_tools.drawings = vec![
+            graph_tools::Drawing::Point([1.0, 2.0]),
+            graph_tools::Drawing::Line([-2.0, 3.0], [4.0, -5.0]),
+            graph_tools::Drawing::Circle {
+                center: [2.0, 4.0],
+                radius: 1.5,
+            },
+        ];
+        let snapshot = source.capture_graph_notebook();
+        snapshot.validate().unwrap();
+        let json = serde_json::to_string(&snapshot).unwrap();
+        let decoded: GraphNotebook = serde_json::from_str(&json).unwrap();
+        decoded.validate().unwrap();
+        assert_eq!(decoded, snapshot);
+        let encoded: serde_json::Value = serde_json::from_str(&json).unwrap();
+        for separately_owned in [
+            "functions",
+            "graph_a",
+            "graph_b",
+            "graph_extra",
+            "settings",
+            "graph_audio",
+        ] {
+            assert!(
+                encoded.get(separately_owned).is_none(),
+                "Functions and preferences have separate notebook owners"
+            );
+        }
+
+        let functions: [String; 10] =
+            std::array::from_fn(|index| source.graph_function(index).into());
+        let mut restored = EqualApp::with_settings(Settings::default(), None);
+        for (index, function) in functions.iter().enumerate() {
+            *restored.graph_function_mut(index) = function.clone();
+        }
+        restored.settings.access.decimal_comma = true;
+        restored.settings.contrast = true;
+        restored.settings.level = 2;
+        restored.settings.degrees = false;
+        restored.settings.precision = 4;
+        restored.graph_error = "Old graph error".into();
+        restored.apply_graph_notebook(decoded);
+        assert_eq!(restored.capture_graph_notebook(), snapshot);
+        assert_eq!(restored.active_graph_indices(), vec![0, 9]);
+        for (index, function) in functions.iter().enumerate() {
+            assert_eq!(restored.graph_function(index), function);
+        }
+        assert!(restored.settings.access.decimal_comma && restored.settings.contrast);
+        assert_eq!(restored.settings.level, 2);
+        assert!(!restored.settings.degrees);
+        assert_eq!(restored.settings.precision, 4);
+        assert!(restored.graph_error.is_empty());
+    }
+
+    #[test]
+    fn graph_notebook_rejects_invalid_numeric_view_trace_and_table_state() {
+        let snapshot = EqualApp::with_settings(Settings::default(), None).capture_graph_notebook();
+        let invalid = |change: fn(&mut GraphNotebook)| {
+            let mut candidate = snapshot.clone();
+            change(&mut candidate);
+            assert!(
+                candidate.validate().is_err(),
+                "Invalid state must be rejected before apply"
+            );
+        };
+        for change in [
+            (|value: &mut GraphNotebook| value.range = f64::NAN) as fn(&mut GraphNotebook),
+            |value| value.range = 0.049,
+            |value| value.range = 1000.1,
+            |value| value.center[0] = f64::INFINITY,
+            |value| value.center[1] = -1.1e12,
+            |value| value.trace.trace_x = f64::NAN,
+            |value| value.trace.trace_x = 1.1e12,
+            |value| value.trace.trace_step = 0.0,
+            |value| value.trace.trace_step = -1.0,
+            |value| value.trace.trace_step = 1e-8,
+            |value| value.trace.trace_step = f64::INFINITY,
+            |value| value.trace.trace_step = 1.1e6,
+            |value| value.trace.selected = 10,
+            |value| value.trace.table_start = f64::NAN,
+            |value| value.trace.table_start = 1.1e12,
+            |value| value.trace.table_step = 0.0,
+            |value| value.trace.table_step = f64::INFINITY,
+            |value| value.trace.table_step = 1.1e12,
+            |value| value.trace.table_rows = 0,
+            |value| value.trace.table_rows = 101,
+            |value| {
+                value.trace.table_start = 1.0e12;
+                value.trace.table_step = 1.0;
+                value.trace.table_rows = 2;
+            },
+        ] {
+            invalid(change);
+        }
+        let mut encoded = serde_json::to_value(snapshot).unwrap();
+        encoded["unexpected"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<GraphNotebook>(encoded).is_err());
+    }
+
+    #[test]
+    fn graph_notebook_rejects_invalid_and_excessive_drawings() {
+        let mut snapshot =
+            EqualApp::with_settings(Settings::default(), None).capture_graph_notebook();
+        for drawing in [
+            graph_tools::Drawing::Point([f64::NAN, 0.0]),
+            graph_tools::Drawing::Point([1.1e12, 0.0]),
+            graph_tools::Drawing::Line([1.0, 2.0], [1.0, 2.0]),
+            graph_tools::Drawing::Circle {
+                center: [0.0, 0.0],
+                radius: 0.0,
+            },
+            graph_tools::Drawing::Circle {
+                center: [0.0, 0.0],
+                radius: 1.1e6,
+            },
+            graph_tools::Drawing::Circle {
+                center: [0.0, f64::INFINITY],
+                radius: 1.0,
+            },
+        ] {
+            snapshot.drawings = vec![drawing];
+            assert!(snapshot.validate().is_err());
+        }
+        snapshot.drawings =
+            vec![graph_tools::Drawing::Point([0.0, 0.0]); graph_tools::MAX_DRAWINGS];
+        snapshot.validate().unwrap();
+        snapshot
+            .drawings
+            .push(graph_tools::Drawing::Point([1.0, 1.0]));
+        assert!(snapshot.validate().is_err());
+    }
 
     #[test]
     fn trace_evaluates_live_functions_and_angle_mode() {

@@ -5,7 +5,7 @@ const ANALYSIS_SAMPLES: usize = 512;
 const INTEGRAL_SAMPLES: usize = 1024;
 const ITERATIONS: usize = 96;
 const MAX_COORDINATE: f64 = 1.0e12;
-const MAX_DRAWINGS: usize = 128;
+pub(crate) const MAX_DRAWINGS: usize = 128;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub(crate) enum Analysis {
@@ -49,7 +49,8 @@ enum DrawKind {
     Circle,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) enum Drawing {
     Point([f64; 2]),
     Line([f64; 2], [f64; 2]),
@@ -74,7 +75,7 @@ impl Drawing {
             ),
         }
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(crate) fn validate(&self) -> Result<(), String> {
         let point = |point: &[f64; 2]| {
             point
                 .iter()
@@ -842,6 +843,35 @@ impl EqualApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn notebook_omits_transient_graph_results_audio_status_and_undo() {
+        let mut app = EqualApp::with_settings(crate::Settings::default(), None);
+        app.graph_tools.output = "Old calculation result".into();
+        app.graph_tools.summary = "Cached sample summary".into();
+        app.graph_tools.audio_status = "Prior audio playback status".into();
+        app.graph_tools.undo_drawings = Some(vec![Drawing::Point([9.0, 9.0])]);
+        app.graph_tools.drawings = vec![Drawing::Point([1.0, 2.0])];
+        let notebook = app.capture_graph_notebook();
+        notebook.validate().unwrap();
+        let json = serde_json::to_string(&notebook).unwrap();
+        for transient in [
+            "Old calculation result",
+            "Cached sample summary",
+            "Prior audio playback status",
+            "undo_drawings",
+            "graph_audio",
+        ] {
+            assert!(!json.contains(transient));
+        }
+        app.apply_graph_notebook(notebook);
+        assert_eq!(app.graph_tools.drawings, vec![Drawing::Point([1.0, 2.0])]);
+        assert!(app.graph_tools.output.is_empty());
+        assert!(app.graph_tools.summary.is_empty());
+        assert!(app.graph_tools.audio_status.is_empty());
+        assert!(app.graph_tools.undo_drawings.is_none());
+    }
+
     #[test]
     fn zeros_intersections_and_extrema_match_known_values() {
         let zero = analyze(Analysis::Zero, "x^2-2", "", 0.0, 2.0, 0.0, false).unwrap();
