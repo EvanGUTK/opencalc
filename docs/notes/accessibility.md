@@ -47,6 +47,6 @@ The existing in-app assistive-technology checklist records only tasks actually t
 
 2. Added 25 topics and three difficulty levels per topic; see [[practice-learning]].
 3. Calculator workflows and expanded access controls are implemented in [[calculator-accessibility]]; guidebook parity and real assistive-technology acceptance remain separate checks.
-4. Save and reopen local calculation/graph/lesson notebooks and optional progress.
+4. Local calculation/graph/lesson notebooks and optional practice progress are implemented; see [[notebooks]].
 
 Related: [[feature-research]]. Reflow is informed by [W3C's reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html); this is a native application and no WCAG conformance claim is made.

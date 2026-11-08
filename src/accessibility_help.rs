@@ -480,6 +480,10 @@ impl EqualApp {
                 shortcut(ui, "Ctrl+,", "open Settings");
                 shortcut(ui, "Ctrl+G", "open the math glossary");
                 shortcut(ui, "Ctrl+H", "open History");
+                shortcut(ui, "Ctrl+N", "new notebook, with a chance to save existing work");
+                shortcut(ui, "Ctrl+O", "open an OpenCalc notebook");
+                shortcut(ui, "Ctrl+S", "save the current notebook");
+                shortcut(ui, "Ctrl+Shift+S", "save a notebook to a different file");
                 shortcut(ui, "Alt+1", "Calculator");
                 shortcut(ui, "Alt+2", "Graphing");
                 shortcut(ui, "Alt+3", "Matrices");

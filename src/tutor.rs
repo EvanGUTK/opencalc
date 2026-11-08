@@ -1,25 +1,111 @@
 use crate::math::{self, Expr};
 use crate::ui::{card, primary};
 use crate::*;
+use serde::{Deserialize, Serialize};
 use std::sync::mpsc::{self, Receiver};
 
 const MAX_UPLOAD: u64 = 8 * 1024 * 1024;
 const MAX_PROBLEM: usize = 8000;
 const AI_URL: &str = "http://127.0.0.1:11434/api/chat";
+const MAX_NOTEBOOK_STEPS: usize = 128;
+const MAX_NOTEBOOK_LESSON_BYTES: usize = 256 * 1024;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Step {
     title: String,
     formula: String,
     why: String,
     basics: String,
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Lesson {
     steps: Vec<Step>,
     answer: String,
     check: String,
 }
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct TutorNotebook {
+    problem: String,
+    lesson_problem: String,
+    lesson: Option<Lesson>,
+    revealed: usize,
+    all_steps: bool,
+    hint: bool,
+}
+
+fn notebook_text(text: &str, limit: usize, label: &str) -> Result<(), String> {
+    if text.len() > limit {
+        return Err(format!("The saved {label} is too long."));
+    }
+    if text
+        .chars()
+        .any(|character| character.is_control() && !matches!(character, '\n' | '\r' | '\t'))
+    {
+        return Err(format!(
+            "The saved {label} contains unsupported control characters."
+        ));
+    }
+    Ok(())
+}
+
+impl TutorNotebook {
+    pub(crate) fn validate(&self) -> Result<(), String> {
+        notebook_text(&self.problem, MAX_PROBLEM, "tutor problem")?;
+        notebook_text(&self.lesson_problem, MAX_PROBLEM, "lesson problem")?;
+        let Some(lesson) = &self.lesson else {
+            return if self.revealed == 1 {
+                Ok(())
+            } else {
+                Err("A saved tutor draft must start at its first step.".into())
+            };
+        };
+        if self.hint || self.lesson_problem.trim().is_empty() {
+            return Err("The saved tutor lesson has inconsistent hint or problem state.".into());
+        }
+        if lesson.steps.is_empty() || lesson.steps.len() > MAX_NOTEBOOK_STEPS {
+            return Err(format!(
+                "A saved tutor lesson must contain 1 to {MAX_NOTEBOOK_STEPS} steps."
+            ));
+        }
+        if !(1..=lesson.steps.len()).contains(&self.revealed) {
+            return Err("The saved tutor step is outside its lesson.".into());
+        }
+        let mut bytes = self.problem.len() + self.lesson_problem.len();
+        for step in &lesson.steps {
+            for (text, limit, label) in [
+                (step.title.as_str(), MAX_PROBLEM, "step title"),
+                (step.formula.as_str(), MAX_PROBLEM, "step formula"),
+                (step.why.as_str(), MAX_PROBLEM, "step explanation"),
+                (step.basics.as_str(), MAX_PROBLEM, "step background"),
+            ] {
+                notebook_text(text, limit, label)?;
+                if text.trim().is_empty() {
+                    return Err(format!("The saved {label} is empty."));
+                }
+                bytes += text.len();
+            }
+        }
+        for (text, label) in [
+            (lesson.answer.as_str(), "lesson answer"),
+            (lesson.check.as_str(), "answer check"),
+        ] {
+            notebook_text(text, MAX_PROBLEM, label)?;
+            if text.trim().is_empty() {
+                return Err(format!("The saved {label} is empty."));
+            }
+            bytes += text.len();
+        }
+        if bytes > MAX_NOTEBOOK_LESSON_BYTES {
+            return Err("The saved tutor lesson contains too much text.".into());
+        }
+        Ok(())
+    }
+}
+
 enum JobResult {
     File(Option<PathBuf>),
     Ai(String, bool),
@@ -596,6 +682,36 @@ pub fn solve(problem: &str, level: usize, degrees: bool) -> Result<Lesson, Strin
 }
 
 impl Tutor {
+    pub(crate) fn notebook_snapshot(&self) -> TutorNotebook {
+        TutorNotebook {
+            problem: self.problem.clone(),
+            lesson_problem: self.lesson_problem.clone(),
+            lesson: self.lesson.clone(),
+            revealed: if self.lesson.is_some() {
+                self.revealed
+            } else {
+                1
+            },
+            all_steps: self.all_steps,
+            hint: self.hint,
+        }
+    }
+
+    /// The complete notebook is validated before any workspace is restored.
+    pub(crate) fn apply_notebook(&mut self, notebook: TutorNotebook) {
+        self.pending = None;
+        self.attachment = None;
+        self.ai_text.clear();
+        self.question.clear();
+        self.notice.clear();
+        self.problem = notebook.problem;
+        self.lesson_problem = notebook.lesson_problem;
+        self.lesson = notebook.lesson;
+        self.revealed = notebook.revealed;
+        self.all_steps = notebook.all_steps;
+        self.hint = notebook.hint;
+    }
+
     pub(crate) fn load_practice_lesson(&mut self, question: &crate::practice::Question) {
         self.load_practice_lesson_with_pacing(question, true);
     }
@@ -1198,6 +1314,107 @@ fn problem_hint(problem: &str, level: usize) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn tutor_notebook_roundtrip_restores_local_work_and_discards_old_ai_jobs() {
+        let mut source = Tutor {
+            problem: "2*x + 3 = 11".into(),
+            ..Tutor::default()
+        };
+        source.solve_local_with_pacing(2, true, true);
+        source.revealed = 2;
+        source.problem = "2*x + 3 = 11 (draft edit)".into();
+        source.ai_text = "private conversation marker".into();
+        source.question = "private followup marker".into();
+        source.model = "private-model-marker".into();
+        source.attachment = Some(("private-image-marker.png".into(), vec![1, 2, 3]));
+        let saved = source.notebook_snapshot();
+        saved.validate().unwrap();
+        let json = serde_json::to_string(&saved).unwrap();
+        for excluded in [
+            "private conversation marker",
+            "private followup marker",
+            "private-model-marker",
+            "private-image-marker",
+            "ai_enabled",
+            "pending",
+        ] {
+            assert!(!json.contains(excluded), "{excluded}");
+        }
+        let decoded: TutorNotebook = serde_json::from_str(&json).unwrap();
+        decoded.validate().unwrap();
+        let (sender, receiver) = mpsc::channel();
+        sender
+            .send(Ok(JobResult::Ai("stale explanation".into(), false)))
+            .unwrap();
+        let mut restored = Tutor {
+            pending: Some(receiver),
+            model: "keep-this-model".into(),
+            ai_enabled: true,
+            ..Tutor::default()
+        };
+        restored.attachment = Some(("stale-upload.png".into(), vec![9]));
+        restored.ai_text = "stale conversation".into();
+        restored.question = "stale followup".into();
+        restored.apply_notebook(decoded);
+        restored.poll(&egui::Context::default());
+        assert_eq!(
+            serde_json::to_value(restored.notebook_snapshot()).unwrap(),
+            serde_json::to_value(saved).unwrap()
+        );
+        assert_eq!(restored.model, "keep-this-model");
+        assert!(restored.ai_enabled);
+        assert!(restored.pending.is_none() && restored.attachment.is_none());
+        assert!(restored.ai_text.is_empty() && restored.question.is_empty());
+        assert!(
+            sender
+                .send(Ok(JobResult::Ai("late response".into(), false)))
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn tutor_notebook_validates_drafts_bounds_and_consistent_steps() {
+        let draft = Tutor::default().notebook_snapshot();
+        draft.validate().unwrap();
+        let mut tutor = Tutor::default();
+        tutor.solve_local(2, true);
+        let valid = tutor.notebook_snapshot();
+        valid.validate().unwrap();
+        let mut invalid = valid.clone();
+        invalid.problem = "x".repeat(MAX_PROBLEM + 1);
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.revealed = 0;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.revealed = invalid.lesson.as_ref().unwrap().steps.len() + 1;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.hint = true;
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.lesson.as_mut().unwrap().steps.clear();
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        invalid.lesson.as_mut().unwrap().steps[0].why.push('\0');
+        assert!(invalid.validate().is_err());
+        invalid = valid.clone();
+        let repeated = invalid.lesson.as_ref().unwrap().steps[0].clone();
+        invalid.lesson.as_mut().unwrap().steps = vec![repeated; MAX_NOTEBOOK_STEPS + 1];
+        assert!(invalid.validate().is_err());
+        let mut unknown = serde_json::to_value(valid).unwrap();
+        unknown["model"] = "untrusted model".into();
+        assert!(serde_json::from_value::<TutorNotebook>(unknown).is_err());
+        tutor.hint = true;
+        tutor.lesson = None;
+        tutor.revealed = 4;
+        let hinted_draft = tutor.notebook_snapshot();
+        hinted_draft.validate().unwrap();
+        assert_eq!(hinted_draft.revealed, 1);
+        assert!(hinted_draft.hint);
+    }
+
     #[test]
     fn new_tutor_explanations_use_the_selected_pace() {
         let mut tutor = Tutor {

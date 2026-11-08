@@ -24,7 +24,7 @@ Questions use bounded deterministic integer mixing for repeatable variation with
 - Each topic/difficulty has its own question index, response, reveal state, and first-attempt score. Switching away and back preserves that session.
 - Invalid text does not count. The first valid submitted answer counts once. Later correction provides feedback without rewriting the first-attempt score.
 - Revealing, copying, or opening the full explanation counts an unanswered question as an attempt without a correct answer. Repeating these actions cannot add attempts.
-- Reset affects the selected topic/difficulty and advances to a fresh question. No practice data is written to preferences; cross-session saving remains step 4.
+- Reset affects the selected topic/difficulty and advances to a fresh question. No practice data is written to preferences; choose optional practice inclusion in a local [[notebooks|notebook]] to save it across sessions.
 
 ## Visual and accessibility behavior
 
@@ -38,4 +38,4 @@ All 85 tests pass, along with Clippy for all targets with warnings denied, forma
 
 The reviewed step-2 executable is `target/curriculum/opencalc.exe`. Start with `--practice --size 800x900` to open the practice workspace beside homework.
 
-Related: [[accessibility]], [[feature-research]]. Step 3 remains full calculator workflow/key parity; step 4 remains local notebooks and saved progress.
+Related: [[accessibility]], [[feature-research]], [[notebooks]]. Guidebook parity and real assistive-device evaluation remain open.
